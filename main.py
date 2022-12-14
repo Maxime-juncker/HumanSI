@@ -1,4 +1,11 @@
-import AI 
+# Je vais partir du principe que ceux qui lise ce code ne save rien des modules 
+# que j'utilise, vue que je suis un chic type je vais mettre les liens vers 
+# la documentation que j'utilise (ou au moins un truc en rapport genre stackOverflow)
+
+# ༼ つ ◕_◕ ༽つ
+
+
+import AI #Un sripte custome (ont peut faire ça si vous saviez po ╰(*°▽°*)╯
 import pygame
 import random
 import sys
@@ -25,7 +32,7 @@ AI.SCREEN_HIGHT = SCREEN_HIGHT
 AI.SCREEN_WIDTH = SCREEN_WIDTH
 
 
-A1 = AI.AI_ACTOR()
+A1 = AI.AI_ACTOR() #Faut aller voir l'autre script pour bien comprendre
 A2 = AI.AI_ACTOR()
 A3 = AI.AI_ACTOR()
 A4 = AI.AI_ACTOR()
@@ -36,7 +43,8 @@ goal2 = A3.FindRandomPointAtDistance(50)
 goal3 = A4.FindRandomPointAtDistance(50)
 
 
-while True:     
+while True:   #Une update de base 
+    
     for event in pygame.event.get():              
         if event.type == QUIT:
             pygame.quit()

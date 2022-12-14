@@ -1,10 +1,17 @@
-import pygame
+# Je vais partir du principe que ceux qui lise ce code ne save rien des modules 
+# que j'utilise, vue que je suis un chic type je vais mettre les liens vers 
+# la documentation que j'utilise (ou au moins un truc en rapport genre stackOverflow)
+
+# ༼ つ ◕_◕ ༽つ
+
+
+import pygame # https://www.pygame.org
 import random
 import sys
 import math
 from pygame.locals import *
 
-FPS = pygame.time.Clock()
+FPS = pygame.time.Clock() # https://www.geeksforgeeks.org/pygame-time/ (pour tout ce qui touche au FPS)
 FPS.tick(1)
 
 # les couleurs de BASEEEEEE
@@ -23,7 +30,7 @@ AI_PATH="S_Test.png"
 
 
 
-class AI_ACTOR(pygame.sprite.Sprite):
+class AI_ACTOR(pygame.sprite.Sprite): #https://learnpython.com/blog/custom-class-python/
 
     speed = 1
     suceed=False
@@ -38,7 +45,8 @@ class AI_ACTOR(pygame.sprite.Sprite):
 
     def update(self):
         
-
+        #https://stackoverflow.com/questions/35136091/pygame-key-getting-pressed (pour les touches)
+        #https://stackoverflow.com/questions/16183265/how-to-move-sprite-in-pygame (pour bouger un sprite)
         pressed_keys = pygame.key.get_pressed()
         if pressed_keys[K_UP]:
             self.rect.move_ip(0, -1)
@@ -85,7 +93,7 @@ class AI_ACTOR(pygame.sprite.Sprite):
         return (randomX, randomY)
         
         
-
+    #https://www.pygame.org/docs/ref/draw.html
     def draw(self, surface):
         surface.blit(self.image, self.rect) 
 
