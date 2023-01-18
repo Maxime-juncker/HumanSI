@@ -1,2 +1,2 @@
-# HumainSI
+# HumanSI
 Un nom complétement original
