@@ -17,7 +17,10 @@ image = "C:/Users/Amaro01/Documents/GitHub/HumanSI/S_Test.gif"
 screen.addshape(image)
 
 
-A1 = AI.AI_ACTOR()
+test = AI.AI_ACTOR()
+test.speed = 1
+test.MoveTo((10,-50))
+
 
 
 
