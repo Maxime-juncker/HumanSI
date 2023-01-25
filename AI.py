@@ -10,6 +10,7 @@ import math
 import turtle
 
 image = "C:/Users/Amaro01/Documents/GitHub/HumanSI/S_Test.gif"
+ressourceImage = "C:/Users/Amaro01/Documents/GitHub/HumanSI/R.gif"
 
 ActorState = {
 
@@ -66,3 +67,16 @@ class AI_ACTOR():
         randomY = random.randint(pos[1] - distance, pos[1] + distance)
 
         return (randomX, randomY)
+
+
+class RessourceActor():
+    hp = 100
+    actor = turtle.Turtle()
+    actor.speed(100)
+
+    def __init__(self):
+
+        self.actor.shape(ressourceImage)
+        self.actor.setheading(90)
+        self.actor.penup()
+        self.actor.setpos(-200,-200)

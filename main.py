@@ -11,8 +11,10 @@ import turtle
 
 screen = turtle.Screen()
 
+ressourceImage = "C:/Users/Amaro01/Documents/GitHub/HumanSI/R.gif"
 image = "C:/Users/Amaro01/Documents/GitHub/HumanSI/S_Test.gif"
 
+screen.addshape(ressourceImage)
 screen.addshape(image)
 screen.setup(1.0, 1.0)
 screen.bgcolor("#7b7b7f")
@@ -21,6 +23,8 @@ screen.bgcolor("#7b7b7f")
 
 test = AI.AI_ACTOR()
 test.speed = 1
+
+tree = AI.RessourceActor()
 
 
 
@@ -40,7 +44,5 @@ while True:
 
 
     screen.update()
-
-screen.mainloop()
 
 
