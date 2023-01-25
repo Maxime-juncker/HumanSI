@@ -8,25 +8,23 @@
 
 import AI #Un sripte custome (ont peut faire ça si vous saviez po ╰(*°▽°*)╯
 import turtle
-import functools
 import random
-import sys
 
 screen = turtle.Screen()
-superTurtle = turtle.Turtle()
 
-superTurtle.shape("circle")
+image = "C:/Users/Amaro01/Documents/GitHub/HumanSI/S_Test.gif"
 
-def test():
-    print("VROOM")
+screen.addshape(image)
+
+
+A1 = AI.AI_ACTOR()
+
+
 
 
 screen.listen()
-screen.onkey()
-
 
 while True:
-
     screen.update()
 
 
