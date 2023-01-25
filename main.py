@@ -8,27 +8,39 @@
 
 import AI #Un sripte custome (ont peut faire ça si vous saviez po ╰(*°▽°*)╯
 import turtle
-import random
 
 screen = turtle.Screen()
 
 image = "C:/Users/Amaro01/Documents/GitHub/HumanSI/S_Test.gif"
 
 screen.addshape(image)
+screen.setup(1.0, 1.0)
+screen.bgcolor("#7b7b7f")
+
 
 
 test = AI.AI_ACTOR()
 test.speed = 1
-test.MoveTo((10,-50))
 
 
 
+
+def MoveActor(actorToMove:AI.AI_ACTOR(), actorState:AI.ActorState=AI.ActorState["Idle"]):
+
+    if (not actorToMove.isMoving and actorState == AI.ActorState["Idle"]):
+        newCoord = test.FindRandomPointAtDistance(50)
+        actorToMove.MoveTo(newCoord)
 
 
 screen.listen()
 
 while True:
+    MoveActor(test)
+
+
+
     screen.update()
 
+screen.mainloop()
 
 
