@@ -19,12 +19,21 @@ ActorState = {
     
 }
 
-class AI_ACTOR(): 
+class Object():
 
-    speed = 20
-    suceed=False
+    def __init__(self):
+        pass
+
+    objectComponents = {}
+
+    def DoesComponentExist(self, componentName:str):
+        return componentName in self.objectComponents
+
+
+
+class CActor(Object): 
+
     actor = turtle.Turtle()
-    isMoving = False
 
         
 
@@ -35,9 +44,25 @@ class AI_ACTOR():
         self.actor.setheading(90)
         self.actor.speed(self.speed)
         self.actor.penup()
+        self.objectComponents["CActor"] = self
         
 
+
+
+class CEntity(CActor):
+
+    speed = 20
+    isMoving = False
+
+    def __init__(self):
+        super().__init__()
+
+        self.objectComponents["CEntity"] = self
+
+
+    
     def MoveTo(self, newPosition:tuple):
+
 
         while (self.actor.pos()[0] < newPosition[0]):
             self.isMoving = True
@@ -69,14 +94,14 @@ class AI_ACTOR():
         return (randomX, randomY)
 
 
-class RessourceActor():
+
+class CRessource(CActor):
+
     hp = 100
-    actor = turtle.Turtle()
-    actor.speed(100)
+
 
     def __init__(self):
+        super.__init__()
+        pass
 
-        self.actor.shape(ressourceImage)
-        self.actor.setheading(90)
-        self.actor.penup()
-        self.actor.setpos(-200,-200)
+
