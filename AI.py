@@ -19,6 +19,12 @@ ActorState = {
     
 }
 
+ActorImage = {
+    
+    "Humain" : image,
+    "Tree" : ressourceImage
+}
+
 class Object():
 
     def __init__(self):
@@ -31,18 +37,19 @@ class Object():
 
 
 
+
+
 class CActor(Object): 
 
     actor = turtle.Turtle()
 
         
 
-    def __init__(self):
+    def __init__(self, spriteName:str="square"):
         super().__init__()
     
-        self.actor.shape(image)
+        self.actor.shape(spriteName)
         self.actor.setheading(90)
-        self.actor.speed(self.speed)
         self.actor.penup()
         self.objectComponents["CActor"] = self
         
@@ -51,11 +58,14 @@ class CActor(Object):
 
 class CEntity(CActor):
 
-    speed = 20
+    speed = 1
     isMoving = False
 
     def __init__(self):
         super().__init__()
+
+        self.actor.speed(self.speed)
+
 
         self.objectComponents["CEntity"] = self
 
@@ -97,11 +107,11 @@ class CEntity(CActor):
 
 class CRessource(CActor):
 
-    hp = 100
 
 
     def __init__(self):
-        super.__init__()
-        pass
+        super().__init__()
+        self.objectComponents["CRessource"] = self
+        
 
 

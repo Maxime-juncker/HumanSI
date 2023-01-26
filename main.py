@@ -23,14 +23,16 @@ screen.bgcolor("#7b7b7f")
 
 
 test = AI.CEntity()
-test.speed = 1
+
+
+tree = AI.CRessource()
 
 
 
 def MoveActor(actorToMove:AI.CEntity(), actorState:AI.ActorState=AI.ActorState["Idle"]):
 
     if (not actorToMove.isMoving and actorState == AI.ActorState["Idle"]):
-        newCoord = test.FindRandomPointAtDistance(50)
+        newCoord = actorToMove.FindRandomPointAtDistance(50)
         actorToMove.MoveTo(newCoord)
 
 
