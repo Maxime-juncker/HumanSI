@@ -9,8 +9,13 @@ import random
 import math
 import turtle
 
-image = "C:/Users/Amaro01/Documents/GitHub/HumanSI/S_Test.gif"
-ressourceImage = "C:/Users/Amaro01/Documents/GitHub/HumanSI/R.gif"
+import os
+
+CURR_DIR = os.path.dirname(os.path.realpath(__file__))
+print(CURR_DIR)
+
+image = CURR_DIR + "/S_Test.gif"
+ressourceImage = CURR_DIR + "/R.gif"
 
 ActorState = {
 
@@ -25,7 +30,9 @@ ActorImage = {
     "Tree" : ressourceImage
 }
 
-class Object():
+
+
+class Object(): #Toutes les classes doivent dériver de celle ci (ça permet de tout centraliser)
 
     def __init__(self):
         pass
@@ -37,26 +44,25 @@ class Object():
 
 
 
+#region Les Actors
 
+class AActor(Object): 
 
-class CActor(Object): 
-
-    actor = turtle.Turtle()
+    actor : turtle.Turtle()
 
         
 
     def __init__(self, spriteName:str="square"):
         super().__init__()
+
+        self.actor = turtle.Turtle()
     
         self.actor.shape(spriteName)
         self.actor.setheading(90)
         self.actor.penup()
-        self.objectComponents["CActor"] = self
-        
 
 
-
-class CEntity(CActor):
+class AEntity(AActor):
 
     speed = 1
     isMoving = False
@@ -65,9 +71,6 @@ class CEntity(CActor):
         super().__init__()
 
         self.actor.speed(self.speed)
-
-
-        self.objectComponents["CEntity"] = self
 
 
     
@@ -103,15 +106,39 @@ class CEntity(CActor):
 
         return (randomX, randomY)
 
+#endregion
+#region Les Component
 
 
-class CRessource(CActor):
+class CComponent(Object):
+    def __init__(self):
+        super().__init__()
 
 
+class CRessource(CComponent):
+
+    
 
     def __init__(self):
         super().__init__()
         self.objectComponents["CRessource"] = self
-        
 
 
+class CDamageable(CComponent):
+
+    maxHp = 100
+    currentHp:maxHp
+
+    def OnDamaged(self, amount:int):
+
+        self.currentHp -= amount
+
+        if (self.currentHp <= 0):
+            self.OnDie()
+
+    def OnDie(self):
+        self.currentHp = 0
+
+
+
+#endregion

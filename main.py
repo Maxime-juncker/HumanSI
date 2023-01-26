@@ -8,28 +8,33 @@
 
 import AI #Un sripte custome (ont peut faire ça si vous saviez po ╰(*°▽°*)╯
 import turtle
+import os
+
+
+CURR_DIR = os.path.dirname(os.path.realpath(__file__))
+print(CURR_DIR)
 
 screen = turtle.Screen()
 
-ressourceImage = "C:/Users/Amaro01/Documents/GitHub/HumanSI/R.gif"
-image = "C:/Users/Amaro01/Documents/GitHub/HumanSI/S_Test.gif"
+
+ressourceImage = CURR_DIR + "/R.gif"
+image = CURR_DIR + "/S_Test.gif"
 
 screen.addshape(ressourceImage)
-
 screen.addshape(image)
+
 screen.setup(1.0, 1.0)
 screen.bgcolor("#7b7b7f")
 
 
 
-test = AI.CEntity()
-
-
-tree = AI.CRessource()
+test = AI.AEntity()
 
 
 
-def MoveActor(actorToMove:AI.CEntity(), actorState:AI.ActorState=AI.ActorState["Idle"]):
+
+
+def MoveActor(actorToMove:AI.AEntity(), actorState:AI.ActorState=AI.ActorState["Idle"]):
 
     if (not actorToMove.isMoving and actorState == AI.ActorState["Idle"]):
         newCoord = actorToMove.FindRandomPointAtDistance(50)
