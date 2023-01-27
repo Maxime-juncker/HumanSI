@@ -30,18 +30,6 @@ screen.bgcolor("#7b7b7f")
 
 test = AI.AEntity()
 
-caca
-
-
-
-
-
-
-
-
-
-
-
 
 def MoveActor(actorToMove:AI.AEntity(), actorState:AI.ActorState=AI.ActorState["Idle"]):
 
