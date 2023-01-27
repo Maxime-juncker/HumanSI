@@ -4,7 +4,7 @@
 
 # ༼ つ ◕_◕ ༽つ
 
-
+#slt
 
 import AI #Un sripte custome (ont peut faire ça si vous saviez po ╰(*°▽°*)╯
 import turtle
