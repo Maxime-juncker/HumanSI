@@ -30,6 +30,15 @@ screen.bgcolor("#7b7b7f")
 
 test = AI.AEntity()
 
+caca
+
+
+
+
+
+
+
+
 
 
 
