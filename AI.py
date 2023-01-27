@@ -37,10 +37,7 @@ class Object(): #Toutes les classes doivent dériver de celle ci (ça permet de 
     def __init__(self):
         pass
 
-    objectComponents = {}
 
-    def DoesComponentExist(self, componentName:str):
-        return componentName in self.objectComponents
 
 
 
@@ -51,10 +48,14 @@ class AActor(Object):
     actor : turtle.Turtle()
 
         
+    actorComponents = {}
+
+    def DoesComponentExist(self, componentName:str):
+        return componentName in self.actorComponents
+
 
     def __init__(self, spriteName:str="square"):
         super().__init__()
-
         self.actor = turtle.Turtle()
     
         self.actor.shape(spriteName)
@@ -67,10 +68,15 @@ class AEntity(AActor):
     speed = 1
     isMoving = False
 
+    Entityname = ""
+
     def __init__(self):
         super().__init__()
 
-        self.actor.speed(self.speed)
+        self.GenerateNewStats()        
+
+    def GenerateNewStats(self):
+        self.speed = random.randint(1, 3)
 
 
     
