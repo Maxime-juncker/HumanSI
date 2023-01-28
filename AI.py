@@ -14,8 +14,6 @@ import os
 CURR_DIR = os.path.dirname(os.path.realpath(__file__))
 print(CURR_DIR)
 
-image = CURR_DIR + "/S_Test.gif"
-ressourceImage = CURR_DIR + "/R.gif"
 
 ActorState = {
 
@@ -24,11 +22,8 @@ ActorState = {
     
 }
 
-ActorImage = {
-    
-    "Humain" : image,
-    "Tree" : ressourceImage
-}
+
+
 
 
 
@@ -65,7 +60,7 @@ class AActor(Object):
 
 class AEntity(AActor):
 
-    speed = 1
+    speed = 2
     isMoving = False
 
     Entityname = ""
@@ -73,10 +68,7 @@ class AEntity(AActor):
     def __init__(self):
         super().__init__()
 
-        self.GenerateNewStats()        
-
-    def GenerateNewStats(self):
-        self.speed = random.randint(1, 3)
+        self.actor.speed(self.speed)
 
 
     

@@ -12,6 +12,7 @@ import os
 import proceduraleGeneration
 
 
+
 CURR_DIR = os.path.dirname(os.path.realpath(__file__))
 print(CURR_DIR)
 
@@ -24,9 +25,16 @@ image = CURR_DIR + "/S_Test.gif"
 screen.addshape(ressourceImage)
 screen.addshape(image)
 
+SpriteLibrary = {
+
+    "Humain" : image,
+    "Tree" : ressourceImage
+    
+}
+
+
 screen.setup(1.0, 1.0)
 screen.bgcolor("#7b7b7f")
-
 
 
 test = AI.AEntity()
@@ -38,7 +46,7 @@ test = AI.AEntity()
 def MoveActor(actorToMove:AI.AEntity(), actorState:AI.ActorState=AI.ActorState["Idle"]):
 
     if (not actorToMove.isMoving and actorState == AI.ActorState["Idle"]):
-        newCoord = actorToMove.FindRandomPointAtDistance(50)
+        newCoord = actorToMove.FindRandomPointAtDistance(100)
         actorToMove.MoveTo(newCoord)
 
 
@@ -54,6 +62,7 @@ def Spawn_Unit():
 screen.onkey(Spawn_Unit, 'space')
 
 while True:
+    MoveActor(test)
 
     for element in unit:
         MoveActor(element)
