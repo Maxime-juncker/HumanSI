@@ -1,5 +1,5 @@
-# Je vais partir du principe que ceux qui lise ce code ne save rien des modules 
-# que j'utilise, vue que je suis un chic type je vais mettre les liens vers 
+# Je vais partir du principe que ceux qui lise ce code ne save rien des modules
+# que j'utilise, vue que je suis un chic type je vais mettre les liens vers
 # la documentation que j'utilise (ou au moins un truc en rapport genre stackOverflow)
 
 # ༼ つ ◕_◕ ༽つ
@@ -37,7 +37,6 @@ screen.bgcolor("#7b7b7f")
 
 
 test = AI.AEntity()
-test2 = AI.AEntity()
 
 
 
@@ -52,12 +51,28 @@ def MoveActor(actorToMove:AI.AEntity(), actorState:AI.ActorState=AI.ActorState["
 
 screen.listen()
 
+
+unit=[]
+
+def Spawn_Unit():
+    unit.append(AI.AEntity())
+    print(unit)
+
+screen.onkey(Spawn_Unit, 'space')
+
 while True:
     MoveActor(test)
-    MoveActor(test2)
 
+    for element in unit:
+        MoveActor(element)
 
 
     screen.update()
+
+
+
+
+
+
 
 
