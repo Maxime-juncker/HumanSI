@@ -1,5 +1,5 @@
 # Je vais partir du principe que ceux qui lise ce code ne save rien des modules
-# que j'utilise, vue que je suis un chic type je vais mettre les liens vers
+# que j'utilise, vue que je suis un chic type je vais mettre les liens versgi
 # la documentation que j'utilise (ou au moins un truc en rapport genre stackOverflow)
 
 # ༼ つ ◕_◕ ༽つ
@@ -9,6 +9,7 @@
 import AI #Un sripte custome (ont peut faire ça si vous saviez po ╰(*°▽°*)╯
 import turtle
 import os
+import proceduraleGeneration
 
 
 CURR_DIR = os.path.dirname(os.path.realpath(__file__))
