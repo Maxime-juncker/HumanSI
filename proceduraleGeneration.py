@@ -22,7 +22,7 @@ class ChunkDeBase() :
     setpos(int(20),int(80))
     print(ChunkPos)
     print(ChunkPos['Chunk 0'])
-    setpos(ChunkPos['Chunk 0',1])
+    setpos(ChunkPos['Chunk 0'][0])
     forward(100)
     #ChunkCoinFinal["Chunk"] = ChunkPos : test un peux rater
     end_fill()
