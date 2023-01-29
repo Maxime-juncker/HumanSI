@@ -1,34 +1,44 @@
 from turtle import *
 
 
-chunkPos = { #pas enlever
+ChunkPos = { #pas enlever
              #pas enlever
 }            #pas enlever
+
 ChunkCoinFinal = {
 
 }
+
 class ChunkDeBase() :
-    currentChunk = str(len(chunkPos))
-    chunkPos["Chunk " + currentChunk] = []
+    currentChunk = str(len(ChunkPos))
+    ChunkPos["Chunk " + currentChunk] = []
     coord = (0,0)
     for i in range(6) :
         color('black')
         begin_fill()
         forward(50)
         left(60)
-        chunkPos["Chunk " + currentChunk].append(pos())
+        ChunkPos["Chunk " + currentChunk].append(pos())
     setpos(int(20),int(80))
-    print(chunkPos)
-    #ChunkCoinFinal["Chunk"] = chunkPos test un peux rater
+    print(ChunkPos)
+    print(ChunkPos['Chunk 0'])
+    setpos(ChunkPos['Chunk 0',1])
+    forward(100)
+    #ChunkCoinFinal["Chunk"] = ChunkPos : test un peux rater
     end_fill()
     done()
 
-print(chunkPos)
-
-def GenerationMap() :
+print(ChunkPos)
+""""
+class GenerationMap() :
     #color('red')
+    coord = ChunkPos['Chunk 0']
     begin_fill()
-    setpos(int(chunkPos['Chunk 0'](1)))
+    setpos(int(10),int(50))
+    forward(100)
     end_fill
     print("ok ok")
-GenerationMap
+
+
+#GenerationMap
+"""
