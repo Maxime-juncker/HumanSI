@@ -14,38 +14,43 @@ ChunkCentre = {
 }
 
 NbrChunk = 0
-
+speed(0)
+title("salut a tous c'est Fanta")
 class ChunkDeBase() :
     currentChunk = str(len(ChunkPos))
-    ChunkPos["Chunk " + currentChunk] = []
-    ChunkCentre["Chunk " + currentChunk] = []
+    ChunkPos[currentChunk] = []
+    ChunkCentre[currentChunk] = []
     coord = (0,0)
-    for i in range(6) :
-        color('black')
-        forward(50)
-        left(60)
-        ChunkPos["Chunk " + currentChunk].append(pos())
+    color('black')
+    for exagone in range(6) :
+           forward(50)
+           left(60)
+           ChunkPos[currentChunk].append(pos())
     left(60)
     penup()
     forward(50)
-    ChunkCentre["Chunk " + currentChunk].append(pos())
-    setpos(ChunkPos['Chunk 0'][1])
+    ChunkCentre[currentChunk].append(pos())
     right(60)
+    forward(50)
     pendown()
     NbrChunk += 1
-
-
     done()
-    
 
+
+
+
+
+
+"""
 print(ChunkPos)
 
 class GenerationMap() :
     #color('red')
-    coord = ChunkPos['Chunk 0'][1]
+    coord = ChunkPos['0'][1]
     setpos(int(10),int(50))
     forward(100)
     print("ok ok")
 
 
 #GenerationMap
+"""
