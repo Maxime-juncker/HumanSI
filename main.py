@@ -37,7 +37,7 @@ def on_quit():
     global game_on
     game_on = False
 
-    screen._root.after(100, screen._root.destroy)
+    screen._root.after(500, screen._root.destroy)
 
 screen._root.protocol("WM_DELETE_WINDOW", on_quit)
 
@@ -122,7 +122,6 @@ while True:
     if not game_on :
         break
 
-    
     MoveActor(test)
 
     for element in unit:
