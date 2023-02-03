@@ -9,14 +9,37 @@
 import AI #Un sripte custome (ont peut faire ça si vous saviez po ╰(*°▽°*)╯
 import turtle
 import os
-import proceduraleGeneration
+#import proceduraleGeneration
+
+class bcolors:
+    HEADER = '\033[95m'
+    OKBLUE = '\033[94m'
+    OKCYAN = '\033[96m'
+    OKGREEN = '\033[92m'
+    WARNING = '\033[93m'
+    FAIL = '\033[91m'
+    ENDC = '\033[0m'
+    BOLD = '\033[1m'
+    UNDERLINE = '\033[4m'
 
 
 
 CURR_DIR = os.path.dirname(os.path.realpath(__file__))
-print(CURR_DIR)
+
+
+game_on = True
+
 
 screen = turtle.Screen()
+
+
+def on_quit():
+    global game_on
+    game_on = False
+
+    screen._root.after(1000, screen._root.destroy)
+
+screen._root.protocol("WM_DELETE_WINDOW", on_quit)
 
 
 ressourceImage = CURR_DIR + "/R.gif"
@@ -31,6 +54,29 @@ SpriteLibrary = {
     "Tree" : ressourceImage
     
 }
+
+
+class UWorld():
+    def __init__(self):
+        pass
+
+    actorCurentlyInWorld = {}
+
+    def KillAllActor(self):
+
+        nbOffTurtle=screen.turtles()
+
+        for turtle in screen.turtles():
+            turtle.hideturtle()
+            turtle.clear()
+
+        print(bcolors.WARNING + str(len(nbOffTurtle)) + " turtle were killed !" + bcolors.ENDC)
+        
+
+
+World = UWorld()
+
+
 
 
 screen.setup(1.0, 1.0)
@@ -49,8 +95,16 @@ def MoveActor(actorToMove:AI.AEntity(), actorState:AI.ActorState=AI.ActorState["
         newCoord = actorToMove.FindRandomPointAtDistance(100)
         actorToMove.MoveTo(newCoord)
 
+World.KillAllActor()
 
 screen.listen()
+
+
+
+
+
+#AI.World.KillActor(test.actor)
+
 
 
 unit=[]
@@ -60,8 +114,14 @@ def Spawn_Unit():
     print(unit)
 
 screen.onkey(Spawn_Unit, 'space')
+screen.onkey(World.KillAllActor, 'a')
+
 
 while True:
+
+    if not game_on :
+        break
+
     MoveActor(test)
 
     for element in unit:

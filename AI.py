@@ -36,11 +36,13 @@ class Object(): #Toutes les classes doivent dériver de celle ci (ça permet de 
 
 
 
+
 #region Les Actors
 
 class AActor(Object): 
 
     actor : turtle.Turtle()
+
 
         
     actorComponents = {}
@@ -50,6 +52,8 @@ class AActor(Object):
 
 
     def __init__(self, spriteName:str="square"):
+
+
         super().__init__()
         self.actor = turtle.Turtle()
     
@@ -73,6 +77,7 @@ class AEntity(AActor):
 
     
     def MoveTo(self, newPosition:tuple):
+
 
 
         while (self.actor.pos()[0] < newPosition[0]):
@@ -139,4 +144,8 @@ class CDamageable(CComponent):
 
 
 
+
+
 #endregion
+
+
