@@ -13,75 +13,78 @@ mer h=0
 mer profonde h=-1
 """
 #Class de base pour tout centraliser
-class Biome() :
+class BiomeDead() :
 
     type = "Sol"
-
-
-#Les infos pour que tout soit au meme endroit
-class InfoBiomePlaine(Biome) :
-
-    hauteur = 2
-    SpawnRessource = True
-    SpawnPasiveLife = True
+    hauteur = -1
+    SpawnRessource = False
+    SpawnPasiveLife = False
     SpawnAgressiveLife = False
-    SpawnWater = True
+    SpawnWater = False
 
-class InfoBiomeForest(Biome) :
-
+class BiomeLife() :
+    type = "Sol"
     hauteur = 3
     SpawnRessource = True
     SpawnPasiveLife = True
     SpawnAgressiveLife = True
     SpawnWater = True
 
-class InfoBiomeMontagne(Biome) :
+#Les infos pour que tout soit au meme endroit
+class InfoBiomePlaine(BiomeLife) :
+    def __init__(self):
+        super().__init__()
 
-    hauteur = 5
-    SpawnRessource = True
-    SpawnPasiveLife = True
-    SpawnAgressiveLife = True
-    SpawnWater = True
+        self.hauteur = 2
 
-class InforBiomeHauteMontagne(Biome) :
+class InfoBiomeForest(BiomeLife) :
+    pass
+    
 
-    hauteur = 8
-    SpawnRessource = True
-    SpawnPasiveLife = True
-    SpawnAgressiveLife = False
-    SpawnWater = False
+class InfoBiomeMontagne(BiomeLife) :
+    def __init__(self):
+        super().__init__()
+        
+        self.hauteur = 5
+    
 
-class InfoBiomePlage(Biome) :
+class InforBiomeHauteMontagne(BiomeLife) :
+    def __init__(self):
+        super().__init__()
+        self.hauteur = 8
+        self.SpawnAgressiveLife = False
+        self.SpawnWater = False
 
-    hauteur = 1
-    SpawnRessource = True
-    SpawnPasiveLife = True
-    SpawnAgressiveLife = False
-    SpawnWater = False
+class InfoBiomePlage(BiomeLife) :
+    def __init__(self):
+        super().__init__()
+        self.hauteur = 1
+        self.SpawnAgressiveLife = False
+        self.SpawnWater = False
 
-class InfoBiomeDesert(Biome) :
+class InfoBiomeDesert(BiomeLife) :
+    def __init__(self):
+        super().__init__()
+        self.hauteur = 2
+        self.SpawnRessource = False
+        self.SpawnPasiveLife = False
+        self.SpawnWater = False
 
-    hauteur = 2
-    SpawnRessource = False
-    SpawnPasiveLife = False
-    SpawnAgressiveLife = True
-    SpawnWater = False
+class InfoBiomeSea(BiomeLife) :
+    def __init__(self):
+        super().__init__()
+        self.hauteur = 0
+        self.SpawnAgressiveLife = False
+        self.SpawnWater = False
 
-class InfoBiomeSea(Biome) :
-
-    hauteur = 0
-    SpawnRessource = True
-    SpawnPasiveLife = True
-    SpawnAgressiveLife = False
-    SpawnWater = False
-
-class InfoBiomeDeepSea(Biome) :
-
-    hauteur = -1
-    SpawnRessource = False
-    SpawnPasiveLife = False
-    SpawnAgressiveLife = False
-    SpawnWater = False
+class InfoBiomeDeepSea(BiomeLife) :
+    def __init__(self):
+        super().__init__()
+        self.hauteur = -1
+        self.SpawnRessource = False
+        self.SpawnPasiveLife = False
+        self.SpawnAgressiveLife = False
+        self.SpawnWater = False
 
 
 #la génération "materielle" des biomes
