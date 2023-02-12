@@ -60,7 +60,7 @@ class UWorld():
     def __init__(self):
         pass
 
-    actorCurentlyInWorld = {}
+    actorCurentlyInWorld = []
 
     def KillAllActor(self):
 
@@ -71,7 +71,28 @@ class UWorld():
             turtle.clear()
 
         print(bcolors.WARNING + str(len(nbOffTurtle)) + " turtle were killed !" + bcolors.ENDC)
+
+
+    def GetActorByName(self):
+
+        '''
+        On recup toutes les variable active et on check 
+
+        (si quelqu'un a une meilleur idée pour faire ça aller y !)
+        '''
         
+        for i in self.actorCurentlyInWorld:
+            pass
+            print(bcolors.OKGREEN + str(id(i)) + bcolors.ENDC)
+            print()
+           # print(bcolors.OKCYAN +  + bcolors.ENDC)
+
+    def Spawn_Unit(self):
+        newActor = AI.AEntity()
+        self.actorCurentlyInWorld.append(newActor)
+
+
+
 
 
 World = UWorld()
@@ -83,7 +104,6 @@ screen.setup(1.0, 1.0)
 screen.bgcolor("#7b7b7f")
 
 
-test = AI.AEntity()
 
 
 
@@ -103,18 +123,14 @@ screen.listen()
 
 
 
-#AI.World.KillActor(test.actor)
 
-
-
-unit=[]
-
-def Spawn_Unit():
-    unit.append(AI.AEntity())
-    print(unit)
-
-screen.onkey(Spawn_Unit, 'space')
+screen.onkey(World.Spawn_Unit, 'space')
 screen.onkey(World.KillAllActor, 'a')
+
+World.Spawn_Unit()
+World.Spawn_Unit()
+World.GetActorByName()
+
 
 
 while True:
@@ -122,9 +138,7 @@ while True:
     if not game_on :
         break
 
-    MoveActor(test)
-
-    for element in unit:
+    for element in World.actorCurentlyInWorld:
         MoveActor(element)
 
 
