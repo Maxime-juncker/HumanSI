@@ -9,6 +9,7 @@
 import AI #Un sripte custome (ont peut faire ça si vous saviez po ╰(*°▽°*)╯
 import turtle
 import os
+import random
 #import proceduraleGeneration
 
 class bcolors:
@@ -57,10 +58,12 @@ SpriteLibrary = {
 
 
 class UWorld():
+
+
     def __init__(self):
         pass
 
-    actorCurentlyInWorld = []
+    actorCurentlyInWorld = {}
 
     def KillAllActor(self):
 
@@ -73,23 +76,30 @@ class UWorld():
         print(bcolors.WARNING + str(len(nbOffTurtle)) + " turtle were killed !" + bcolors.ENDC)
 
 
-    def GetActorByName(self):
-
-        '''
-        On recup toutes les variable active et on check 
-
-        (si quelqu'un a une meilleur idée pour faire ça aller y !)
-        '''
+    def CheckIfActorExist(self, actorName:str=""):
         
-        for i in self.actorCurentlyInWorld:
-            pass
-            print(bcolors.OKGREEN + str(id(i)) + bcolors.ENDC)
-            print()
-           # print(bcolors.OKCYAN +  + bcolors.ENDC)
+
+        if (actorName == ""):
+            print(bcolors.FAIL + "ActorName est empty peut être qu'il n'est pas renseigner a l'appelle de GetActorByName" + bcolors.ENDC)
+            return 
+
+        
+        
+        for actor in self.actorCurentlyInWorld:
+
+            if self.actorCurentlyInWorld[actor].actorName == actorName:
+                return actor
+
+
+        print(bcolors.FAIL + "L'acteur n'est pas présent dans : " + bcolors.WARNING + "self.actorCurentlyInWorld" + bcolors.ENDC)
+
+
+
 
     def Spawn_Unit(self):
         newActor = AI.AEntity()
-        self.actorCurentlyInWorld.append(newActor)
+        newActor.actorName = "AEntity " + str( len(self.actorCurentlyInWorld) + 1)
+        self.actorCurentlyInWorld[newActor.actorName] = newActor;
 
 
 
@@ -108,17 +118,17 @@ screen.bgcolor("#7b7b7f")
 
 
 
+def MoveActor(actorToMove:AI.AEntity()):
 
-def MoveActor(actorToMove:AI.AEntity(), actorState:AI.ActorState=AI.ActorState["Idle"]):
 
-    if (not actorToMove.isMoving and actorState == AI.ActorState["Idle"]):
-        newCoord = actorToMove.FindRandomPointAtDistance(100)
-        actorToMove.MoveTo(newCoord)
+    newCoord = actorToMove.FindRandomPointAtDistance(100)
+    actorToMove.MoveTo(newCoord)
+
+
 
 World.KillAllActor()
 
 screen.listen()
-
 
 
 
@@ -129,17 +139,29 @@ screen.onkey(World.KillAllActor, 'a')
 
 World.Spawn_Unit()
 World.Spawn_Unit()
-World.GetActorByName()
+
+
 
 
 
 while True:
 
-    if not game_on :
+    '''
+    lorsque game_on passe a false, ça veut dire que la fenetre vas ce fermer dans 1000ms
+    il faut detruire tous les acteurs, faire les truc de sauvegarde + exit ka boucle infini
+
+    (sinon y'a des erreur mais ça impacte pas le jeux c'est juste pas jolie =D )
+    '''
+
+    if not game_on : 
+        World.KillAllActor()
+
+        #Parameters.Save() <- Pas encore fait
         break
 
+
     for element in World.actorCurentlyInWorld:
-        MoveActor(element)
+        MoveActor(World.actorCurentlyInWorld[element])
 
 
     screen.update()

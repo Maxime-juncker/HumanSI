@@ -41,7 +41,8 @@ class Object(): #Toutes les classes doivent dériver de celle ci (ça permet de 
 
 class AActor(Object): 
 
-    actor : turtle.Turtle()
+    actorTurtle : turtle.Turtle()
+    actorName : str
 
 
         
@@ -55,55 +56,68 @@ class AActor(Object):
 
 
         super().__init__()
-        self.actor = turtle.Turtle()
+        self.actorTurtle = turtle.Turtle()
     
-        self.actor.shape(spriteName)
-        self.actor.setheading(90)
-        self.actor.penup()
+        self.actorTurtle.shape(spriteName)
+        self.actorTurtle.setheading(90)
+        self.actorTurtle.penup()
 
 
 class AEntity(AActor):
 
-    speed = 2
+    speed = 10
     isMoving = False
+    currentDestination:tuple
 
+    pos : turtle.Turtle()
     Entityname = ""
 
     def __init__(self):
         super().__init__()
 
-        self.actor.speed(self.speed)
+        self.actorTurtle.speed(self.speed)
 
 
+
+
+        
     
     def MoveTo(self, newPosition:tuple):
+        
+        if (not self.isMoving):
+            self.currentDestination = newPosition
 
 
+        if (not self.isMoving):
+            self.currentDestination = newPosition
 
-        while (self.actor.pos()[0] < newPosition[0]):
+        if (self.actorTurtle.pos()[0] < self.currentDestination[0]):
             self.isMoving = True
-            self.actor.goto(self.actor.pos()[0] + self.speed, self.actor.pos()[1])
+            self.actorTurtle.goto(self.actorTurtle.pos()[0] + self.speed, self.actorTurtle.pos()[1])
 
-        while (self.actor.pos()[0] > newPosition[0]):
+        if (self.actorTurtle.pos()[0] > self.currentDestination[0]):
             self.isMoving = True
-            self.actor.goto(self.actor.pos()[0] - self.speed, self.actor.pos()[1])
+            self.actorTurtle.goto(self.actorTurtle.pos()[0] - self.speed, self.actorTurtle.pos()[1])
 
-        while (self.actor.pos()[1] < newPosition[1]):
+        if (self.actorTurtle.pos()[1] < self.currentDestination[1]):
             self.isMoving = True
-            self.actor.goto(self.actor.pos()[0], self.actor.pos()[1] + self.speed)
+            self.actorTurtle.goto(self.actorTurtle.pos()[0], self.actorTurtle.pos()[1] + self.speed)
 
-        while (self.actor.pos()[1] > newPosition[1]):
+        if (self.actorTurtle.pos()[1] > self.currentDestination[1]):
             self.isMoving = True
-            self.actor.goto(self.actor.pos()[0], self.actor.pos()[1] - self.speed)
+            self.actorTurtle.goto(self.actorTurtle.pos()[0], self.actorTurtle.pos()[1] - self.speed)
 
-        self.isMoving = False
+        if abs(self.actorTurtle.pos()[0] - self.currentDestination[0]) < 10 and abs( self.actorTurtle.pos()[1] - self.currentDestination[1]) < 10:
+            self.isMoving = False
+
+
         
 
 
 
     def FindRandomPointAtDistance(self, distance:float):
 
-        pos = self.actor.pos()
+        pos = self.actorTurtle.pos()
         randomX = random.randint(pos[0] - distance, pos[0] + distance)
         randomY = random.randint(pos[1] - distance, pos[1] + distance)
 
