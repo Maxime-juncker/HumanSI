@@ -65,12 +65,12 @@ class AActor(Object):
 
 class AEntity(AActor):
 
-    speed = 10
+    speed = 2
     isMoving = False
     currentDestination:tuple
 
-    pos : turtle.Turtle()
     Entityname = ""
+    
 
     def __init__(self):
         super().__init__()
@@ -86,7 +86,7 @@ class AEntity(AActor):
         
         if (not self.isMoving):
             self.currentDestination = newPosition
-
+            
 
         if (not self.isMoving):
             self.currentDestination = newPosition

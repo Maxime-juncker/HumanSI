@@ -10,7 +10,12 @@ import AI #Un sripte custome (ont peut faire ça si vous saviez po ╰(*°▽°*
 import turtle
 import os
 import random
+import time
 #import proceduraleGeneration
+
+fps = 200
+time_delta = 1./fps
+
 
 class bcolors:
     HEADER = '\033[95m'
@@ -59,6 +64,9 @@ SpriteLibrary = {
 
 class UWorld():
 
+    isCreatingActor = False
+    wanToCreateActor=False
+
 
     def __init__(self):
         pass
@@ -94,12 +102,25 @@ class UWorld():
         print(bcolors.FAIL + "L'acteur n'est pas présent dans : " + bcolors.WARNING + "self.actorCurentlyInWorld" + bcolors.ENDC)
 
 
+    def TryToCreateActor(self,x,y):
+        self.wanToCreateActor = True
+        self.Spawn_Unit(x,y)
+
+    def Spawn_Unit(self,x,y):
+        self.wanToCreateActor = False
+        self.isCreatingActor = True
 
 
-    def Spawn_Unit(self):
+
         newActor = AI.AEntity()
+        newActor.actorTurtle.speed(999)
+        newActor.actorTurtle.setpos(x,y)
         newActor.actorName = "AEntity " + str( len(self.actorCurentlyInWorld) + 1)
-        self.actorCurentlyInWorld[newActor.actorName] = newActor;
+        self.actorCurentlyInWorld[newActor.actorName] = newActor
+
+
+        self.isCreatingActor = False
+
 
 
 
@@ -133,17 +154,13 @@ screen.listen()
 
 
 
-
-screen.onkey(World.Spawn_Unit, 'space')
+screen.onclick(World.TryToCreateActor)
 screen.onkey(World.KillAllActor, 'a')
 
-World.Spawn_Unit()
-World.Spawn_Unit()
 
 
 
-
-
+canCreateActor=False
 while True:
 
     '''
@@ -153,18 +170,23 @@ while True:
     (sinon y'a des erreur mais ça impacte pas le jeux c'est juste pas jolie =D )
     '''
 
+    time.sleep(time_delta) # Permet de limiter le nb te time que la loop run avec les Fps 
+
+
     if not game_on : 
         World.KillAllActor()
-
         #Parameters.Save() <- Pas encore fait
         break
 
+    actorInScene = World.actorCurentlyInWorld.copy()
 
-    for element in World.actorCurentlyInWorld:
+    for element in actorInScene:
         MoveActor(World.actorCurentlyInWorld[element])
 
 
     screen.update()
+
+
 
 
 
