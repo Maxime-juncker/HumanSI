@@ -65,7 +65,7 @@ class AActor(Object):
 
 class AEntity(AActor):
 
-    speed = 2
+    speed = 999
     isMoving = False
     currentDestination:tuple
 
@@ -93,19 +93,19 @@ class AEntity(AActor):
 
         if (self.actorTurtle.pos()[0] < self.currentDestination[0]):
             self.isMoving = True
-            self.actorTurtle.goto(self.actorTurtle.pos()[0] + self.speed, self.actorTurtle.pos()[1])
+            self.actorTurtle.goto(self.actorTurtle.pos()[0] + 1, self.actorTurtle.pos()[1])
 
         if (self.actorTurtle.pos()[0] > self.currentDestination[0]):
             self.isMoving = True
-            self.actorTurtle.goto(self.actorTurtle.pos()[0] - self.speed, self.actorTurtle.pos()[1])
+            self.actorTurtle.goto(self.actorTurtle.pos()[0] - 1, self.actorTurtle.pos()[1])
 
         if (self.actorTurtle.pos()[1] < self.currentDestination[1]):
             self.isMoving = True
-            self.actorTurtle.goto(self.actorTurtle.pos()[0], self.actorTurtle.pos()[1] + self.speed)
+            self.actorTurtle.goto(self.actorTurtle.pos()[0], self.actorTurtle.pos()[1] + 1)
 
         if (self.actorTurtle.pos()[1] > self.currentDestination[1]):
             self.isMoving = True
-            self.actorTurtle.goto(self.actorTurtle.pos()[0], self.actorTurtle.pos()[1] - self.speed)
+            self.actorTurtle.goto(self.actorTurtle.pos()[0], self.actorTurtle.pos()[1] - 1)
 
         if abs(self.actorTurtle.pos()[0] - self.currentDestination[0]) < 10 and abs( self.actorTurtle.pos()[1] - self.currentDestination[1]) < 10:
             self.isMoving = False
