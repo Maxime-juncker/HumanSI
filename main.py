@@ -12,6 +12,7 @@ import os
 import World
 import time
 import Parameters
+import random
 #import proceduraleGeneration
 
 # \\ ======================================= VARS ======================================= //
@@ -39,6 +40,8 @@ class bcolors: # /!\ les couleurs ne marche que sur sur certains IDE (ex : edupy
 screen:turtle.Screen()
 
 def Setup():
+
+
     """
     Setup des different parametre du mon (World, turtle etc...)
     si vous voulez mettre un truc qui se fait au début du script mettez le ici
@@ -70,7 +73,6 @@ def Setup():
     # ====== Setup le screen de turlte ========
 
     screen.setup(1.0, 1.0)
-    screen.bgcolor("#7b7b7f")
 
     # =========================================
 
@@ -101,16 +103,22 @@ def MoveActor(actorToMove:AI.AEntity()):
     actorToMove.MoveTo(newCoord)
 
 
+
+def TestAction(x,y):
+
+    actorInScene = World.currentWorld.actorCurentlyInWorld.copy()
+
+    i = random.randint(1, len(actorInScene))
+    actorInScene[i].DoRandomInteraction()
+        
 Setup()
 
 
 screen.listen()
-screen.onclick(World.currentWorld.SpawnUnit, 3)
+screen.onclick(TestAction, 3)
 screen.onclick(World.currentWorld.SpawnBasedOnRessourceIndex, 1)
 screen.onkey(World.currentWorld.KillAllActor, 'a')
 screen.onkey(World.currentWorld.SwitchRessource, 'b')
-
-
 
 
 

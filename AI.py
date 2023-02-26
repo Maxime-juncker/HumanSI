@@ -85,43 +85,46 @@ class AEntity(AActor):
         self.actorTurtle.speed(self.speed)
 
     def CanMove(self):
-        return self.movingToken >= Parameters.MOVING_TOKEN_THRESHOLD
+        return self.movingToken >= Parameters.MOVING_TOKEN_THRESHOLD and not self.middleOfAnAction
 
 
 
+    def DoRandomInteraction(self):
+        print(World.bcolors.FAIL + 'rejkofro' + World.bcolors.ENDC)
+        self.actorTurtle.write("BLA BLA BLA ",False, font=("Raleway", 20, "normal"), align="center")
 
+    def Talk(self):
+        pass
         
     
     def MoveTo(self, newPosition:tuple):
 
         #self.debugText.setpos(self.actorTurtle.pos())
+
+        if (not self.CanMove()):
+            return
         
         if (not self.isMoving):
             self.currentDestination = newPosition
     
 
         if (self.actorTurtle.pos()[0] < self.currentDestination[0]):
-            middleOfAnAction = True
             self.isMoving = True
             self.actorTurtle.goto(self.actorTurtle.pos()[0] + 2, self.actorTurtle.pos()[1])
 
         if (self.actorTurtle.pos()[0] > self.currentDestination[0]):
-            middleOfAnAction = True
             self.isMoving = True
             self.actorTurtle.goto(self.actorTurtle.pos()[0] - 2, self.actorTurtle.pos()[1])
 
         if (self.actorTurtle.pos()[1] < self.currentDestination[1]):
-            middleOfAnAction = True
             self.isMoving = True
             self.actorTurtle.goto(self.actorTurtle.pos()[0], self.actorTurtle.pos()[1] + 2)
 
         if (self.actorTurtle.pos()[1] > self.currentDestination[1]):
-            middleOfAnAction = True
             self.isMoving = True
             self.actorTurtle.goto(self.actorTurtle.pos()[0], self.actorTurtle.pos()[1] - 2)
 
         if abs(self.actorTurtle.pos()[0] - self.currentDestination[0]) < 10 and abs( self.actorTurtle.pos()[1] - self.currentDestination[1]) < 10:
-            middleOfAnAction = False
             self.isMoving = False
             self.movingToken = 0
 
@@ -151,8 +154,6 @@ class CComponent(Object):
 
 
 class CRessource(CComponent):
-
-    
 
     def __init__(self):
         super().__init__()
