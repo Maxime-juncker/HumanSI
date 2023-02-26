@@ -18,7 +18,7 @@ import Parameters
 
 game_on = False
 
-fps = 200
+fps = 500
 time_delta = 1./fps
 
 CURR_DIR = os.path.dirname(os.path.realpath(__file__))
@@ -56,6 +56,7 @@ def Setup():
 
     global screen
     screen = turtle.Screen()
+    screen.title("HumainSI : Chargement...")
 
     # ====== Setup un new world ========
     World.SetupNewWorld()
@@ -74,6 +75,9 @@ def Setup():
 
     #pour être prudent si jamais y'a un actor pour x raison ont le delete 
     World.currentWorld.KillAllActor()
+
+    screen.title("HumainSI")
+
 
     #ont lock la fonction pour ne pas pouvoir la ré-appeler par accident
     game_on = True
@@ -99,8 +103,11 @@ Setup()
 
 
 screen.listen()
-screen.onclick(World.currentWorld.Spawn_Unit)
+screen.onclick(World.currentWorld.SpawnUnit, 3)
+screen.onclick(World.currentWorld.SpawnBasedOnRessourceIndex, 1)
 screen.onkey(World.currentWorld.KillAllActor, 'a')
+screen.onkey(World.currentWorld.SwitchRessource, 'b')
+
 
 
 
@@ -115,7 +122,6 @@ while True:
     (sinon y'a des erreur mais ça impacte pas le jeux c'est juste pas jolie =D )
     '''
 
-    time.sleep(time_delta) # Permet de limiter le nb te time que la loop run avec les Fps 
 
 
     if not game_on : 
@@ -124,8 +130,6 @@ while True:
         break
 
     actorInScene = World.currentWorld.actorCurentlyInWorld.copy()
-
-    print(World.currentWorld.actorCurrentlyMoving)
 
     for element in actorInScene:
         if actorInScene[element].CanMove() and World.currentWorld.actorCurrentlyMoving <= Parameters.MAX_ACTORS_MOVING or actorInScene[element].isMoving:
@@ -138,5 +142,6 @@ while True:
         else:
             actorInScene[element].movingToken += 1
 
+    time.sleep(time_delta) # Permet de limiter le nb te time que la loop run avec les Fps 
 
     screen.update()

@@ -12,14 +12,22 @@ import Parameters
 import os
 import World
 
+
+
 CURR_DIR = os.path.dirname(os.path.realpath(__file__))
-print(CURR_DIR)
+
+if CURR_DIR == "":
+    print(World.bcolors.FAIL + "FAIL : CURR_DIR est empty ce probleme ne doit pas etre mis de coter si le jeu crach c'est a cause DE CURR_DIR" + World.bcolors.ENDC)
+else:
+    print(World.bcolors.OKGREEN + "CURR_DIR a bine été assigné : " + CURR_DIR + World.bcolors.ENDC)
 
 
-ActorState = {
+RessourceList = {
 
-    "None" : 0,
-    "Idle" : 1,
+    "None" : "black",
+    "Tree" : "green",
+    "Rock" : "grey",
+
     
 }
 
@@ -53,13 +61,14 @@ class AActor(Object):
         return componentName in self.actorComponents
 
 
-    def __init__(self, spriteName:str="square"):
+    def __init__(self, spriteName:str="square", ressourceName:str="None"):
 
 
         super().__init__()
         self.actorTurtle = turtle.Turtle()
     
         self.actorTurtle.shape(spriteName)
+        self.actorTurtle.color(RessourceList[ressourceName])
         self.actorTurtle.setheading(90)
         self.actorTurtle.penup()
 
@@ -85,9 +94,6 @@ class AEntity(AActor):
 
         self.movingToken = random.randint(0, 10)
         self.actorTurtle.speed(self.speed)
-
-        self.debugText.hideturtle()
-        self.debugText.write("arg", move=False, align="left", font=("Arial", 36, "bold"))
 
     def CanMove(self):
         return self.movingToken >= Parameters.MOVING_TOKEN_THRESHOLD
