@@ -9,13 +9,19 @@
 import AI #Un sripte custome (ont peut faire ça si vous saviez po ╰(*°▽°*)╯
 import turtle
 import os
-import random
+import World
 import time
+import Parameters
 #import proceduraleGeneration
+
+# \\ ======================================= VARS ======================================= //
+
+game_on = False
 
 fps = 200
 time_delta = 1./fps
 
+CURR_DIR = os.path.dirname(os.path.realpath(__file__))
 
 class bcolors:
     HEADER = '\033[95m'
@@ -28,15 +34,50 @@ class bcolors:
     BOLD = '\033[1m'
     UNDERLINE = '\033[4m'
 
+# \\ ============================================================================== //
+
+screen:turtle.Screen()
 
 
-CURR_DIR = os.path.dirname(os.path.realpath(__file__))
+def Setup():
+    """
+    Setup des different parametre du mon (World, turtle etc...)
+    si vous voulez mettre un truc qui se fait au début du script mettez le ici
+    Merci :)
+
+    a la fin ont lock la fonction
+    (si jamais elle était appeler une deuxieme fois y'aurais 2 World 2 screen etc....)
+    """
+
+    global game_on
+
+    if game_on:
+        return
+
+    global screen
+    screen = turtle.Screen()
+
+    # ====== Setup un new world ========
+    World.SetupNewWorld()
+    World.currentWorld.Setup(screen)
+    # ==================================
 
 
-game_on = True
+
+    # ====== Setup le screen de turlte ========
+
+    screen.setup(1.0, 1.0)
+    screen.bgcolor("#7b7b7f")
+
+    # =========================================
 
 
-screen = turtle.Screen()
+    #pour être prudent si jamais y'a un actor pour x raison ont le delete 
+    World.currentWorld.KillAllActor()
+
+    #ont lock la fonction pour ne pas pouvoir la ré-appeler par accident
+    game_on = True
+
 
 
 def on_quit():
@@ -45,99 +86,7 @@ def on_quit():
 
     screen._root.after(1000, screen._root.destroy)
 
-screen._root.protocol("WM_DELETE_WINDOW", on_quit)
-
-
-ressourceImage = CURR_DIR + "/R.gif"
-image = CURR_DIR + "/S_Test.gif"
-
-screen.addshape(ressourceImage)
-screen.addshape(image)
-
-SpriteLibrary = {
-
-    "Humain" : image,
-    "Tree" : ressourceImage
-    
-}
-
-
-class UWorld():
-
-    isCreatingActor = False
-    wanToCreateActor=False
-
-
-    def __init__(self):
-        pass
-
-    actorCurentlyInWorld = {}
-
-    def KillAllActor(self):
-
-        nbOffTurtle=screen.turtles()
-
-        for turtle in screen.turtles():
-            turtle.hideturtle()
-            turtle.clear()
-
-        print(bcolors.WARNING + str(len(nbOffTurtle)) + " turtle were killed !" + bcolors.ENDC)
-
-
-    def CheckIfActorExist(self, actorName:str=""):
-        
-
-        if (actorName == ""):
-            print(bcolors.FAIL + "ActorName est empty peut être qu'il n'est pas renseigner a l'appelle de GetActorByName" + bcolors.ENDC)
-            return 
-
-        
-        
-        for actor in self.actorCurentlyInWorld:
-
-            if self.actorCurentlyInWorld[actor].actorName == actorName:
-                return actor
-
-
-        print(bcolors.FAIL + "L'acteur n'est pas présent dans : " + bcolors.WARNING + "self.actorCurentlyInWorld" + bcolors.ENDC)
-
-
-    def TryToCreateActor(self,x,y):
-        self.wanToCreateActor = True
-        self.Spawn_Unit(x,y)
-
-    def Spawn_Unit(self,x,y):
-        self.wanToCreateActor = False
-        self.isCreatingActor = True
-
-
-
-        newActor = AI.AEntity()
-        newActor.actorTurtle.speed(999)
-        newActor.actorTurtle.setpos(x,y)
-        newActor.actorName = "AEntity " + str( len(self.actorCurentlyInWorld) + 1)
-        self.actorCurentlyInWorld[newActor.actorName] = newActor
-
-
-        self.isCreatingActor = False
-
-
-
-
-
-
-World = UWorld()
-
-
-
-
-screen.setup(1.0, 1.0)
-screen.bgcolor("#7b7b7f")
-
-
-
-
-
+    screen._root.protocol("WM_DELETE_WINDOW", on_quit)
 
 def MoveActor(actorToMove:AI.AEntity()):
 
@@ -146,21 +95,17 @@ def MoveActor(actorToMove:AI.AEntity()):
     actorToMove.MoveTo(newCoord)
 
 
+Setup()
 
-World.KillAllActor()
 
 screen.listen()
+screen.onclick(World.currentWorld.Spawn_Unit)
+screen.onkey(World.currentWorld.KillAllActor, 'a')
 
 
 
 
-screen.onclick(World.TryToCreateActor)
-screen.onkey(World.KillAllActor, 'a')
 
-
-
-
-canCreateActor=False
 while True:
 
     '''
@@ -174,24 +119,24 @@ while True:
 
 
     if not game_on : 
-        World.KillAllActor()
+        World.currentWorld.KillAllActor()
         #Parameters.Save() <- Pas encore fait
         break
 
-    actorInScene = World.actorCurentlyInWorld.copy()
+    actorInScene = World.currentWorld.actorCurentlyInWorld.copy()
+
+    print(World.currentWorld.actorCurrentlyMoving)
 
     for element in actorInScene:
-        MoveActor(World.actorCurentlyInWorld[element])
+        if actorInScene[element].CanMove() and World.currentWorld.actorCurrentlyMoving <= Parameters.MAX_ACTORS_MOVING or actorInScene[element].isMoving:
+            
+            if not actorInScene[element].isMoving:
+                World.currentWorld.actorCurrentlyMoving += 1 
+                
+            MoveActor(actorInScene[element])
+
+        else:
+            actorInScene[element].movingToken += 1
 
 
     screen.update()
-
-
-
-
-
-
-
-
-
-

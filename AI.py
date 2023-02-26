@@ -8,8 +8,9 @@
 import random
 import math
 import turtle
-
+import Parameters
 import os
+import World
 
 CURR_DIR = os.path.dirname(os.path.realpath(__file__))
 print(CURR_DIR)
@@ -68,6 +69,13 @@ class AEntity(AActor):
     speed = 999
     isMoving = False
     currentDestination:tuple
+    movingToken = 0
+
+    debugText = turtle.Turtle()
+
+
+    #===========================================================================================
+    middleOfAnAction = False
 
     Entityname = ""
     
@@ -75,7 +83,14 @@ class AEntity(AActor):
     def __init__(self):
         super().__init__()
 
+        self.movingToken = random.randint(0, 10)
         self.actorTurtle.speed(self.speed)
+
+        self.debugText.hideturtle()
+        self.debugText.write("arg", move=False, align="left", font=("Arial", 36, "bold"))
+
+    def CanMove(self):
+        return self.movingToken >= Parameters.MOVING_TOKEN_THRESHOLD
 
 
 
@@ -83,32 +98,40 @@ class AEntity(AActor):
         
     
     def MoveTo(self, newPosition:tuple):
+
+        #self.debugText.setpos(self.actorTurtle.pos())
         
         if (not self.isMoving):
             self.currentDestination = newPosition
-            
-
-        if (not self.isMoving):
-            self.currentDestination = newPosition
+    
 
         if (self.actorTurtle.pos()[0] < self.currentDestination[0]):
+            middleOfAnAction = True
             self.isMoving = True
-            self.actorTurtle.goto(self.actorTurtle.pos()[0] + 1, self.actorTurtle.pos()[1])
+            self.actorTurtle.goto(self.actorTurtle.pos()[0] + 2, self.actorTurtle.pos()[1])
 
         if (self.actorTurtle.pos()[0] > self.currentDestination[0]):
+            middleOfAnAction = True
             self.isMoving = True
-            self.actorTurtle.goto(self.actorTurtle.pos()[0] - 1, self.actorTurtle.pos()[1])
+            self.actorTurtle.goto(self.actorTurtle.pos()[0] - 2, self.actorTurtle.pos()[1])
 
         if (self.actorTurtle.pos()[1] < self.currentDestination[1]):
+            middleOfAnAction = True
             self.isMoving = True
-            self.actorTurtle.goto(self.actorTurtle.pos()[0], self.actorTurtle.pos()[1] + 1)
+            self.actorTurtle.goto(self.actorTurtle.pos()[0], self.actorTurtle.pos()[1] + 2)
 
         if (self.actorTurtle.pos()[1] > self.currentDestination[1]):
+            middleOfAnAction = True
             self.isMoving = True
-            self.actorTurtle.goto(self.actorTurtle.pos()[0], self.actorTurtle.pos()[1] - 1)
+            self.actorTurtle.goto(self.actorTurtle.pos()[0], self.actorTurtle.pos()[1] - 2)
 
         if abs(self.actorTurtle.pos()[0] - self.currentDestination[0]) < 10 and abs( self.actorTurtle.pos()[1] - self.currentDestination[1]) < 10:
+            middleOfAnAction = False
             self.isMoving = False
+            self.movingToken = 0
+
+            World.currentWorld.actorCurrentlyMoving -= 1
+
 
 
         
