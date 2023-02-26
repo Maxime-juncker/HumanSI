@@ -23,7 +23,7 @@ time_delta = 1./fps
 
 CURR_DIR = os.path.dirname(os.path.realpath(__file__))
 
-class bcolors:
+class bcolors: # /!\ les couleurs ne marche que sur sur certains IDE (ex : edupython n'affiche pas les couleurs)
     HEADER = '\033[95m'
     OKBLUE = '\033[94m'
     OKCYAN = '\033[96m'
@@ -37,7 +37,6 @@ class bcolors:
 # \\ ============================================================================== //
 
 screen:turtle.Screen()
-
 
 def Setup():
     """
@@ -57,6 +56,9 @@ def Setup():
     global screen
     screen = turtle.Screen()
     screen.title("HumainSI : Chargement...")
+
+    test = turtle.Turtle()
+
 
     # ====== Setup un new world ========
     World.SetupNewWorld()

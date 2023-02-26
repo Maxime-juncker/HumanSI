@@ -1,7 +1,7 @@
 import AI
 import turtle
 
-class bcolors:
+class bcolors: # /!\ les couleurs ne marche que sur sur certains IDE (ex : edupython n'affiche pas les couleurs)
     HEADER = '\033[95m'
     OKBLUE = '\033[94m'
     OKCYAN = '\033[96m'
@@ -22,7 +22,7 @@ class UWorld():
     actorCurentlyInWorld = {}
     actorCurrentlyMoving = 0
 
-    ressourceList = ["Unit", "Tree", "Rock", "None"]
+    ressourceList = [("Unit", "square"), ("Tree", "Arbre1.gif"), ("Rock", "square"), ("None", "square")]
 
 
 
@@ -32,11 +32,12 @@ class UWorld():
     
     def Setup(self, screen):
         self.screen = screen
+        self.RegisterAllSprite()
 
     ressouceIndexCurrentlySelected = 0
 
     def KillAllActor(self):
-
+        
         nbOffTurtle=self.screen.turtles()
 
         for turtle in self.screen.turtles():
@@ -47,7 +48,8 @@ class UWorld():
 
     def SwitchRessource(self):
 
-        if self.ressouceIndexCurrentlySelected > len( self.ressourceList):
+
+        if self.ressouceIndexCurrentlySelected == len(self.ressourceList) -1:
             self.ressouceIndexCurrentlySelected = 0
         else:
             self.ressouceIndexCurrentlySelected += 1
@@ -69,25 +71,28 @@ class UWorld():
 
     def SpawnBasedOnRessourceIndex(self, x, y):
 
-        if self.ressourceList[self.ressouceIndexCurrentlySelected] == "Unit":
+        if self.ressourceList[self.ressouceIndexCurrentlySelected][0] == "Unit":
             self.SpawnUnit(x,y)
         else:
-            self.SpawnRessource(x,y, self.ressourceList[self.ressouceIndexCurrentlySelected])
+            self.SpawnRessource(x,y, self.ressourceList[self.ressouceIndexCurrentlySelected][1])
 
     def SpawnUnit(self,x,y):
 
         newActor = AI.AEntity()
         newActor.actorTurtle.speed(999)
         newActor.actorTurtle.setpos(x,y)
-        newActor.actorName = "AEntity " + str( len(self.actorCurentlyInWorld) + 1)
+        newActor.actorName = "AEntity " + str(len(self.actorCurentlyInWorld) + 1)
         self.actorCurentlyInWorld[newActor.actorName] = newActor
 
     def SpawnRessource(self, x, y, ressourceName:str="None"):
 
-        newRessource = AI.AActor("square", ressourceName)
+        newRessource = AI.AActor(ressourceName)
         newRessource.actorTurtle.speed(999)
         newRessource.actorTurtle.setpos(x,y)
         newRessource.actorName = "ERessource " + str(len(self.actorCurentlyInWorld) + 1)
+
+    def RegisterAllSprite(self):
+        self.screen.register_shape('Arbre1.gif')
 
 
 currentWorld:UWorld
@@ -95,6 +100,9 @@ currentWorld:UWorld
 def SetupNewWorld():
     global currentWorld
     currentWorld = UWorld()
+
+
+
 
 
 
