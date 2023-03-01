@@ -19,7 +19,7 @@ import random
 
 game_on = False
 
-fps = 500
+fps = 200
 time_delta = 1./fps
 
 CURR_DIR = os.path.dirname(os.path.realpath(__file__))
@@ -60,8 +60,6 @@ def Setup():
     screen = turtle.Screen()
     screen.title("HumainSI : Chargement...")
 
-    test = turtle.Turtle()
-
 
     # ====== Setup un new world ========
     World.SetupNewWorld()
@@ -73,14 +71,9 @@ def Setup():
     # ====== Setup le screen de turlte ========
 
     screen.setup(1.0, 1.0)
+    screen.title("HumainSI")
 
     # =========================================
-
-
-    #pour être prudent si jamais y'a un actor pour x raison ont le delete 
-    World.currentWorld.KillAllActor()
-
-    screen.title("HumainSI")
 
 
     #ont lock la fonction pour ne pas pouvoir la ré-appeler par accident
@@ -104,18 +97,20 @@ def MoveActor(actorToMove:AI.AEntity()):
 
 
 
-def TestAction(x,y):
+def TestAction():
+
+
 
     actorInScene = World.currentWorld.actorCurentlyInWorld.copy()
 
-    i = random.randint(1, len(actorInScene))
-    actorInScene[i].DoRandomInteraction()
+    for element in actorInScene: 
+        actorInScene[element].actorComponents["CHumain"].Interaction()
         
 Setup()
 
 
 screen.listen()
-screen.onclick(TestAction, 3)
+screen.onkey(TestAction, "r")
 screen.onclick(World.currentWorld.SpawnBasedOnRessourceIndex, 1)
 screen.onkey(World.currentWorld.KillAllActor, 'a')
 screen.onkey(World.currentWorld.SwitchRessource, 'b')

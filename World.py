@@ -24,7 +24,7 @@ class UWorld():
     actorCurrentlyMoving = 0
     ressouceIndexCurrentlySelected = 0
 
-    ressourceList = [["Unit", ("square","square")], ["Tree", ("Assets/Arbre1.gif", "Assets/Arbre2.gif")], ["Rock", ("Assets/caillou1.gif","Assets/caillou1.gif")], ["None", ("square","square")]]
+    ressourceList = [["Unit", ("Assets/Pop1a.gif","Assets/Pop1b.gif", "Assets/Pop1c.gif")], ["Tree", ("Assets/Arbre1.gif", "Assets/Arbre2.gif")], ["Rock", ("Assets/caillou1.gif","Assets/caillou1.gif")], ["None", ("square","square")]]
 
 
     debuText = turtle.Turtle()
@@ -35,7 +35,11 @@ class UWorld():
     
     def Setup(self, screen):
         self.screen = screen
+        self.KillAllActor()
         self.RegisterAllSprite()
+        self.debuText.hideturtle()
+        self.debuText.clear()
+        self.debuText.write("Spawn Selected : " + str(self.ressourceList[self.ressouceIndexCurrentlySelected]), font=("Raleway", 20, "normal"), align="center")
         
 
 
@@ -77,16 +81,30 @@ class UWorld():
     def SpawnBasedOnRessourceIndex(self, x, y):
 
         if self.ressourceList[self.ressouceIndexCurrentlySelected][0] == "Unit":
-            self.SpawnUnit(x,y)
+            self.SpawnUnit(x,y, True)
         else:
             self.SpawnRessource(x,y, self.ressourceList[self.ressouceIndexCurrentlySelected][1], True)
 
-    def SpawnUnit(self,x,y):
+    def SpawnUnit(self,x,y, randomSprite:bool=True):
 
-        newActor = AI.AEntity()
+
+
+        print(self.ressourceList[self.ressouceIndexCurrentlySelected][1])
+        if (randomSprite and len(self.ressourceList[self.ressouceIndexCurrentlySelected][1]) > 1):
+            i = random.randint(1, len(self.ressourceList[self.ressouceIndexCurrentlySelected][1]) - 1)
+            newActor = AI.AEntity()
+            newActor.Setup(self.ressourceList[self.ressouceIndexCurrentlySelected][1][i])  
+        else:
+            newActor = AI.AEntity()
+            newActor.Setup(self.ressourceList[self.ressouceIndexCurrentlySelected][1])
+
+
         newActor.actorTurtle.speed(999)
         newActor.actorTurtle.setpos(x,y)
         newActor.actorName = "AEntity " + str(len(self.actorCurentlyInWorld) + 1)
+        
+        newActor.actorComponents["CHumain"] = AI.CHumainRace()
+        newActor.actorComponents["CHumain"].Setup(newActor.actorTurtle)
         self.actorCurentlyInWorld[newActor.actorName] = newActor
 
     def SpawnRessource(self, x, y, ressourceName:str="None", randomSprite:bool=True):
@@ -94,19 +112,26 @@ class UWorld():
         print(self.ressourceList[self.ressouceIndexCurrentlySelected][1])
         if (randomSprite and len(self.ressourceList[self.ressouceIndexCurrentlySelected][1]) > 1):
             i = random.randint(0, len(self.ressourceList[self.ressouceIndexCurrentlySelected][1]) - 1)
-            newRessource = AI.AActor(self.ressourceList[self.ressouceIndexCurrentlySelected][1][i])
+            newRessource = AI.AActor()
+            newRessource.Setup(self.ressourceList[self.ressouceIndexCurrentlySelected][1][i])
             
         else:
-            newRessource = AI.AActor(self.ressourceList[self.ressouceIndexCurrentlySelected][1])
+            newRessource = AI.AActor()
+            newRessource.Setup(self.ressourceList[self.ressouceIndexCurrentlySelected][1])
+
 
         newRessource.actorTurtle.speed(999)
         newRessource.actorTurtle.setpos(x,y)
         newRessource.actorName = "ressourceName " + str(len(self.actorCurentlyInWorld) + 1)
 
+
     def RegisterAllSprite(self):
         self.screen.register_shape('Assets/Arbre1.gif')
         self.screen.register_shape('Assets/Arbre2.gif')
         self.screen.register_shape('Assets/caillou1.gif')
+        self.screen.register_shape('Assets/Pop1a.gif')
+        self.screen.register_shape('Assets/Pop1b.gif')
+        self.screen.register_shape('Assets/Pop1c.gif')
         
 
 

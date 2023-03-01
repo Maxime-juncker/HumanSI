@@ -51,15 +51,18 @@ class AActor(Object):
         return componentName in self.actorComponents
 
 
-    def __init__(self, spriteName:str="square"):
+    def __init__(self):
+        self.actorTurtle = turtle.Turtle()
 
 
         super().__init__()
-        self.actorTurtle = turtle.Turtle()
+
+    def Setup(self,spriteName:str="square"):
     
         self.actorTurtle.shape(spriteName)
         self.actorTurtle.setheading(90)
         self.actorTurtle.penup()
+
 
 
 class AEntity(AActor):
@@ -88,13 +91,6 @@ class AEntity(AActor):
         return self.movingToken >= Parameters.MOVING_TOKEN_THRESHOLD and not self.middleOfAnAction
 
 
-
-    def DoRandomInteraction(self):
-        print(World.bcolors.FAIL + 'rejkofro' + World.bcolors.ENDC)
-        self.actorTurtle.write("BLA BLA BLA ",False, font=("Raleway", 20, "normal"), align="center")
-
-    def Talk(self):
-        pass
         
     
     def MoveTo(self, newPosition:tuple):
@@ -153,12 +149,33 @@ class CComponent(Object):
         super().__init__()
 
 
+class CHumainRace(CComponent):
+
+    InteractionType = {
+        1 : "Talk"
+    }
+
+    actorTurtle:turtle.Turtle()
+
+    def __init__(self):
+        super().__init__()
+
+    def Setup(self, actorTurlte):
+        self.actorTurtle = actorTurlte
+
+    def Interaction(self, interaction:InteractionType=InteractionType[1]):
+        print("f")
+        self.actorTurtle.write("Spawn Selected : " , font=("Raleway", 20, "normal"), align="center")
+
+
+
+
+
+
 class CRessource(CComponent):
 
     def __init__(self):
         super().__init__()
-        self.objectComponents["CRessource"] = self
-
 
 class CDamageable(CComponent):
 
