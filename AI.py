@@ -11,6 +11,7 @@ import turtle
 import Parameters
 import os
 import World
+import threading
 
 
 
@@ -79,6 +80,10 @@ class AEntity(AActor):
     middleOfAnAction = False
 
     Entityname = ""
+
+    def update(self):
+        for i in self.actorComponents:
+            self.actorComponents[i].Update()
     
 
     def __init__(self):
@@ -148,12 +153,22 @@ class CComponent(Object):
     def __init__(self):
         super().__init__()
 
+    def Update(self): # doit etre implementer dans tous les class enfants
+        pass
+
+    def Setup(self):
+        pass
+
 
 class CHumainRace(CComponent):
 
     InteractionType = {
         1 : "Talk"
     }
+
+    def Update(self):
+        pass
+
 
     actorTurtle:turtle.Turtle()
 
@@ -164,11 +179,36 @@ class CHumainRace(CComponent):
         self.actorTurtle = actorTurlte
 
     def Interaction(self, interaction:InteractionType=InteractionType[1]):
-        print("f")
-        self.actorTurtle.write("Spawn Selected : " , font=("Raleway", 20, "normal"), align="center")
+        self.actorTurtle.write("bla bla bla" , font=("Raleway", 10, "normal"), align="center")
 
 
+class CAnimator(CComponent):
+    
+    turtleToAnimate:turtle.Turtle()
+    IsOn = False
 
+    def Setup(self, turtle):
+        super().Setup()
+        self.turtleToAnimate = turtle
+
+    
+
+    def Update(self):
+
+        if self.IsOn:
+            return
+        else:
+            self.IsOn = True
+        timer = threading.Timer(0.5, self.AdvanceAnim)
+        timer.start()
+
+        
+    def AdvanceAnim(self):
+        self.IsOn = False
+        print("OUII")
+
+
+        
 
 
 
@@ -176,6 +216,11 @@ class CRessource(CComponent):
 
     def __init__(self):
         super().__init__()
+
+    
+
+
+
 
 class CDamageable(CComponent):
 

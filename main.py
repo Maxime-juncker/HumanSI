@@ -97,20 +97,19 @@ def MoveActor(actorToMove:AI.AEntity()):
 
 
 
-def TestAction():
-
-
+def TestAction(x,y):
 
     actorInScene = World.currentWorld.actorCurentlyInWorld.copy()
 
     for element in actorInScene: 
+        print(element)
         actorInScene[element].actorComponents["CHumain"].Interaction()
         
 Setup()
 
 
 screen.listen()
-screen.onkey(TestAction, "r")
+screen.onclick(TestAction, 3)
 screen.onclick(World.currentWorld.SpawnBasedOnRessourceIndex, 1)
 screen.onkey(World.currentWorld.KillAllActor, 'a')
 screen.onkey(World.currentWorld.SwitchRessource, 'b')
@@ -146,6 +145,8 @@ while True:
 
         else:
             actorInScene[element].movingToken += 1
+
+        actorInScene[element].update()
 
     time.sleep(time_delta) # Permet de limiter le nb te time que la loop run avec les Fps 
 

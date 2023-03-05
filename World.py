@@ -26,6 +26,8 @@ class UWorld():
 
     ressourceList = [["Unit", ("Assets/Pop1a.gif","Assets/Pop1b.gif", "Assets/Pop1c.gif")], ["Tree", ("Assets/Arbre1.gif", "Assets/Arbre2.gif")], ["Rock", ("Assets/caillou1.gif","Assets/caillou1.gif")], ["None", ("square","square")]]
 
+    unitList = ["ClassicHumain", "Assets/Pop1a.gif"]
+
 
     debuText = turtle.Turtle()
 
@@ -104,6 +106,9 @@ class UWorld():
         newActor.actorName = "AEntity " + str(len(self.actorCurentlyInWorld) + 1)
         
         newActor.actorComponents["CHumain"] = AI.CHumainRace()
+        newActor.actorComponents["CAnimator"] = AI.CAnimator()
+
+        newActor.actorComponents["CAnimator"].Setup(newActor.actorTurtle)
         newActor.actorComponents["CHumain"].Setup(newActor.actorTurtle)
         self.actorCurentlyInWorld[newActor.actorName] = newActor
 
