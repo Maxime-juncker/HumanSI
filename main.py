@@ -109,7 +109,6 @@ Setup()
 
 
 screen.listen()
-screen.onclick(TestAction, 3)
 screen.onclick(World.currentWorld.SpawnBasedOnRessourceIndex, 1)
 screen.onkey(World.currentWorld.KillAllActor, 'a')
 screen.onkey(World.currentWorld.SwitchRessource, 'b')

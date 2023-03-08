@@ -58,10 +58,10 @@ class AActor(Object):
 
         super().__init__()
 
-    def Setup(self,spriteName:str="square"):
+    def Setup(self,spriteName:tuple):
     
-        self.actorTurtle.shape(spriteName)
-        self.actorTurtle.setheading(90)
+        i = random.randint(0, len(spriteName)-1)
+        self.actorTurtle.shape(spriteName[i])
         self.actorTurtle.penup()
 
 
@@ -84,7 +84,9 @@ class AEntity(AActor):
     def update(self):
         for i in self.actorComponents:
             self.actorComponents[i].Update()
-    
+
+        
+
 
     def __init__(self):
         super().__init__()
@@ -144,6 +146,24 @@ class AEntity(AActor):
         randomY = random.randint(pos[1] - distance, pos[1] + distance)
 
         return (randomX, randomY)
+    
+
+
+class AResourceNode(AActor):
+    def __init__(self):
+        super().__init__()
+
+    def Setup(self, spriteName: str = "square"):
+        
+        print(spriteName)
+        self.actorTurtle.shape(spriteName)
+        self.actorTurtle.penup()
+
+        self.actorTurtle.shapesize(5)
+        self.actorTurtle.color("green")
+
+          
+
 
 #endregion
 #region Les Component
@@ -178,18 +198,21 @@ class CHumainRace(CComponent):
     def Setup(self, actorTurlte):
         self.actorTurtle = actorTurlte
 
-    def Interaction(self, interaction:InteractionType=InteractionType[1]):
-        self.actorTurtle.write("bla bla bla" , font=("Raleway", 10, "normal"), align="center")
 
 
 class CAnimator(CComponent):
     
     turtleToAnimate:turtle.Turtle()
     IsOn = False
+    tileSheet:tuple
+    currentTileIndex = 0
 
-    def Setup(self, turtle):
+    timer:threading.Timer
+
+    def Setup(self, turtle, _tileSheet):
         super().Setup()
         self.turtleToAnimate = turtle
+        self.tileSheet = _tileSheet
 
     
 
@@ -204,12 +227,20 @@ class CAnimator(CComponent):
 
         
     def AdvanceAnim(self):
+
+
+        if self.currentTileIndex + 1 == len(self.tileSheet):
+            self.currentTileIndex = 0
+        else:
+            print(self.currentTileIndex)
+            self.currentTileIndex += 1
+
         self.IsOn = False
-        print("OUII")
+        self.turtleToAnimate.shape(self.tileSheet[self.currentTileIndex])
+
 
 
         
-
 
 
 class CRessource(CComponent):
@@ -236,6 +267,7 @@ class CDamageable(CComponent):
 
     def OnDie(self):
         self.currentHp = 0
+
 
 
 
