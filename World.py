@@ -24,12 +24,19 @@ class UWorld():
     actorCurrentlyMoving = 0
     ressouceIndexCurrentlySelected = 0
 
-    ressourceList = [["Unit", ("Assets/Pop1a.gif","Assets/Pop1b.gif", "Assets/Pop1c.gif")],["ResourceNode", ("square","square")], ["Tree", ("Assets/Arbre1.gif", "Assets/Arbre2.gif")], ["Rock", ("Assets/caillou1.gif","Assets/fer.gif", "Assets/or.gif")], ["None", ("square","square")]]
+    actorsList = [
+        ["Unit", ("Assets/Pop1a.gif", "Assets/Pop1b.gif", "Assets/Pop1c.gif")],
+        ["House", ("square", "square")],
+        ["Tree", ("Assets/Arbre1.gif", "Assets/Arbre2.gif")],
+        ["Rock", ("Assets/caillou1.gif", "Assets/fer.gif", "Assets/or.gif")],
+        ["None", ("square", "square")]]
+
 
     unitList = {
 
-            "ClassicHumain" : ("Assets/Pop1a.gif","Assets/Pop1b.gif","Assets/Pop1c.gif")
+            "ClassicHumain" : ("Assets/Pop1a.gif", "Assets/Pop1b.gif", "Assets/Pop1c.gif")
         }
+
 
 
     debuText = turtle.Turtle()
@@ -44,7 +51,7 @@ class UWorld():
         self.RegisterAllSprite()
         self.debuText.hideturtle()
         self.debuText.clear()
-        self.debuText.write("Spawn Selected : " + str(self.ressourceList[self.ressouceIndexCurrentlySelected]), font=("Raleway", 20, "normal"), align="center")
+        self.debuText.write("Spawn Selected : " + str(self.actorsList[self.ressouceIndexCurrentlySelected]), font=("Raleway", 20, "normal"), align="center")
         
 
 
@@ -60,13 +67,13 @@ class UWorld():
 
     def SwitchRessource(self):
 
-        if self.ressouceIndexCurrentlySelected == len(self.ressourceList) -1:
+        if self.ressouceIndexCurrentlySelected == len(self.actorsList) -1:
             self.ressouceIndexCurrentlySelected = 0
         else:
             self.ressouceIndexCurrentlySelected += 1
         self.debuText.hideturtle()
         self.debuText.clear()
-        self.debuText.write("Spawn Selected : " + str(self.ressourceList[self.ressouceIndexCurrentlySelected]), font=("Raleway", 20, "normal"), align="center")
+        self.debuText.write("Spawn Selected : " + str(self.actorsList[self.ressouceIndexCurrentlySelected]), font=("Raleway", 20, "normal"), align="center")
 
 
     def CheckIfActorExist(self, actorName:str=""):
@@ -85,16 +92,16 @@ class UWorld():
 
     def SpawnBasedOnRessourceIndex(self, x, y):
 
-        if self.ressourceList[self.ressouceIndexCurrentlySelected][0] == "Unit":
-            self.SpawnUnit(x,y, True)
+        if self.actorsList[self.ressouceIndexCurrentlySelected][0] == "Unit":
+            self.SpawnUnit(x,y)
         else:
-            self.SpawnRessource(x,y, self.ressourceList[self.ressouceIndexCurrentlySelected][1], True)
+            self.SpawnRessource(x, y, self.actorsList[self.ressouceIndexCurrentlySelected][1], True)
 
-    def SpawnUnit(self,x,y, randomSprite:bool=True):
+    def SpawnUnit(self,x,y):
 
 
         newActor = AI.AEntity()
-        newActor.Setup(self.ressourceList[self.ressouceIndexCurrentlySelected][1])
+        newActor.Setup(self.actorsList[self.ressouceIndexCurrentlySelected][1])
 
 
         newActor.actorTurtle.speed(999)
@@ -105,15 +112,16 @@ class UWorld():
         newActor.actorComponents["CAnimator"] = AI.CAnimator()
 
         newActor.actorComponents["CAnimator"].Setup(newActor.actorTurtle, self.unitList["ClassicHumain"])
+        print(newActor.actorTurtle)
         newActor.actorComponents["CHumain"].Setup(newActor.actorTurtle)
         self.actorCurentlyInWorld[newActor.actorName] = newActor
 
     def SpawnRessource(self, x, y, ressourceName:str="None", randomSprite:bool=True):
 
-        print(self.ressourceList[self.ressouceIndexCurrentlySelected][1])
+        print(self.actorsList[self.ressouceIndexCurrentlySelected][1])
 
         newRessource = AI.AActor()
-        newRessource.Setup(self.ressourceList[self.ressouceIndexCurrentlySelected][1])
+        newRessource.Setup(self.actorsList[self.ressouceIndexCurrentlySelected][1])
 
 
         newRessource.actorTurtle.speed(999)

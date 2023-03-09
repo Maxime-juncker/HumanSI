@@ -85,6 +85,7 @@ def on_quit():
     global game_on
     game_on = False
 
+
     screen._root.after(1000, screen._root.destroy)
 
     screen._root.protocol("WM_DELETE_WINDOW", on_quit)
