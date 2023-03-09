@@ -48,7 +48,6 @@ class node :
         self.active = True
     def couleur_pixel(self):
         if self.el <= (-25):
-            couleur = 'bleu fonce'
         elif self.el <= Carte['cLevel']:
             couleur = 'bleue'
         elif self.el <= 25 and self.temp <= 0 :
