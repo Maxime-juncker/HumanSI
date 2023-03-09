@@ -48,20 +48,21 @@ class node :
         self.active = True
     def couleur_pixel(self):
         if self.el <= (-25):
+            couleur = 'bleu fonce'                              #océan
         elif self.el <= Carte['cLevel']:
-            couleur = 'bleue'
+            couleur = 'bleue'                                   #mer
         elif self.el <= 25 and self.temp <= 0 :
-            couleur = 'gris fonce'
+            couleur = 'gris fonce'                              #Haute montagne
         elif self.el <= 25 and self.temp <= 5 :
-            couleur = 'gris '
+            couleur = 'gris '                                   #montagne
         elif self.el <= 25 and self.temp <= 10 :
-            couleur = 'vert'
+            couleur = 'vert'                                    #prairie
         elif self.el <= 25 and self.temp <= 50 : 
-            couleur = 'vert fonce'
+            couleur = 'vert fonce'                              #forêt
         elif self.el <= 25 and self.temp <= 100:
-            couleur = 'jaune'
+            couleur = 'jaune'                                   #plage
         else : 
-            couleur = 'marron'
+            couleur = 'marron'                                  #marais
         a = self.xy[0] * 5
         b = self.xy[1] * 5
         c = a + 5 
@@ -166,3 +167,4 @@ for i in Carte['nodes']:
 canvas.update()
 
 mainloop()
+
