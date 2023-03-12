@@ -109,10 +109,6 @@ class UWorld():
         newActor.actorName = "AEntity " + str(len(self.actorCurentlyInWorld) + 1)
         
         newActor.actorComponents["CHumain"] = AI.CHumainRace()
-        newActor.actorComponents["CAnimator"] = AI.CAnimator()
-
-        newActor.actorComponents["CAnimator"].Setup(newActor.actorTurtle, self.unitList["ClassicHumain"])
-        print(newActor.actorTurtle)
         newActor.actorComponents["CHumain"].Setup(newActor.actorTurtle)
         self.actorCurentlyInWorld[newActor.actorName] = newActor
 

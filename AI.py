@@ -7,11 +7,12 @@
 
 import random
 import math
-import turtle
-import Parameters
+import Settings
 import os
 import World
 import threading
+import pygame
+from pygame import *
 
 CURR_DIR = os.path.dirname(os.path.realpath(__file__))
 
@@ -31,7 +32,6 @@ class Object():  # Toutes les classes doivent dériver de celle ci (ça permet d
 # region Les Actors
 
 class AActor(Object):
-    actorTurtle: turtle.Turtle()
     actorName: str
 
     actorComponents = {}
@@ -40,26 +40,18 @@ class AActor(Object):
         return componentName in self.actorComponents
 
     def __init__(self):
-        self.actorTurtle = turtle.Turtle()
-
         super().__init__()
+        pass
 
     def Setup(self, spriteName: tuple):
         i = random.randint(0, len(spriteName) - 1)
-        self.actorTurtle.shape(spriteName[i])
-        self.actorTurtle.penup()
+        """self.actorTurtle.shape(spriteName[i])
+        self.actorTurtle.penup()"""
 
 
 class AEntity(AActor):
-    speed = 999
-    isMoving = False
-    currentDestination: tuple
-    movingToken = 0
 
-    debugText = turtle.Turtle()
-
-    # ===========================================================================================
-    middleOfAnAction = False
+    # NE MARCHE PLUS ATTENDER QUE JE LA REFACE
 
     Entityname = ""
 
@@ -67,47 +59,17 @@ class AEntity(AActor):
         for i in self.actorComponents:
             self.actorComponents[i].Update()
 
+    def Setup(self):
+        pass
+
     def __init__(self):
         super().__init__()
 
-        self.movingToken = random.randint(0, 10)
-        self.actorTurtle.speed(self.speed)
 
-    def CanMove(self):
-        return self.movingToken >= Parameters.MOVING_TOKEN_THRESHOLD and not self.middleOfAnAction
 
     def MoveTo(self, newPosition: tuple):
-
-        # self.debugText.setpos(self.actorTurtle.pos())
-
-        if (not self.CanMove()):
-            return
-
-        if (not self.isMoving):
-            self.currentDestination = newPosition
-
-        if (self.actorTurtle.pos()[0] < self.currentDestination[0]):
-            self.isMoving = True
-            self.actorTurtle.goto(self.actorTurtle.pos()[0] + 2, self.actorTurtle.pos()[1])
-
-        if (self.actorTurtle.pos()[0] > self.currentDestination[0]):
-            self.isMoving = True
-            self.actorTurtle.goto(self.actorTurtle.pos()[0] - 2, self.actorTurtle.pos()[1])
-
-        if (self.actorTurtle.pos()[1] < self.currentDestination[1]):
-            self.isMoving = True
-            self.actorTurtle.goto(self.actorTurtle.pos()[0], self.actorTurtle.pos()[1] + 2)
-
-        if (self.actorTurtle.pos()[1] > self.currentDestination[1]):
-            self.isMoving = True
-            self.actorTurtle.goto(self.actorTurtle.pos()[0], self.actorTurtle.pos()[1] - 2)
-
-        if abs(self.actorTurtle.pos()[0] - self.currentDestination[0]) < 10 and abs(
-                self.actorTurtle.pos()[1] - self.currentDestination[1]) < 10:
-            self.isMoving = False
-            self.movingToken = 0
-
-            World.currentWorld.actorCurrentlyMoving -= 1
+        #A REFAIRE
+        pass
 
     def FindRandomPointAtDistance(self, distance: float):
 
@@ -122,13 +84,9 @@ class AResourceNode(AActor):
     def __init__(self):
         super().__init__()
 
-    def Setup(self, spriteName: str = "square"):
-        print(spriteName)
-        self.actorTurtle.shape(spriteName)
-        self.actorTurtle.penup()
-
-        self.actorTurtle.shapesize(5)
-        self.actorTurtle.color("green")
+    def Setup(self):
+        # A REFAIRE
+        pass
 
 
 # endregion
@@ -154,55 +112,21 @@ class CHumainRace(CComponent):
     def Update(self):
         pass
 
-    actorTurtle: turtle.Turtle()
-
     def __init__(self):
         super().__init__()
 
-    def Setup(self, actorTurlte):
-        self.actorTurtle = actorTurlte
-
+    def Setup(self):
+        pass
 
 class CAnimator(CComponent):
-    turtleToAnimate: turtle.Turtle()
-    IsOn = False
-    tileSheet: tuple
-    currentTileIndex = 0
-
-    timer: threading.Timer
-
-    def Setup(self, turtle, _tileSheet):
+    def Setup(self):
         super().Setup()
-        self.turtleToAnimate = turtle
-        self.tileSheet = _tileSheet
+        pass
 
     def Update(self):
-
-        if self.IsOn:
-            return
-        else:
-            self.IsOn = True
-        timer = threading.Timer(0.5, self.AdvanceAnim)
-        timer.start()
+        pass
 
 
-    def AdvanceAnim(self):
-
-        self.IsOn = False
-        print(self.turtleToAnimate)
-
-        if self.currentTileIndex == len(self.tileSheet)-1:
-            self.currentTileIndex = 0
-        else:
-            self.currentTileIndex += 1
-        #self.turtleToAnimate.shape(self.tileSheet[self.currentTileIndex])
-        """
-        if self.currentTileIndex == len(self.tileSheet)-1:
-            self.currentTileIndex = 0
-        else:
-            print(self.currentTileIndex)
-            self.currentTileIndex += 1
-        self.IsOn = False"""
 
 
 class CRessource(CComponent):
@@ -211,17 +135,5 @@ class CRessource(CComponent):
         super().__init__()
 
 
-class CDamageable(CComponent):
-    maxHp = 100
-    currentHp: maxHp
-
-    def OnDamaged(self, amount: int):
-        self.currentHp -= amount
-
-        if (self.currentHp <= 0):
-            self.OnDie()
-
-    def OnDie(self):
-        self.currentHp = 0
 
 # endregion
