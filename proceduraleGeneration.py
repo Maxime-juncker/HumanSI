@@ -4,32 +4,6 @@ from random import *
 from tkinter import *
 import random as rand
 
-"""
-perlinNoiseValue = random()
-
-def turtelColor(value) :
-    pixelType = None
-    if value == 0 :
-        pixelType = 'DeepWater'
-    elif value>0 and value<=0.1 :
-        pixelType = 'Water'
-    elif value>0.1 and value<=0.2 :
-        pixelType = 'Bitche'
-    elif value>0.2 and value<=0.5 :
-        pixelType = 'Meadow'
-    elif value>0.5 and value<=0.7 :
-        pixelType = 'Forest'
-    elif value>0.7 and value<=0.8 :
-        pixelType = 'Hill'
-    elif value>0.8 and value<=0.9 :
-        pixelType = 'Mountain'
-    elif value>0.9 and value<=1 :
-        pixelType = 'HightMontain' 
-    return(pixelType)
-
-print(perlinNoiseValue)                            
-print(turtelColor(perlinNoiseValue))
-"""
 
 root = Tk()
 dimX=1000
@@ -48,21 +22,21 @@ class node :
         self.active = True
     def couleur_pixel(self):
         if self.el <= (-25):
-            couleur = 'bleu fonce'
+            couleur = 'bleu fonce'                              #océan
         elif self.el <= Carte['cLevel']:
-            couleur = 'bleue'
+            couleur = 'bleue'                                   #mer
         elif self.el <= 25 and self.temp <= 0 :
-            couleur = 'gris fonce'
+            couleur = 'gris fonce'                              #Haute montagne
         elif self.el <= 25 and self.temp <= 5 :
-            couleur = 'gris '
+            couleur = 'gris '                                   #montagne
         elif self.el <= 25 and self.temp <= 10 :
-            couleur = 'vert'
+            couleur = 'vert'                                    #prairie
         elif self.el <= 25 and self.temp <= 50 : 
-            couleur = 'vert fonce'
+            couleur = 'vert fonce'                              #forêt
         elif self.el <= 25 and self.temp <= 100:
-            couleur = 'jaune'
+            couleur = 'jaune'                                   #plage
         else : 
-            couleur = 'marron'
+            couleur = 'marron'                                  #marais
         a = self.xy[0] * 5
         b = self.xy[1] * 5
         c = a + 5 
@@ -167,3 +141,4 @@ for i in Carte['nodes']:
 canvas.update()
 
 mainloop()
+
