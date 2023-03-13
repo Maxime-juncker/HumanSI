@@ -6,11 +6,12 @@
 
 
 import sys
-import os
 import Settings
 import pygame
 from Settings import *
 from debug import debug
+from AI import *
+import World
 
 
 class bcolors:  # /!\ les couleurs ne marche que sur sur certains IDE (ex : edupython n'affiche pas les couleurs)
@@ -27,6 +28,15 @@ class bcolors:  # /!\ les couleurs ne marche que sur sur certains IDE (ex : edup
 
 # \\ ============================================================================== //
 
+World.SetupNewWorld()
+world = World.currentWorld
+
+
+def DoUpdate():
+    world.Update()
+
+
+
 
 class Game:
     def __init__(self):
@@ -34,8 +44,9 @@ class Game:
         # Pygame setup :
         pygame.init()
         self.screen = pygame.display.set_mode((WIDTH, HEIGHT))
+        pygame.display.init()
         self.clock = pygame.time.Clock()
-
+        test = world.SpawnUnit(10, 10)
 
     def run(self):
         while True:
@@ -45,9 +56,14 @@ class Game:
                     sys.exit()
 
             self.screen.fill('white')
+            world.Update()
             pygame.display.update()
             self.clock.tick(FPS)
+            self.screen.blit(test.image, test.rect)
+            pygame.display.flip()
 
+
+test = World.Test
 
 game = Game()
 game.run()
