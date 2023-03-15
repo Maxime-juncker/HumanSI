@@ -18,20 +18,21 @@ class bcolors:  # /!\ les couleurs ne marche que sur sur certains IDE (ex : edup
     UNDERLINE = '\033[4m'
 
 
-game = Game()
+def Update():
+    sprites = game.visibleSprite
+    for sprite in sprites:
+        sprites[sprite].Update()
+
 
 # Boucle update
 while game.GAME_RUNNING:
 
     game.display.fill('white')
-    game.display.blit(game.test.image, game.test.rect)
-    game.display.blit(game.test2.image, game.test2.rect)
+    Update()
 
     # Update le screen
     pygame.display.flip()
 
-    game.test.MoveTo((500, 0))
-    game.test2.MoveTo((0, 500))
 
     # Si on ferme la fenetre
     for event in pygame.event.get():
@@ -40,3 +41,10 @@ while game.GAME_RUNNING:
             game.GAME_RUNNING = False
             pygame.quit()
             print(bcolors.FAIL + "Exiting..." + bcolors.ENDC)
+
+    # on ecoute les input du clavier
+    if event.type == pygame.MOUSEBUTTONDOWN:
+        mouseButton = pygame.mouse.get_pressed()
+        if mouseButton[0]: # mouseButton[0] = souris gauche
+            game.SpawnUnit()
+
