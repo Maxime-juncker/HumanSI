@@ -37,7 +37,7 @@ class AActor(Object):
     def __init__(self, pos, group):
         super().__init__()
         print("s")
-        self.image = pygame.image.load("Pop1c.png")
+        self.image = pygame.image.load("Assets/Pop1c.png")
         self.rect = self.image.get_rect(topleft=pos)
         pygame.sprite.Sprite.__init__(group)
 
