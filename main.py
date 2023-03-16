@@ -2,7 +2,6 @@ import sys
 import pygame
 import Settings
 from Settings import *
-from debug import debug
 from Game import *
 
 

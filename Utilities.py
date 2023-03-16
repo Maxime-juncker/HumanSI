@@ -1,3 +1,5 @@
+import random
+
 import pygame
 import Game
 
@@ -13,4 +15,10 @@ def debug(info, y=10, x=10):
     x / y = les postion a partir du coin haut gauche ou le msg vas pop
             (perso je trouve que 10 et 10 c'est pas mal)
     """
+
+def SeekNewPos(currentPos, distance):
+    randomX = random.randint(currentPos[0] - distance, currentPos[0] + distance)
+    randomY = random.randint(currentPos[1] - distance, currentPos[1] + distance)
+
+    return (randomX, randomY)
 

@@ -1,15 +1,26 @@
 import random
 import pygame
 import Game
+from enum import Enum
+from Utilities import SeekNewPos
+
+
+class UnitState(Enum):
+    NONE = -1
+    IDLE = 0
+    MOVING = 1
+
 
 class BasicObject():
     name = ""
 
 
-class Test(pygame.sprite.Sprite, BasicObject):
+class Unit(pygame.sprite.Sprite, BasicObject):
 
     def Update(self):
         self.display.blit(self.image, self.rect)
+
+        self.MoveTo(self.currentDestination)
 
     def __init__(self, _display):
         super().__init__()
@@ -20,9 +31,28 @@ class Test(pygame.sprite.Sprite, BasicObject):
         self.display = _display
         self.name = str(random.randint(0, 1000))
 
-        self.rect = pygame.mouse.get_pos()
-
         Game.game.visibleSprite[self.name] = self
+
+        self.rect.x = pygame.mouse.get_pos()[0]
+        self.rect.y = pygame.mouse.get_pos()[1]
+
+
+        self.currentDestination = SeekNewPos(self.rect, 500)
+        self.state = UnitState.MOVING
+
+    def SetNewState(self, newState: UnitState):
+        '''
+        Fonct pour changer le state
+        renvois True si le state est changer
+                False si le state reste le même
+        '''
+
+        if (not newState == self.state):
+            self.state = newState
+            return False
+        else:
+            self.state = newState
+            return True
 
     def MoveRight(self, dir):
         '''
@@ -44,15 +74,19 @@ class Test(pygame.sprite.Sprite, BasicObject):
 
     def MoveTo(self, coord):
 
+        if (not self.state == UnitState.MOVING):
+            return
+
+        if abs(self.rect.y - coord[1]) < 5 and abs(self.rect.x - coord[0]) < 5:
+            self.SetNewState(UnitState.IDLE)
+            return
+
         self.moveTimer -= 1
 
         if self.moveTimer > 0:
             return
         else:
             self.moveTimer = 10
-
-        if abs(self.rect.y - coord[1]) < 5 and abs(self.rect.x - coord[0]) < 5:
-            return
 
         if self.rect.x <= coord[0]:
             self.MoveRight(1)

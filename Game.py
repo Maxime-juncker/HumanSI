@@ -2,6 +2,11 @@ import pygame
 import AI
 from AI import *
 
+spriteResources = {
+    "basicHuman": "Assets/Pop1c.png",
+    "Stone": "Asset/caillou1.png",
+}
+
 
 class Game:
     visibleSprite = {}
@@ -13,14 +18,14 @@ class Game:
         pygame.init()
 
         pygame.display.set_caption("HumainSI")
-        self.display = pygame.display.set_mode((1080, 720))
+        self.display = pygame.display.set_mode((1220, 1080))
 
         self.background = pygame.image.load("Assets/download.jpg")
 
         self.GAME_RUNNING = True
 
     def SpawnUnit(self):
-        newUnit = Test(self.display)
+        newUnit = Unit(self.display)
 
 
 game = Game()
