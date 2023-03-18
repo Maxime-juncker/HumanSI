@@ -63,7 +63,7 @@ def getNeighbors():
                 if len(n1.neighbors) >= 2:
                     break
 
-print('Getting Neighbors')
+print('Getting Neighbor')
 getNeighbors()
 
 def seed():
