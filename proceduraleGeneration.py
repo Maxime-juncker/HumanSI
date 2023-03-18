@@ -1,6 +1,10 @@
 from tkinter import *
 import random as rand
 
+<<<<<<< HEAD
+=======
+
+>>>>>>> 25653c974b18a41374877fab68e1e0bbfcfe5e0c
 root = Tk()
 resX = 1280; resY = 720
 canvas = Canvas(root, bg="blue", height=resY, width=resX); canvas.pack()
