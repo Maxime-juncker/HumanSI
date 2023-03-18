@@ -1,10 +1,6 @@
 from tkinter import *
 import random as rand
 
-<<<<<<< HEAD
-=======
-
->>>>>>> 25653c974b18a41374877fab68e1e0bbfcfe5e0c
 root = Tk()
 resX = 1280; resY = 720
 canvas = Canvas(root, bg="blue", height=resY, width=resX); canvas.pack()
@@ -31,10 +27,10 @@ class node:
             color = 'blue'
         elif self.el <= 25 and self.temp <=0:
             color = 'light grey'
-        elif self.el <= 25 and self.temp <=5:
+        elif self.el <= 25 and self.temp <=50:
             color = 'green'
-        elif self.el <= 25 and self.temp <=10:
-            color = 'dark green'
+        elif self.el <= 25 and self.temp <=75:
+            color = 'light green'
         elif self.el <= 25 and self.temp <=100:
             color = 'grey'
         else:
@@ -67,7 +63,7 @@ def getNeighbors():
                 if len(n1.neighbors) >= 2:
                     break
 
-print('Getting Neighbor')
+print('Getting Neighbors')
 getNeighbors()
 
 def seed():
@@ -132,7 +128,7 @@ def process4():
 
     
 print('0')
-for i in range(100):
+for i in range(150):
     process1()
     process4()
 print('1')
@@ -140,7 +136,7 @@ for i in range(21):
     process2()
     process3()
 print('2')
-for i in range(100):
+for i in range(95):
     process1()
 
 canvas.delete('all')
