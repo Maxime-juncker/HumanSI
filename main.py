@@ -28,6 +28,7 @@ def Update():
 while game.GAME_RUNNING:
 
     game.display.fill('white')
+    print("frhe")
     Update()
 
     # Update le screen
