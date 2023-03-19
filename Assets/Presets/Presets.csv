@@ -1,0 +1,5 @@
+name,speed,moveTimer
+BasicHuman,1,10
+Rock,0,0
+Tree,0,0
+
