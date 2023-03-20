@@ -55,11 +55,14 @@ class Game:
 
         preset = LoadPreset(Directories.PresetDir + "Presets.csv", names[self.spriteIndex])
 
-        newUnit = Unit(self.display, self.GetRandomSprite(sprites[self.spriteIndex]), preset)
+        pos = pygame.mouse.get_pos()
+        newUnit = Unit(self.display, self.GetRandomSprite(sprites[self.spriteIndex]), preset,pos)
         self.visibleSprite[newUnit.name] = newUnit
 
     def SpawnUnit(self, popPreset):
-        newUnit = Unit(self.display, self.GetRandomSprite(spriteResources[popPreset["name"]]), popPreset)
+        pos = pygame.mouse.get_pos()
+
+        newUnit = Unit(self.display, self.GetRandomSprite(spriteResources[popPreset["name"]]), popPreset,pos)
         self.visibleSprite[newUnit.name] = newUnit
 
     def SpawnCivilisation(self):

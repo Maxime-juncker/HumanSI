@@ -1,0 +1,15 @@
+name,religion,aggressivity,spawnRate
+
+defaultCivilisation,none,10
+
+yellow,none,50,100
+red,crabisme,70,100
+purple,crabisme,0,100
+blue,none,30,100
+green,potitFantome,10,100
+
+white,gargantua,50,100
+black,crabisme,10,100
+
+
+

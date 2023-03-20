@@ -22,14 +22,14 @@ class BasicObject():
 
 class Unit(pygame.sprite.Sprite, BasicObject):
 
-    def __init__(self, _display, sprite, preset):
+    def __init__(self, _display, sprite, preset,pos):
 
         super().__init__()
 
         self.unitPreset = preset
 
         self.image = pygame.image.load(sprite)
-        self.rect = self.image.get_rect()
+        self.rect = self.image.get_rect(center=pos)
         self.speed = int(self.unitPreset["speed"])
         self.moveTimer = int(self.unitPreset["moveTimer"])
         self.maxMoveTimer = int(self.unitPreset["moveTimer"])
@@ -39,8 +39,7 @@ class Unit(pygame.sprite.Sprite, BasicObject):
 
         Game.game.visibleSprite[self.name] = self
 
-        self.rect.x = pygame.mouse.get_pos()[0]
-        self.rect.y = pygame.mouse.get_pos()[1]
+
 
         self.currentDestination = SeekNewPos(self.rect, 100)
         self.state = UnitState.IDLE
@@ -133,6 +132,7 @@ class Civilisation(BasicObject):
         self.religion = self.civilisationPreset["religion"]
         self.aggressivity = self.civilisationPreset["aggressivity"]
         self.inWar = False
+
 
         debugSuccessMsg("Civilisation Spawned --> " + self.name)
 
