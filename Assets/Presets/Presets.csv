@@ -1,5 +1,17 @@
-name,speed,moveTimer
-BasicHuman,1,10
-Rock,0,0
-Tree,0,0
+name,speed,moveTimer,interactionRate,attack,attackSpeed,health,civilisation
+BasicHuman,1,10,1,1,1,10,none
+
+Rock,0,0,0,0,0,50,none
+Tree,0,0,0,0,0,50,none
+YellowCityHall,0,0,0,0,0,100,none
+
+
+Chief_Devan,2,10,10,5,5,50,yellow
+Chief_Yohann,1,30,0,15,2,80,red
+Chief_Alexandre,1,5,3,0,0,10,purple
+Chief_Nathan,1,10,1,2,10,20,blue
+Chief_Maxime,1,5,3,5,5,50,green
+
+Chief_Romain,1,5,3,5,5,50,white
+Chief_Antonin,1,5,3,5,5,50,black
 

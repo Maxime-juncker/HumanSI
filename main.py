@@ -23,20 +23,36 @@ while game.GAME_RUNNING:
         if event.type == pygame.QUIT:
             game.GAME_RUNNING = False
             pygame.quit()
-            print(bcolors.FAIL + "Exiting..." + bcolors.ENDC)
+            debugFailMsg("Exiting...")
 
         # on ecoute les input du clavier
         if event.type == pygame.MOUSEBUTTONDOWN:
-            mouseButton = pygame.mouse.get_pressed()
 
-            if mouseButton[0]:  # mouseButton[0] = souris gauche
-                game.SpawnUnit()
+            '''
+            0 - left click
+            1 - middle click
+            2 - right click
+            '''
+
+            mouseButton = pygame.mouse.get_pressed()
+            if mouseButton[0]:
+                game.SpawnUnitBaseByIndex()
+            elif mouseButton[2]:
+                game.SpawnCivilisation()
+
         if event.type == pygame.MOUSEWHEEL:
 
-            if game.spriteIndex == len(spriteResources)-1:
-                game.spriteIndex = 0
+            if event.y == 1:
+                if game.spriteIndex + 1 > len(spriteResources)-1:
+                    game.spriteIndex = 0
+                else:
+                    game.spriteIndex += 1
+
             else:
-                game.spriteIndex += 1
+                if game.spriteIndex - 1 < 0:
+                    game.spriteIndex = len(spriteResources)-1
+                else:
+                    game.spriteIndex -= 1
 
 
 

@@ -25,13 +25,15 @@ def SetupRichPresence():
     rpc.update(details="une super simulation pas du tout inspiré d'un jeu", large_image="maxresdefault")
 
 
-def debug(info, y=10, x=10):
-    """
-    fonction pour print une info sur l'ecran (c'est quand même plus pratique qui print .__.)
-    info : n'importe quoi
-    x / y = les postion a partir du coin haut gauche ou le msg vas pop
-            (perso je trouve que 10 et 10 c'est pas mal)
-    """
+def debugSuccessMsg(info):
+    print(bcolors.OKGREEN + "Success : " + bcolors.OKCYAN + str(info) + bcolors.ENDC)
+
+def debugFailMsg(info):
+    print(bcolors.FAIL + str(info) + bcolors.ENDC)
+
+def debugWarningMsg(info):
+    print(bcolors.WARNING + "Warning : " + bcolors.BOLD + str(info) + bcolors.ENDC)
+
 
 
 def SeekNewPos(currentPos, distance):

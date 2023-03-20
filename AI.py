@@ -3,8 +3,7 @@ import pygame
 import Game
 from enum import Enum
 from Utilities import *
-
-
+from Game import *
 
 
 class UnitState(Enum):
@@ -15,22 +14,28 @@ class UnitState(Enum):
 
 class BasicObject():
     name = ""
+    id = 0
+
+    def Update(self):
+        pass
 
 
 class Unit(pygame.sprite.Sprite, BasicObject):
 
-    def __init__(self, _display, sprite, preset=""):
+    def __init__(self, _display, sprite, preset):
 
         super().__init__()
 
+        self.unitPreset = preset
 
         self.image = pygame.image.load(sprite)
         self.rect = self.image.get_rect()
-        self.speed = int(preset["speed"])
-        self.moveTimer = int(preset["moveTimer"])
-        self.maxMoveTimer = int(preset["moveTimer"])
+        self.speed = int(self.unitPreset["speed"])
+        self.moveTimer = int(self.unitPreset["moveTimer"])
+        self.maxMoveTimer = int(self.unitPreset["moveTimer"])
         self.display = _display
-        self.name = preset["name"] + str(random.randint(0, 1000))
+        self.id = str(random.randint(0, 99999))
+        self.name = self.unitPreset["name"] + str(self.id)
 
         Game.game.visibleSprite[self.name] = self
 
@@ -39,6 +44,8 @@ class Unit(pygame.sprite.Sprite, BasicObject):
 
         self.currentDestination = SeekNewPos(self.rect, 100)
         self.state = UnitState.IDLE
+
+        debugSuccessMsg("Unit Spawned --> " + self.name)
 
     def Update(self):
         self.display.blit(self.image, self.rect)
@@ -107,3 +114,40 @@ class Unit(pygame.sprite.Sprite, BasicObject):
             self.MoveUp(1)
         elif self.rect.y >= coord[1]:
             self.MoveUp(-1)
+
+
+class Civilisation(BasicObject):
+
+    def __init__(self, preset, popPreset):
+
+        super().__init__()
+
+        self.civilisationPreset = preset
+        self.populationPreset = popPreset
+
+        self.id = random.randint(0, 9999)
+        self.name = self.civilisationPreset["name"] + str(self.id)
+
+        self.spawnRate = int(self.civilisationPreset["spawnRate"])
+        self.spawnTimer = self.spawnRate
+        self.religion = self.civilisationPreset["religion"]
+        self.aggressivity = self.civilisationPreset["aggressivity"]
+        self.inWar = False
+
+        debugSuccessMsg("Civilisation Spawned --> " + self.name)
+
+
+    def Update(self):
+        self.spawnTimer -= 1
+        if self.spawnTimer > 0:
+            return
+        else:
+            self.spawnTimer = self.spawnRate
+
+        Game.game.SpawnUnit(self.populationPreset)
+
+    def SpawnCityHall(self):
+        Game.game.SpawnUnit()
+
+    def SpawnNewPopulation(self):
+        Game.game.SpawnUnit(self.populationPreset)
