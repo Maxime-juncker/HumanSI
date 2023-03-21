@@ -1,5 +1,7 @@
 import sys
 import pygame
+
+import Game
 from Utilities import *
 from Game import *
 
@@ -34,8 +36,18 @@ while game.GAME_RUNNING:
 
         if event.type == pygame.MOUSEWHEEL:
 
-            game.cameraGroup.zoomScale += event.y * 0.1
-            game.cameraGroup.internalSurfaceSizeVector = pygame.math.Vector2(game.cameraGroup.internalSurfaceSize) * 0.1
+            if 1 < game.cameraGroup.zoomScale + event.y * 0.3 < 3.5:
+                game.cameraGroup.zoomScale += round(event.y * 0.3,2)
+                print(str(game.cameraGroup.zoomScale))
+                print(game.cameraGroup.internalSurfaceSize)
+
+                """if game.cameraGroup.zoomScale > 1.5:
+                    game.cameraGroup.internalSurfaceSizeVector = (100, 100)"""
+
+                #game.cameraGroup.UpdateZoom()
+
+
+
 
             if event.y == 1:
                 if game.spriteIndex + 1 > len(spriteResources)-1:

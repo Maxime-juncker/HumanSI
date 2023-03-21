@@ -66,6 +66,7 @@ class CameraGroup(pygame.sprite.Group):
         self.internalOffset_x = self.internalSurfaceSize[0] // 2 - self.half_w
         self.internalOffset_y = self.internalSurfaceSize[1] // 2 - self.half_h
 
+
     def CustomDraw(self):
         # self.centerCameraOnTarget()
         # self.boxTargetCamera()
