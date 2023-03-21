@@ -1,159 +1,87 @@
-import AI
-import turtle
+import pygame
 import random
 
-class bcolors: # /!\ les couleurs ne marche que sur sur certains IDE (ex : edupython n'affiche pas les couleurs)
-    HEADER = '\033[95m'
-    OKBLUE = '\033[94m'
-    OKCYAN = '\033[96m'
-    OKGREEN = '\033[92m'
-    WARNING = '\033[93m'
-    FAIL = '\033[91m'
-    ENDC = '\033[0m'
-    BOLD = '\033[1m'
-    UNDERLINE = '\033[4m'
+# --- constants --- (UPPER_CASE_NAMES)
 
+SCREEN_WIDTH = 800
+SCREEN_HEIGHT = 600
 
+FPS = 25
 
+BLACK = (0, 0, 0)
+WHITE = (255, 255, 255)
 
-class UWorld():
+# --- main ---
 
-    screen:turtle.Screen()
-    
-    actorCurentlyInWorld = {}
-    actorCurrentlyMoving = 0
-    ressouceIndexCurrentlySelected = 0
+pygame.init()
 
-    actorsList = [
-        ["Unit", ("Assets/Pop1a.gif", "Assets/Pop1b.gif", "Assets/Pop1c.gif")],
-        ["House", ("square", "square")],
-        ["Tree", ("Assets/Arbre1.gif", "Assets/Arbre2.gif")],
-        ["Rock", ("Assets/caillou1.gif", "Assets/fer.gif", "Assets/or.gif")],
-        ["None", ("square", "square")]]
+screen = pygame.display.set_mode((SCREEN_WIDTH, SCREEN_HEIGHT))
+screen_rect = screen.get_rect()
 
+surface = pygame.surface.Surface((SCREEN_WIDTH, SCREEN_HEIGHT))
 
-    unitList = {
+# --- objects ---
 
-            "ClassicHumain" : ("Assets/Pop1a.gif", "Assets/Pop1b.gif", "Assets/Pop1c.gif")
-        }
+bg_image = pygame.image.load('Assets/download.jpg').convert()
+bg_rect = bg_image.get_rect(center=screen_rect.center)
 
+player_image = pygame.image.load("Assets/fer.png").convert()
+player_rect = player_image.get_rect(center=screen_rect.center)
 
+# --- mainloop ---
 
-    debuText = turtle.Turtle()
+clock = pygame.time.Clock()
 
+follow_player = False
+zoom = False
 
-    def __init__(self):
-        pass
-    
-    def Setup(self, screen):
-        self.screen = screen
-        self.KillAllActor()
-        self.RegisterAllSprite()
-        self.debuText.hideturtle()
-        self.debuText.clear()
-        self.debuText.write("Spawn Selected : " + str(self.actorsList[self.ressouceIndexCurrentlySelected]), font=("Raleway", 20, "normal"), align="center")
-        
+# number = 0  # to generate images for animated `gif`
+# `ffmpeg -i image-%03d.jpg -vf scale=250:200 video.gif`
 
+running = True
+while running:
 
-    def KillAllActor(self):
-        
-        nbOffTurtle=self.screen.turtles()
+    # --- events ---
+    for event in pygame.event.get():
+        if event.type == pygame.QUIT:
+            running = False
 
-        for turtle in self.screen.turtles():
-            turtle.hideturtle()
-            turtle.clear()
+        elif event.type == pygame.KEYUP:
+            if event.key == pygame.K_ESCAPE:
+                running = False
 
-        print(bcolors.WARNING + str(len(nbOffTurtle)) + " turtle were killed !" + bcolors.ENDC)
+            elif event.key == pygame.K_SPACE:
+                follow_player = not follow_player
 
-    def SwitchRessource(self):
+            elif event.key == pygame.K_RETURN:
+                zoom = not zoom
 
-        if self.ressouceIndexCurrentlySelected == len(self.actorsList) -1:
-            self.ressouceIndexCurrentlySelected = 0
-        else:
-            self.ressouceIndexCurrentlySelected += 1
-        self.debuText.hideturtle()
-        self.debuText.clear()
-        self.debuText.write("Spawn Selected : " + str(self.actorsList[self.ressouceIndexCurrentlySelected]), font=("Raleway", 20, "normal"), align="center")
+    # --- changes/moves/updates ---
 
+    move_x = random.randint(-5, 5)
+    move_y = random.randint(-5, 5)
+    player_rect.move_ip(move_x, move_y)
 
-    def CheckIfActorExist(self, actorName:str=""):
-        
-        if (actorName == ""):
-            print(bcolors.FAIL + "ActorName est empty peut être qu'il n'est pas renseigner a l'appelle de GetActorByName" + bcolors.ENDC)
-            return 
+    # --- draw on surface ---
 
-        for actor in self.actorCurentlyInWorld:
+    surface.fill(BLACK)
+    surface.blit(bg_image, bg_rect)
+    surface.blit(player_image, player_rect)
 
-            if self.actorCurentlyInWorld[actor].actorName == actorName:
-                return actor
+    # --- modify surface ---
 
-        print(bcolors.FAIL + "L'acteur n'est pas présent dans : " + bcolors.WARNING + "self.actorCurentlyInWorld" + bcolors.ENDC)
+    surface_mod = surface.copy()
+    surface_mod_rect = surface_mod.get_rect()
 
+    if zoom:
+        scale = 2
+        surface_mod = pygame.transform.rotozoom(surface_mod, 0, scale)
+        surface_mod_rect = surface_mod.get_rect()
+    else:
+        scale = 1
 
-    def SpawnBasedOnRessourceIndex(self, x, y):
-
-        if self.actorsList[self.ressouceIndexCurrentlySelected][0] == "Unit":
-            self.SpawnUnit(x,y)
-        else:
-            self.SpawnRessource(x, y, self.actorsList[self.ressouceIndexCurrentlySelected][1], True)
-
-    def SpawnUnit(self,x,y):
-
-
-        newActor = AI.AEntity()
-        newActor.Setup(self.actorsList[self.ressouceIndexCurrentlySelected][1])
-
-
-        newActor.actorTurtle.speed(999)
-        newActor.actorTurtle.setpos(x,y)
-        newActor.actorName = "AEntity " + str(len(self.actorCurentlyInWorld) + 1)
-        
-        newActor.actorComponents["CHumain"] = AI.CHumainRace()
-        newActor.actorComponents["CAnimator"] = AI.CAnimator()
-
-        newActor.actorComponents["CAnimator"].Setup(newActor.actorTurtle, self.unitList["ClassicHumain"])
-        print(newActor.actorTurtle)
-        newActor.actorComponents["CHumain"].Setup(newActor.actorTurtle)
-        self.actorCurentlyInWorld[newActor.actorName] = newActor
-
-    def SpawnRessource(self, x, y, ressourceName:str="None", randomSprite:bool=True):
-
-        print(self.actorsList[self.ressouceIndexCurrentlySelected][1])
-
-        newRessource = AI.AActor()
-        newRessource.Setup(self.actorsList[self.ressouceIndexCurrentlySelected][1])
-
-
-        newRessource.actorTurtle.speed(999)
-        newRessource.actorTurtle.setpos(x,y)
-        newRessource.actorName = "ressourceName " + str(len(self.actorCurentlyInWorld) + 1)
-
-
-    def RegisterAllSprite(self):
-        self.screen.register_shape('Assets/Arbre1.gif')
-        self.screen.register_shape('Assets/Arbre2.gif')
-        self.screen.register_shape('Assets/caillou1.gif')
-        self.screen.register_shape('Assets/Pop1a.gif')
-        self.screen.register_shape('Assets/Pop1b.gif')
-        self.screen.register_shape('Assets/Pop1c.gif')
-
-
-        self.screen.register_shape('Assets/or.gif')
-        self.screen.register_shape('Assets/fer.gif')
-        
-
-
-currentWorld:UWorld
-
-def SetupNewWorld():
-    global currentWorld
-    currentWorld = UWorld()
-
-
-
-
-
-
-
-
-
+    if follow_player:
+        surface_mod_rect.x = (screen_rect.centerx - player_rect.centerx * scale)
+        surface_mod_rect.y = (screen_rect.centery - player_rect.centery * scale)
+    else:
+        surface_mod_rect.center = screen_rect.center

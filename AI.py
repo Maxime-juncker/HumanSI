@@ -1,7 +1,6 @@
-import random
-import pygame
-import Game
 from enum import Enum
+import random
+import Game
 from Utilities import *
 from Game import *
 
@@ -12,7 +11,7 @@ class UnitState(Enum):
     MOVING = 1
 
 
-class BasicObject():
+class BasicObject:
     name = ""
     id = 0
 
@@ -22,9 +21,9 @@ class BasicObject():
 
 class Unit(pygame.sprite.Sprite, BasicObject):
 
-    def __init__(self, _display, sprite, preset,pos):
+    def __init__(self, _display, sprite, preset, pos, group):
 
-        super().__init__()
+        super().__init__(group)
 
         self.unitPreset = preset
 
@@ -39,22 +38,19 @@ class Unit(pygame.sprite.Sprite, BasicObject):
 
         Game.game.visibleSprite[self.name] = self
 
-
-
         self.currentDestination = SeekNewPos(self.rect, 100)
         self.state = UnitState.IDLE
 
         debugSuccessMsg("Unit Spawned --> " + self.name)
 
     def Update(self):
-        self.display.blit(self.image, self.rect)
         self.StateMachine()
 
     def StateMachine(self):
         if self.state == UnitState.MOVING:
             self.MoveTo(self.currentDestination)
         if self.state == UnitState.IDLE:
-            self.currentDestination = SeekNewPos(self.rect, 100)
+            self.currentDestination = SeekNewPos(self.rect, 1000)
             self.SetNewState(UnitState.MOVING)
 
     def SetNewState(self, newState: UnitState):
@@ -64,7 +60,7 @@ class Unit(pygame.sprite.Sprite, BasicObject):
                 False si le state reste le même
         '''
 
-        if (not newState == self.state):
+        if not newState == self.state:
             self.state = newState
             return False
         else:
@@ -124,6 +120,11 @@ class Civilisation(BasicObject):
         self.civilisationPreset = preset
         self.populationPreset = popPreset
 
+        cityHallPreset = LoadPreset(Directories.PresetDir + "Presets.csv", self.civilisationPreset["cityHallName"])
+
+        self.cityHallPos = pygame.mouse.get_pos()
+        Game.game.SpawnUnit(cityHallPreset, self.cityHallPos)
+
         self.id = random.randint(0, 9999)
         self.name = self.civilisationPreset["name"] + str(self.id)
 
@@ -133,9 +134,7 @@ class Civilisation(BasicObject):
         self.aggressivity = self.civilisationPreset["aggressivity"]
         self.inWar = False
 
-
         debugSuccessMsg("Civilisation Spawned --> " + self.name)
-
 
     def Update(self):
         self.spawnTimer -= 1
@@ -144,7 +143,7 @@ class Civilisation(BasicObject):
         else:
             self.spawnTimer = self.spawnRate
 
-        Game.game.SpawnUnit(self.populationPreset)
+        Game.game.SpawnUnit(self.populationPreset, self.cityHallPos)
 
     def SpawnCityHall(self):
         Game.game.SpawnUnit()

@@ -4,18 +4,10 @@ from Utilities import *
 from Game import *
 
 
-
-
 # Boucle update
 while game.GAME_RUNNING:
 
-    game.display.fill('white')
 
-    game.SuperUpdate()
-    game.Update()
-
-    # Update le screen
-    pygame.display.flip()
 
     # Si on ferme la fenetre
     for event in pygame.event.get():
@@ -42,6 +34,9 @@ while game.GAME_RUNNING:
 
         if event.type == pygame.MOUSEWHEEL:
 
+            game.cameraGroup.zoomScale += event.y * 0.1
+            game.cameraGroup.internalSurfaceSizeVector = pygame.math.Vector2(game.cameraGroup.internalSurfaceSize) * 0.1
+
             if event.y == 1:
                 if game.spriteIndex + 1 > len(spriteResources)-1:
                     game.spriteIndex = 0
@@ -53,6 +48,11 @@ while game.GAME_RUNNING:
                     game.spriteIndex = len(spriteResources)-1
                 else:
                     game.spriteIndex -= 1
+
+    game.display.fill('#71ddee')
+
+    game.SuperUpdate()
+    game.Update()
 
 
 
