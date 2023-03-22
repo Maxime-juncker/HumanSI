@@ -148,9 +148,8 @@ class Game:
         preset = LoadPreset(Directories.PresetDir + "Presets.csv", names[self.spriteIndex])
 
         pos = pygame.mouse.get_pos()
-        offestPos = pos - self.cameraGroup.offset + self.cameraGroup.internalOffset
-
-        self.newUnit = Unit(self.display, self.GetRandomSprite(sprites[self.spriteIndex]), preset, offestPos,
+        offsetPos = pos + self.cameraGroup.offset - self.cameraGroup.internalOffset
+        self.newUnit = Unit(self.display, self.GetRandomSprite(sprites[self.spriteIndex]), preset, offsetPos,
                             self.cameraGroup)
         self.visibleSprite[self.newUnit.name] = self.newUnit
 

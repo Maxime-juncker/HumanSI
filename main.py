@@ -5,11 +5,8 @@ import Game
 from Utilities import *
 from Game import *
 
-
 # Boucle update
 while game.GAME_RUNNING:
-
-
 
     # Si on ferme la fenetre
     for event in pygame.event.get():
@@ -19,7 +16,6 @@ while game.GAME_RUNNING:
             pygame.quit()
             debugFailMsg("Exiting...")
 
-        # on ecoute les input du clavier
         if event.type == pygame.MOUSEBUTTONDOWN:
 
             '''
@@ -29,42 +25,36 @@ while game.GAME_RUNNING:
             '''
 
             mouseButton = pygame.mouse.get_pressed()
+            """
             if mouseButton[0]:
-                game.SpawnUnitBaseByIndex()
-            elif mouseButton[2]:
+            game.SpawnUnitBaseByIndex()"""
+            if mouseButton[2]:
                 game.SpawnCivilisation()
-
         if event.type == pygame.MOUSEWHEEL:
 
             if 1 < game.cameraGroup.zoomScale + event.y * 0.3 < 3.5:
-                game.cameraGroup.zoomScale += round(event.y * 0.3,2)
-                print(str(game.cameraGroup.zoomScale))
-                print(game.cameraGroup.internalSurfaceSize)
-
-                """if game.cameraGroup.zoomScale > 1.5:
-                    game.cameraGroup.internalSurfaceSizeVector = (100, 100)"""
-
-                #game.cameraGroup.UpdateZoom()
+                game.cameraGroup.zoomScale += round(event.y * 0.3, 2)
 
 
 
+        if event.type == pygame.KEYDOWN:
+            if event.key == pygame.K_SPACE:
+                game.SpawnUnitBaseByIndex()
 
-            if event.y == 1:
-                if game.spriteIndex + 1 > len(spriteResources)-1:
+            if event.key == pygame.K_a:
+                if game.spriteIndex + 1 > len(spriteResources) - 1:
                     game.spriteIndex = 0
                 else:
                     game.spriteIndex += 1
 
-            else:
+            elif event.key == pygame.K_e:
                 if game.spriteIndex - 1 < 0:
-                    game.spriteIndex = len(spriteResources)-1
+                    game.spriteIndex = len(spriteResources) - 1
                 else:
                     game.spriteIndex -= 1
+
 
     game.display.fill('#71ddee')
 
     game.SuperUpdate()
     game.Update()
-
-
-
