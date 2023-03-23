@@ -31,7 +31,6 @@ while game.GAME_RUNNING:
             if mouseButton[2]:
                 game.SpawnCivilisation()
         if event.type == pygame.MOUSEWHEEL:
-            print("coucou")
 
             if 1 < game.cameraGroup.zoomScale + event.y * 0.3 < 3.5:
                 game.cameraGroup.zoomScale += round(event.y * 0.3, 2)

@@ -20,6 +20,10 @@ spriteResources = {
     "Rock": ("Assets/caillou1.png", "Assets/fer.png", "Assets/or.png"),
     "Tree": ("Assets/Arbre1.png", "Assets/Arbre2.png"),
     "YellowCityHall": ("Assets/Props/MaisonY1.png", "Assets/Props/MaisonY1.png"),
+    "GreenCityHall": ("Assets/Props/MaisonY1.png", "Assets/Props/MaisonY1.png"),
+    "GreenHouse": ("Assets/Props/MaisonY1.png", "Assets/Props/MaisonY1.png"),
+    "RedHouse": ("Assets/Props/MaisonY1.png", "Assets/Props/MaisonY1.png"),
+    "RedCityHall": ("Assets/Props/MaisonY1.png", "Assets/Props/MaisonY1.png"),
 
 }
 
@@ -127,6 +131,8 @@ class Game:
 
         # c'est juste un truc pour faire un statue sur dicord (pas très important)
         SetupRichPresence()
+
+        #spawnAbleObject =
 
         # C'est bon on a fini le setup la game loop peut commencer :D
         pygame.display.set_caption("HumainSI")
