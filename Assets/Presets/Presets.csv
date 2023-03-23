@@ -1,4 +1,4 @@
-name,speed,moveTimer,interactionRate,attack,attackSpeed,health,civilisation
+name,speed,moveTimer,interactionRate,attack,attackSpeed,health,civilisation,spritePath
 BasicHuman,1,2,1,1,1,10,none
 
 Rock,0,0,0,0,0,50,none
@@ -7,11 +7,20 @@ Tree,0,0,0,0,0,50,none
 YellowCityHall,0,0,0,0,0,100,none
 
 
-Chief_Devan,1,2,10,5,5,50,yellow
-Chief_Yohann,1,5,0,15,2,80,red
-Chief_Alexandre,1,5,3,0,0,10,purple
-Chief_Nathan,1,2,1,2,10,20,blue
-Chief_Maxime,1,1,3,5,5,50,green
+Chief_Devan,0,2,10,5,5,50,yellow
+Chief_Yohann,0,5,0,15,2,80,red
+Chief_Alexandre,0,5,3,0,0,10,purple
+Chief_Nathan,0,2,1,2,10,20,blue
+Chief_Maxime,0,1,3,5,5,50,green
+
+Pop_Yellow,0,1,3,5,5,50,yellow
+Pop,Red,0,1,3,5,5,50,red
+Pop_Purple,0,1,3,5,5,50,purple
+Pop_Blue,0,1,3,5,5,50,blue
+Pop_Green,0,1,3,5,5,50,green
+
+
+
 
 Chief_Romain,1,5,3,5,5,50,white
 Chief_Antonin,1,1,3,1,1,2,black

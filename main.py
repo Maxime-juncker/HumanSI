@@ -25,9 +25,9 @@ while game.GAME_RUNNING:
             '''
 
             mouseButton = pygame.mouse.get_pressed()
-            """
+
             if mouseButton[0]:
-            game.SpawnUnitBaseByIndex()"""
+                game.SpawnUnitBaseByIndex()
             if mouseButton[2]:
                 game.SpawnCivilisation()
         if event.type == pygame.MOUSEWHEEL:
@@ -35,11 +35,7 @@ while game.GAME_RUNNING:
             if 1 < game.cameraGroup.zoomScale + event.y * 0.3 < 3.5:
                 game.cameraGroup.zoomScale += round(event.y * 0.3, 2)
 
-
-
         if event.type == pygame.KEYDOWN:
-            if event.key == pygame.K_SPACE:
-                game.SpawnUnitBaseByIndex()
 
             if event.key == pygame.K_a:
                 if game.spriteIndex + 1 > len(spriteResources) - 1:
@@ -52,7 +48,6 @@ while game.GAME_RUNNING:
                     game.spriteIndex = len(spriteResources) - 1
                 else:
                     game.spriteIndex -= 1
-
 
     game.display.fill('#71ddee')
 

@@ -7,17 +7,19 @@ spriteResources = {
     "BasicHuman": ("Assets/Pop1c.png", "Assets/Pop1c.png"),
 
     "Chief_Devan": ("Assets/Devan/PopDa.png", "Assets/Devan/PopDb.png"),
-    "Chief_Yohann": ("Assets/Yohann/PopYa.png", "Assets/Yohann/PopYb.png"),
+    "Chief_Yohann": ("Assets/Yohann/ChefYa.png", "Assets/Yohann/ChefYa.png"),
     "Chief_Alexandre": ("Assets/Alexandre/PopAlexa.png", "Assets/Alexandre/PopAlexb.png"),
     "Chief_Nathan": ("Assets/Nathan/PopNa.png", "Assets/Nathan/PopNb.png"),
     "Chief_Maxime": ("Assets/Maxime/PopMa.png", "Assets/Maxime/PopMb.png"),
+
+    ""
 
     "Chief_Romain": ("Assets/Romain/PopRa.png", "Assets/Romain/PopRb.png"),
     "Chief_Antonin": ("Assets/Antonin/PopAntoa.png", "Assets/Antonin/PopAntob.png"),
 
     "Rock": ("Assets/caillou1.png", "Assets/fer.png", "Assets/or.png"),
     "Tree": ("Assets/Arbre1.png", "Assets/Arbre2.png"),
-    "YellowCityHall": ("Assets/download.jpg", "Assets/download.jpg"),
+    "YellowCityHall": ("Assets/Props/MaisonY1.png", "Assets/Props/MaisonY1.png"),
 
 }
 
@@ -148,7 +150,7 @@ class Game:
         preset = LoadPreset(Directories.PresetDir + "Presets.csv", names[self.spriteIndex])
 
         pos = pygame.mouse.get_pos()
-        offsetPos = pos + self.cameraGroup.offset - self.cameraGroup.internalOffset
+        offsetPos = self.cameraGroup.offset - self.cameraGroup.internalOffset  + pygame.mouse.get_pos()
         self.newUnit = Unit(self.display, self.GetRandomSprite(sprites[self.spriteIndex]), preset, offsetPos,
                             self.cameraGroup)
         self.visibleSprite[self.newUnit.name] = self.newUnit

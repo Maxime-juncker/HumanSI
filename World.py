@@ -25,7 +25,7 @@ surface = pygame.surface.Surface((SCREEN_WIDTH, SCREEN_HEIGHT))
 bg_image = pygame.image.load('Assets/download.jpg').convert()
 bg_rect = bg_image.get_rect(center=screen_rect.center)
 
-player_image = pygame.image.load("Assets/fer.png").convert()
+player_image = pygame.image.load("Assets/Props/fer.png").convert()
 player_rect = player_image.get_rect(center=screen_rect.center)
 
 # --- mainloop ---
