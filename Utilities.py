@@ -1,10 +1,12 @@
 import random
 from pypresence import Presence
 import csv
-
+import os
 
 class Directories:
     PresetDir = "Assets/Presets/"
+    SpritesDir = "Assets/Graphics/"
+
 
 
 class bcolors:  # /!\ les couleurs ne marche que sur sur certains IDE (ex : edupython n'affiche pas les couleurs)
@@ -28,12 +30,13 @@ def SetupRichPresence():
 def debugSuccessMsg(info):
     print(bcolors.OKGREEN + "Success : " + bcolors.OKCYAN + str(info) + bcolors.ENDC)
 
+
 def debugFailMsg(info):
     print(bcolors.FAIL + str(info) + bcolors.ENDC)
 
+
 def debugWarningMsg(info):
     print(bcolors.WARNING + "Warning : " + bcolors.BOLD + str(info) + bcolors.ENDC)
-
 
 
 def SeekNewPos(currentPos, distance):
@@ -55,3 +58,8 @@ def LoadPreset(presetPath, name):
     # Si on arrive ici ça veut dire que on a pas trouver de result :
     print(bcolors.FAIL + "Preset non trouver, essaye de vertifier l'orthographe" + bcolors.ENDC)
     return presetPath, name
+
+
+def LoadSpritesFromFolder(folderPath):
+    return os.listdir(Directories.SpritesDir + folderPath)
+

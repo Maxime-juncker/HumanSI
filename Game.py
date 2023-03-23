@@ -4,7 +4,7 @@ from AI import *
 from Utilities import *
 
 spriteResources = {
-    "BasicHuman": ("Assets/Pop1c.png", "Assets/Pop1c.png"),
+    "DefaultHuman": ("Assets/Pop1c.png", "Assets/Pop1c.png"),
 
     "Chief_Devan": ("Assets/Devan/PopDa.png", "Assets/Devan/PopDb.png"),
     "Chief_Yohann": ("Assets/Yohann/ChefYa.png", "Assets/Yohann/ChefYa.png"),
@@ -34,7 +34,6 @@ SI VOUS AJOUTEZ DES SPRITE AJOUTER LES A CAMERAGROUP
 
 
 class CameraGroup(pygame.sprite.Group):
-
 
     def __init__(self):
         super().__init__()
@@ -67,7 +66,6 @@ class CameraGroup(pygame.sprite.Group):
         self.internalOffset = pygame.math.Vector2()
         self.internalOffset_x = self.internalSurfaceSize[0] // 2 - self.half_w
         self.internalOffset_y = self.internalSurfaceSize[1] // 2 - self.half_h
-
 
     def CustomDraw(self):
         # self.centerCameraOnTarget()
@@ -141,17 +139,14 @@ class Game:
         et on le passe en parametre au truc que on vas spawn
         '''
 
-        sprites = []
         names = []
-
-        [sprites.extend([v]) for v in spriteResources.values()]
         [names.extend([v]) for v in spriteResources.keys()]
 
         preset = LoadPreset(Directories.PresetDir + "Presets.csv", names[self.spriteIndex])
+        sprites = LoadSpritesFromFolder(preset["spritesPath"])
 
-        pos = pygame.mouse.get_pos()
-        offsetPos = self.cameraGroup.offset - self.cameraGroup.internalOffset  + pygame.mouse.get_pos()
-        self.newUnit = Unit(self.display, self.GetRandomSprite(sprites[self.spriteIndex]), preset, offsetPos,
+        offsetPos = self.cameraGroup.offset - self.cameraGroup.internalOffset + pygame.mouse.get_pos()
+        self.newUnit = Unit(self.display, self.GetRandomSprite(sprites), preset, offsetPos,
                             self.cameraGroup)
         self.visibleSprite[self.newUnit.name] = self.newUnit
 
@@ -167,7 +162,8 @@ class Game:
 
         self.civilisationSpawned[newCivilisation.name] = newCivilisation
 
-    def GetRandomSprite(self, sprites: tuple):
+    def GetRandomSprite(self, sprites):
+        print(sprites)
         return sprites[random.randint(0, len(sprites) - 1)]
 
     def Update(self):
