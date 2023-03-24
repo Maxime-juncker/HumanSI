@@ -12,14 +12,19 @@ spriteResources = {
     "Chief_Nathan": ("Assets/Nathan/PopNa.png", "Assets/Nathan/PopNb.png"),
     "Chief_Maxime": ("Assets/Maxime/PopMa.png", "Assets/Maxime/PopMb.png"),
 
-    ""
+    "Pop_Red": ("Assets/Maxime/PopMa.png", "Assets/Maxime/PopMb.png"),
+    "Pop_Yellow": ("Assets/Maxime/PopMa.png", "Assets/Maxime/PopMb.png"),
+    "Pop_Green": ("Assets/Maxime/PopMa.png", "Assets/Maxime/PopMb.png"),
+    "Pop_Blue": ("Assets/Maxime/PopMa.png", "Assets/Maxime/PopMb.png"),
+    "Pop_Purple": ("Assets/Maxime/PopMa.png", "Assets/Maxime/PopMb.png"),
+
 
     "Chief_Romain": ("Assets/Romain/PopRa.png", "Assets/Romain/PopRb.png"),
     "Chief_Antonin": ("Assets/Antonin/PopAntoa.png", "Assets/Antonin/PopAntob.png"),
 
     "Rock": ("Assets/caillou1.png", "Assets/fer.png", "Assets/or.png"),
     "Tree": ("Assets/Arbre1.png", "Assets/Arbre2.png"),
-    "YellowCityHall": ("Assets/Props/MaisonY1.png", "Assets/Props/MaisonY1.png"),
+    #"YellowCityHall": ("Assets/Props/MaisonY1.png", "Assets/Props/MaisonY1.png"),
     "GreenCityHall": ("Assets/Props/MaisonY1.png", "Assets/Props/MaisonY1.png"),
     "GreenHouse": ("Assets/Props/MaisonY1.png", "Assets/Props/MaisonY1.png"),
     "RedHouse": ("Assets/Props/MaisonY1.png", "Assets/Props/MaisonY1.png"),
@@ -63,7 +68,7 @@ class CameraGroup(pygame.sprite.Group):
 
         # zoom (honetement j'ai aucune idée de pk ça marche mais tkt...)
         self.zoomScale = 1
-        self.internalSurfaceSize = (1280, 720)
+        self.internalSurfaceSize = (1920, 1080)
         self.internalSurface = pygame.Surface(self.internalSurfaceSize, pygame.SRCALPHA)
         self.internalRect = self.internalSurface.get_rect(center=(self.half_w, self.half_h))
         self.internalSurfaceSizeVector = pygame.math.Vector2(self.internalSurfaceSize)
@@ -122,7 +127,7 @@ class Game:
         pygame.init()
         pygame.display.set_caption("Chargement...")
 
-        self.display = pygame.display.set_mode((1280, 720))
+        self.display = pygame.display.set_mode((1920, 1080))
         self.cameraGroup = CameraGroup()
 
         self.clock = pygame.time.Clock()
