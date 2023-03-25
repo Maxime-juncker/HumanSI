@@ -1,12 +1,10 @@
 import random
-from pypresence import Presence
 import csv
 import os
 
 class Directories:
     PresetDir = "Assets/Presets/"
     SpritesDir = "Assets/Graphics/"
-
 
 
 class bcolors:  # /!\ les couleurs ne marche que sur sur certains IDE (ex : edupython n'affiche pas les couleurs)
@@ -19,13 +17,6 @@ class bcolors:  # /!\ les couleurs ne marche que sur sur certains IDE (ex : edup
     ENDC = '\033[0m'
     BOLD = '\033[1m'
     UNDERLINE = '\033[4m'
-
-
-def SetupRichPresence():
-    rpc = Presence(1087011571005390898)
-    rpc.connect()
-    rpc.update(details="une super simulation pas du tout inspiré d'un jeu", large_image="maxresdefault")
-
 
 def debugSuccessMsg(info):
     print(bcolors.OKGREEN + "Success : " + bcolors.OKCYAN + str(info) + bcolors.ENDC)
@@ -46,14 +37,20 @@ def SeekNewPos(currentPos, distance):
     return randomX, randomY
 
 
-def LoadPreset(presetPath, name):
+def LoadPreset(presetPath, name=""):
     file = open(presetPath, "r")
     content = csv.DictReader(file, delimiter=",")
 
-    result = []
-    for ligne in content:
-        if ligne["name"] == name:
-            return ligne
+    result = {}
+    if name == "":
+        for ligne in content:
+            result[ligne["name"]] = ligne
+        return result
+
+    else:
+        for ligne in content:
+            if ligne["name"] == name:
+                return ligne
 
     # Si on arrive ici ça veut dire que on a pas trouver de result :
     print(bcolors.FAIL + "Preset non trouver, essaye de vertifier l'orthographe" + bcolors.ENDC)

@@ -1,32 +1,35 @@
-name,speed,moveTimer,interactionRate,attack,attackSpeed,health,civilisation,spritesPath,isSpawnable
-DefaultHuman,1,2,1,1,1,10,none,Civilisations/Default/PopDefault,1
+name,speed,moveTimer,interactionRate,attack,attackSpeed,health,lifeSpan,civilisation,spritesPath,isSpawnable
+DefaultHuman,1,2,1,1,1,10,500,none,Civilisations/Default/PopDefault,1
 
-Rock,0,0,0,0,0,50,none,Props/Rocks,1
-Tree,0,0,0,0,0,50,none,Props/Tree,1
+Rock,0,0,0,0,0,50,-1,none,Props/Rocks,1
+Tree,0,0,0,0,0,50,-1,none,Props/Tree,1
 
-YellowCityHall,0,0,0,0,0,100,none,Civilisations/Default/PopDefault,1
-GreenCityHall,0,0,0,0,0,100,none,Civilisations/Green/BuildingsGreen/HDV,1
-GreenHouse,0,0,0,0,0,100,none,Civilisations/Green/BuildingsGreen/Buildings,1
+YellowCityHall,0,0,0,0,0,100,-1,none,Civilisations/Default/PopDefault,1
+GreenCityHall,0,0,0,0,0,100,-1,none,Civilisations/Green/BuildingsGreen/HDV,1
+GreenHouse,0,0,0,0,0,100,-1,none,Civilisations/Green/BuildingsGreen/Buildings,1
 
-RedCityHall,0,0,0,0,0,100,none,Civilisations/Red/BuildingsRed/HDV,1
-RedHouse,0,0,0,0,0,100,none,Civilisations/Red/BuildingsRed/Buildings,1
-
-
+RedCityHall,0,0,0,0,0,100,-1,none,Civilisations/Red/BuildingsRed/HDV,1
+RedHouse,0,0,0,0,0,100,-1,none,Civilisations/Red/BuildingsRed/Buildings,1
 
 
-Chief_Devan,1,2,10,5,5,50,yellow,Civilisations/Yellow/Devan,1
-Chief_Yohann,1,5,0,15,2,80,red,Civilisations/Red/Yohann,1
-Chief_Alexandre,1,5,3,0,0,10,purple,Civilisations/Purple/Alexandre,1
-Chief_Nathan,1,2,1,2,10,20,blue,Civilisations/Blue/Nathan,1
-Chief_Maxime,1,1,3,5,5,50,green,Civilisations/Green/Maxime,1
-
-Chief_Romain,1,5,3,5,5,50,white,Civilisations/White/PopWhite,1
-Chief_Antonin,1,1,3,1,1,2,black,Civilisations/Black/PopBlack,1
 
 
-Pop_Yellow,1,1,3,5,5,50,yellow,Civilisations/Yellow/PopYellow,1
-Pop_Red,1,1,3,5,5,50,red,Civilisations/Red/PopRed,1
-Pop_Purple,1,1,3,5,5,50,purple,Civilisations/Purple/PopPurple,1
-Pop_Blue,1,1,3,5,5,50,blue,Civilisations/Blue/PopBlue,1
-Pop_Green,1,1,3,5,5,50,green,Civilisations/Green/PopGreen,1
+Chief_Devan,1,2,10,5,5,50,-1,yellow,Civilisations/Yellow/Devan,1
+Chief_Yohann,1,5,0,15,2,80,-1,red,Civilisations/Red/Yohann,1
+Chief_Alexandre,1,5,3,0,0,10,-1,purple,Civilisations/Purple/Alexandre,1
+Chief_Nathan,1,2,1,2,10,20,-1,blue,Civilisations/Blue/Nathan,1
+Chief_Maxime,1,1,3,5,5,50,-1,green,Civilisations/Green/Maxime,1
+
+Chief_Romain,1,5,3,5,5,50,-1,white,Civilisations/White/Romain,1
+Chief_Antonin,1,1,3,1,1,2,-1,black,Civilisations/Black/Antonin,1
+
+
+Pop_Yellow,1,1,3,5,5,50,500,yellow,Civilisations/Yellow/PopYellow,1
+Pop_Red,1,1,3,5,5,50,500,red,Civilisations/Red/PopRed,1
+Pop_Purple,1,1,3,5,5,50,500,purple,Civilisations/Purple/PopPurple,1
+Pop_Blue,1,1,3,5,5,50,500,blue,Civilisations/Blue/PopBlue,1
+Pop_Green,1,1,3,5,5,50,500,green,Civilisations/Green/PopGreen,1
+Pop_Black,1,1,3,5,5,50,500,green,Civilisations/Black/PopBlack,1
+Pop_White,1,1,3,5,5,50,500,green,Civilisations/White/PopWhite,1
+
 

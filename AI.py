@@ -27,29 +27,43 @@ class Unit(pygame.sprite.Sprite, BasicObject):
 
         self.unitPreset = preset
         self.image = pygame.image.load(Directories.SpritesDir + preset["spritesPath"]+ "/" + sprite)
-        self.rect = self.image.get_rect(center=pos)
+        self.rect = self.image.get_rect()
         self.speed = int(self.unitPreset["speed"])
         self.moveTimer = int(self.unitPreset["moveTimer"])
         self.maxMoveTimer = int(self.unitPreset["moveTimer"])
         self.display = _display
         self.id = str(random.randint(0, 99999))
         self.name = self.unitPreset["name"] + str(self.id)
+        self.lifeSpawn = int(self.unitPreset["lifeSpan"])
+
+        self.rect.bottomright = pos
 
         Game.game.visibleSprite[self.name] = self
 
-        self.currentDestination = SeekNewPos(self.rect, 100)
+        self.currentDestination = SeekNewPos(self.rect, 30)
         self.state = UnitState.IDLE
 
         debugSuccessMsg("Unit Spawned --> " + self.name)
 
     def Update(self):
         self.StateMachine()
+        self.UpdateLifeSpan()
+
+    def UpdateLifeSpan(self):
+        if self.lifeSpawn < 0: #Si le lifeSpan < 0 s'a veut dire que l'unit est imortelle
+            return
+
+        self.lifeSpawn -= 1
+        if self.lifeSpawn > 0:
+            return
+        elif self.lifeSpawn == 0:
+            self.kill()
 
     def StateMachine(self):
         if self.state == UnitState.MOVING:
             self.MoveTo(self.currentDestination)
         if self.state == UnitState.IDLE:
-            self.currentDestination = SeekNewPos(self.rect, 1000)
+            self.currentDestination = SeekNewPos(self.rect, 200)
             self.SetNewState(UnitState.MOVING)
 
     def SetNewState(self, newState: UnitState):
@@ -116,8 +130,11 @@ class Civilisation(BasicObject):
 
         super().__init__()
 
+        print(str(preset))
+        print(str(popPreset))
+
         self.civilisationPreset = preset
-        self.populationPreset = popPreset
+        self.populationPreset = LoadPreset(Directories.PresetDir + "Presets.csv", preset["popName"])
 
         cityHallPreset = LoadPreset(Directories.PresetDir + "Presets.csv", self.civilisationPreset["cityHallName"])
 

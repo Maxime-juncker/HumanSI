@@ -3,35 +3,6 @@ import AI
 from AI import *
 from Utilities import *
 
-spriteResources = {
-    "DefaultHuman": ("Assets/Pop1c.png", "Assets/Pop1c.png"),
-
-    "Chief_Devan": ("Assets/Devan/PopDa.png", "Assets/Devan/PopDb.png"),
-    "Chief_Yohann": ("Assets/Yohann/ChefYa.png", "Assets/Yohann/ChefYa.png"),
-    "Chief_Alexandre": ("Assets/Alexandre/PopAlexa.png", "Assets/Alexandre/PopAlexb.png"),
-    "Chief_Nathan": ("Assets/Nathan/PopNa.png", "Assets/Nathan/PopNb.png"),
-    "Chief_Maxime": ("Assets/Maxime/PopMa.png", "Assets/Maxime/PopMb.png"),
-
-    "Pop_Red": ("Assets/Maxime/PopMa.png", "Assets/Maxime/PopMb.png"),
-    "Pop_Yellow": ("Assets/Maxime/PopMa.png", "Assets/Maxime/PopMb.png"),
-    "Pop_Green": ("Assets/Maxime/PopMa.png", "Assets/Maxime/PopMb.png"),
-    "Pop_Blue": ("Assets/Maxime/PopMa.png", "Assets/Maxime/PopMb.png"),
-    "Pop_Purple": ("Assets/Maxime/PopMa.png", "Assets/Maxime/PopMb.png"),
-
-
-    "Chief_Romain": ("Assets/Romain/PopRa.png", "Assets/Romain/PopRb.png"),
-    "Chief_Antonin": ("Assets/Antonin/PopAntoa.png", "Assets/Antonin/PopAntob.png"),
-
-    "Rock": ("Assets/caillou1.png", "Assets/fer.png", "Assets/or.png"),
-    "Tree": ("Assets/Arbre1.png", "Assets/Arbre2.png"),
-    #"YellowCityHall": ("Assets/Props/MaisonY1.png", "Assets/Props/MaisonY1.png"),
-    "GreenCityHall": ("Assets/Props/MaisonY1.png", "Assets/Props/MaisonY1.png"),
-    "GreenHouse": ("Assets/Props/MaisonY1.png", "Assets/Props/MaisonY1.png"),
-    "RedHouse": ("Assets/Props/MaisonY1.png", "Assets/Props/MaisonY1.png"),
-    "RedCityHall": ("Assets/Props/MaisonY1.png", "Assets/Props/MaisonY1.png"),
-
-}
-
 '''
 TRUC IMPORTANT. 
 pygame fonctionne en dessinant les truc qui sont contenu dans une liste 
@@ -68,7 +39,7 @@ class CameraGroup(pygame.sprite.Group):
 
         # zoom (honetement j'ai aucune idée de pk ça marche mais tkt...)
         self.zoomScale = 1
-        self.internalSurfaceSize = (1920, 1080)
+        self.internalSurfaceSize = (self.displaySurface.get_size()[0], self.displaySurface.get_size()[1])
         self.internalSurface = pygame.Surface(self.internalSurfaceSize, pygame.SRCALPHA)
         self.internalRect = self.internalSurface.get_rect(center=(self.half_w, self.half_h))
         self.internalSurfaceSizeVector = pygame.math.Vector2(self.internalSurfaceSize)
@@ -79,6 +50,9 @@ class CameraGroup(pygame.sprite.Group):
     def CustomDraw(self):
         # self.centerCameraOnTarget()
         # self.boxTargetCamera()
+
+        if game.selectedTarget is not None:
+            self.centerCameraOnTarget(game.selectedTarget)
         self.keyboardControl()
 
         self.internalSurface.fill('#71ddee')
@@ -98,18 +72,27 @@ class CameraGroup(pygame.sprite.Group):
 
     def keyboardControl(self):
         keys = pygame.key.get_pressed()
-        if keys[pygame.K_q]: self.cameraRect.x -= self.keyboardSpeed
-        if keys[pygame.K_d]: self.cameraRect.x += self.keyboardSpeed
-        if keys[pygame.K_z]: self.cameraRect.y -= self.keyboardSpeed
-        if keys[pygame.K_s]: self.cameraRect.y += self.keyboardSpeed
+        if keys[pygame.K_q]:
+            self.cameraRect.x -= self.keyboardSpeed
+            game.selectedTarget = None
+        if keys[pygame.K_d]:
+            self.cameraRect.x += self.keyboardSpeed
+            game.selectedTarget = None
+
+        if keys[pygame.K_z]:
+            self.cameraRect.y -= self.keyboardSpeed
+            game.selectedTarget = None
+
+        if keys[pygame.K_s]:
+            self.cameraRect.y += self.keyboardSpeed
+            game.selectedTarget = None
 
         self.offset.x = self.cameraRect.left - self.cameraBorder['left']
         self.offset.y = self.cameraRect.top - self.cameraBorder['top']
 
-    def centerCameraOnTarget(self):
-        if game.newUnit is not None:
-            self.offset.x = game.newUnit.rect.centerx - self.half_w
-            self.offset.y = game.newUnit.rect.centery - self.half_h
+    def centerCameraOnTarget(self, target):
+        self.offset.x = game.newUnit.rect.centerx - self.half_w
+        self.offset.y = game.newUnit.rect.centery - self.half_h
 
 
 class Game:
@@ -118,9 +101,11 @@ class Game:
         # Creation de la fenetre de l'app
 
         self.newUnit = None
+        self.selectedTarget = None
         self.visibleSprite = {}
         self.civilisationSpawned = {}
         self.spriteIndex = 0
+        self.spawnAbleUnit = LoadPreset(Directories.PresetDir + "Presets.csv")
 
         # ============ SETUP PYGAME =====================
 
@@ -133,12 +118,6 @@ class Game:
         self.clock = pygame.time.Clock()
 
         # =================================================
-
-        # c'est juste un truc pour faire un statue sur dicord (pas très important)
-        SetupRichPresence()
-
-        #spawnAbleObject =
-
         # C'est bon on a fini le setup la game loop peut commencer :D
         pygame.display.set_caption("HumainSI")
 
@@ -151,10 +130,11 @@ class Game:
         '''
 
         names = []
-        [names.extend([v]) for v in spriteResources.keys()]
+        [names.extend([v]) for v in self.spawnAbleUnit.keys()]
 
         preset = LoadPreset(Directories.PresetDir + "Presets.csv", names[self.spriteIndex])
         sprites = LoadSpritesFromFolder(preset["spritesPath"])
+        print(sprites)
 
         offsetPos = self.cameraGroup.offset - self.cameraGroup.internalOffset + pygame.mouse.get_pos()
         self.newUnit = Unit(self.display, self.GetRandomSprite(sprites), preset, offsetPos,
@@ -162,12 +142,14 @@ class Game:
         self.visibleSprite[self.newUnit.name] = self.newUnit
 
     def SpawnUnit(self, popPreset, pos):
+        sprites = LoadSpritesFromFolder(popPreset["spritesPath"])
 
-        newUnit = Unit(self.display, self.GetRandomSprite(spriteResources[popPreset["name"]]), popPreset, pos)
-        self.visibleSprite[newUnit.name] = newUnit
+        self.newUnit = Unit(self.display, self.GetRandomSprite(sprites), popPreset, pos,
+                            self.cameraGroup)
+        self.visibleSprite[self.newUnit.name] = self.newUnit
 
     def SpawnCivilisation(self):
-        popPreset = LoadPreset(Directories.PresetDir + "Presets.csv", "Chief_Devan")
+        popPreset = LoadPreset(Directories.PresetDir + "Presets.csv", "Chief_Yohann")
         preset = LoadPreset(Directories.PresetDir + "Civilisation.csv", popPreset["civilisation"])
         newCivilisation = Civilisation(preset, popPreset)
 
@@ -210,7 +192,7 @@ class Game:
 
         # on met aussi un petit text (debug)
         l = []
-        [l.extend([v]) for v in spriteResources.keys()]
+        [l.extend([v]) for v in game.spawnAbleUnit.keys()]
         font = pygame.font.SysFont("Arial", 27)
         letter = font.render("Spawn : " + str(l[self.spriteIndex]), 0, (0, 0, 0))
         self.display.blit(letter, (50, 50))

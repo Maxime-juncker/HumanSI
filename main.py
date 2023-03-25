@@ -28,28 +28,35 @@ while game.GAME_RUNNING:
 
             if mouseButton[0]:
                 game.SpawnUnitBaseByIndex()
-            if mouseButton[2]:
+            if mouseButton[1]:
                 game.SpawnCivilisation()
+            if mouseButton[2]:
+                # get a list of all sprites that are under the mouse cursor
+                offsetPos = game.cameraGroup.offset - game.cameraGroup.internalOffset + pygame.mouse.get_pos()
+                clicked_sprites = [s for s in game.cameraGroup if s.rect.collidepoint(offsetPos)]
+
+                if len(clicked_sprites) > 0:
+                    game.selectedTarget = clicked_sprites[0]
+
         if event.type == pygame.MOUSEWHEEL:
 
             if 1 < game.cameraGroup.zoomScale + event.y * 0.3 < 3.5:
-                game.cameraGroup.zoomScale += round(event.y * 0.3, 2)
+                game.cameraGroup.zoomScale += event.y * 0.3
+
 
         if event.type == pygame.KEYDOWN:
 
             if event.key == pygame.K_a:
-                if game.spriteIndex + 1 > len(spriteResources) - 1:
+                if game.spriteIndex + 1 > len(game.spawnAbleUnit) - 1:
                     game.spriteIndex = 0
                 else:
                     game.spriteIndex += 1
 
             elif event.key == pygame.K_e:
                 if game.spriteIndex - 1 < 0:
-                    game.spriteIndex = len(spriteResources) - 1
+                    game.spriteIndex = len(game.spawnAbleUnit) - 1
                 else:
                     game.spriteIndex -= 1
-
-    game.display.fill('#71ddee')
 
     game.SuperUpdate()
     game.Update()
