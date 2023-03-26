@@ -1,15 +1,15 @@
-name,cityHallName,religion,aggressivity,spawnRate,popName,houseName
+name,cityHallName,religion,aggressivity,spawnRate,fertility,popName,houseName
 
-defaultCivilisation,none,none,50,DefaultHuman,GreenHouse
+defaultCivilisation,none,none,5,1,DefaultHuman,GreenHouse
 
-yellow,YellowCityHall,none,50,50,Pop_Yellow,GreenHouse
-red,RedCityHall,crabisme,70,1,Pop_Red,RedHouse
-purple,none,crabisme,0,50,Pop_Purple,GreenHouse
-blue,none,crabisme,30,50,Pop_Blue,GreenHouse
-green,none,potitFantome,10,50,Pop_Green,GreenHouse
+yellow,YellowCityHall,none,50,5,1,Pop_Yellow,GreenHouse
+red,RedCityHall,crabisme,70,5,1,Pop_Red,RedHouse
+purple,RedCityHall,crabisme,0,5,1,Pop_Purple,GreenHouse
+blue,RedCityHall,crabisme,30,5,1,Pop_Blue,GreenHouse
+green,GreenCityHall,potitFantome,10,5,1,Pop_Green,GreenHouse
 
-white,none,gargantua,50,50,Pop_White,GreenHouse
-black,none,crabisme,10,50,Pop_Black,GreenHouse
+white,none,gargantua,50,5,1,Pop_White,GreenHouse
+black,none,crabisme,10,5,1000,Pop_Black,GreenHouse
 
 
 

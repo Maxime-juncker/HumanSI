@@ -29,7 +29,7 @@ while game.GAME_RUNNING:
             if mouseButton[0]:
                 game.SpawnUnitBaseByIndex()
             if mouseButton[1]:
-                game.SpawnCivilisation()
+                game.SpawnCivilisation("Chief_Yohann")
             if mouseButton[2]:
                 # get a list of all sprites that are under the mouse cursor
                 offsetPos = game.cameraGroup.offset - game.cameraGroup.internalOffset + pygame.mouse.get_pos()

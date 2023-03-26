@@ -132,33 +132,36 @@ class Civilisation(BasicObject):
         super().__init__()
 
         self.civilisationPreset = preset
+
         self.populationPreset = LoadPreset(Directories.PresetDir + "Presets.csv", preset["popName"])
         self.housePreset = LoadPreset(Directories.PresetDir + "Presets.csv", preset["houseName"])
-
         cityHallPreset = LoadPreset(Directories.PresetDir + "Presets.csv", self.civilisationPreset["cityHallName"])
 
         offsetPos = Game.game.cameraGroup.offset - Game.game.cameraGroup.internalOffset + pygame.mouse.get_pos()
-
         self.cityHallPos = offsetPos
         self.cityHall = Game.game.SpawnUnit(cityHallPreset, self.cityHallPos)
 
         self.id = random.randint(0, 9999)
         self.name = self.civilisationPreset["name"] + str(self.id)
 
-        self.spawnRate = int(self.civilisationPreset["spawnRate"])
+        self.spawnRate = int(self.civilisationPreset["fertility"])
+        self.houseSpawnRate = int(self.civilisationPreset["spawnRate"])
+
         self.religion = self.civilisationPreset["religion"]
         self.aggressivity = self.civilisationPreset["aggressivity"]
         self.inWar = False
-
+        self.currentPopulation = 0
 
         self.timerActive = False
 
-        self.currentZoneSize = 500
+        self.currentZoneSize = 100
         debugSuccessMsg("Civilisation Spawned --> " + self.name)
 
-        self.start_time = threading.Timer(self.spawnRate, self.SpawnNewPopulation)
-        self.start_time.start()
+        self.PopTimer = threading.Timer(self.spawnRate, self.SpawnNewPopulation)
+        self.PopTimer.start()
 
+        self.houseTimer = threading.Timer(self.houseSpawnRate, self.SpawnNewHouse)
+        self.houseTimer.start()
     def Update(self):
         if not Game.game.GAME_RUNNING:
             self.cityHall.kill()
@@ -167,11 +170,26 @@ class Civilisation(BasicObject):
         Game.game.SpawnUnit()
 
     def SpawnNewPopulation(self):
-        self.start_time.cancel()
+        if not Game.game.GAME_RUNNING:
+            return
+
+        Game.game.SpawnUnit(self.populationPreset, SeekNewPos(self.cityHallPos, self.currentZoneSize))
+        self.currentPopulation += 1
+
+        if self.currentPopulation % 5 == 0:
+            self.SpawnNewHouse()
+
+        self.PopTimer = threading.Timer(self.spawnRate, self.SpawnNewPopulation)
+        self.PopTimer.start()
+
+
+    def SpawnNewHouse(self):
+        self.houseTimer.cancel()
 
         if not Game.game.GAME_RUNNING:
             return
 
+        self.currentZoneSize += 20
         Game.game.SpawnUnit(self.housePreset, SeekNewPos(self.cityHallPos, self.currentZoneSize))
-        self.start_time = threading.Timer(self.spawnRate, self.SpawnNewPopulation)
-        self.start_time.start()
+
+

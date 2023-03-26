@@ -23,8 +23,8 @@ class CameraGroup(pygame.sprite.Group):
         self.half_w = self.displaySurface.get_size()[0] // 2
         self.half_h = self.displaySurface.get_size()[1] // 2
 
-        self.groundSurface = pygame.image.load("Assets/Graphics/ground.png").convert_alpha()
-        self.groundRect = self.groundSurface.get_rect(topleft=(0, 0))
+       # self.groundSurface = pygame.image.load("Assets/Graphics/ground.png").convert_alpha()
+       # self.groundRect = self.groundSurface.get_rect(topleft=(0, 0))
 
         # Box setup
         self.cameraBorder = {"left": 200, "right": 200, "top": 100, "bottom": 100}
@@ -57,11 +57,11 @@ class CameraGroup(pygame.sprite.Group):
             self.centerCameraOnTarget(game.selectedTarget)
         self.keyboardControl()
 
-        self.internalSurface.fill('#71ddee')
+        self.internalSurface.fill('white')
 
         # Terrain
-        groundOffset = self.groundRect.topleft - self.offset + self.internalOffset
-        self.internalSurface.blit(self.groundSurface, groundOffset)
+        #groundOffset = self.groundRect.topleft - self.offset + self.internalOffset
+        #self.internalSurface.blit(self.groundSurface, groundOffset)
 
         # Elements actifs
         for sprite in sorted(self.sprites(), key=lambda sprite: sprite.rect.centery):
@@ -138,25 +138,22 @@ class Game:
         sprites = LoadSpritesFromFolder(preset["spritesPath"])
 
         offsetPos = self.cameraGroup.offset - self.cameraGroup.internalOffset + pygame.mouse.get_pos()
-        print(offsetPos)
-
-        pixelColor = pygame.Surface.get_at(self.display,(0,0))
-        if pixelColor[0] == 113 and pixelColor[1] == 221 and pixelColor[2] == 238:
-            print("HEYAAA")
-
-
-
         self.newUnit = Unit(self.display, self.GetRandomSprite(sprites), preset, offsetPos,
                             self.cameraGroup)
         self.visibleSprite[self.newUnit.name] = self.newUnit
 
-    def SpawnUnit(self, popPreset, pos):
-        print(pos)
+        if "Chief_" in names[self.spriteIndex]:
+            self.SpawnCivilisation(names[self.spriteIndex])
 
-        pixelColor = self.cameraGroup.internalSurface.get_at((round(pos[0], round(pos[1]))))
-        if pixelColor[0] == 113 and pixelColor[1] == 221 and pixelColor[2] == 238:
-            debugFailMsg("unable to spanw on water !")
-            return
+    def SpawnUnit(self, popPreset, pos):
+
+        try:
+            (r, g, b, a) = self.cameraGroup.internalSurface.get_at((int(pos[0]), int(pos[1])))
+            if r == 113 and g == 221 and b == 238:
+                debugFailMsg("unable to spawn on water !")
+                return
+        except:
+            print("probleme")
 
 
         sprites = LoadSpritesFromFolder(popPreset["spritesPath"])
@@ -165,8 +162,19 @@ class Game:
                             self.cameraGroup)
         self.visibleSprite[self.newUnit.name] = self.newUnit
 
-    def SpawnCivilisation(self):
-        popPreset = LoadPreset(Directories.PresetDir + "Presets.csv", "Chief_Yohann")
+    def SpawnCivilisation(self, civilisationChief):
+
+        offsetPos = self.cameraGroup.offset - self.cameraGroup.internalOffset + pygame.mouse.get_pos()
+
+        try:
+            (r, g, b, a) = pygame.Surface.get_at(self.display, (int(offsetPos[0]), int(offsetPos[1])))
+            if r == 113 and g == 221 and b == 238:
+                debugFailMsg("unable to spawn on water !")
+                return
+        except:
+            print("probleme")
+
+        popPreset = LoadPreset(Directories.PresetDir + "Presets.csv", civilisationChief)
         preset = LoadPreset(Directories.PresetDir + "Civilisation.csv", popPreset["civilisation"])
         newCivilisation = Civilisation(preset, popPreset)
 
@@ -217,7 +225,7 @@ class Game:
         self.fps_counter()
 
         pygame.display.update()
-        self.clock.tick(60)
+        self.clock.tick(120)
 
     def fps_counter(self):
         font = pygame.font.SysFont("Arial", 27)
