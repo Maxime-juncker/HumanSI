@@ -43,7 +43,6 @@ while game.GAME_RUNNING:
             if 1 < game.cameraGroup.zoomScale + event.y * 0.3 < 3.5:
                 game.cameraGroup.zoomScale += event.y * 0.3
 
-
         if event.type == pygame.KEYDOWN:
 
             if event.key == pygame.K_a:

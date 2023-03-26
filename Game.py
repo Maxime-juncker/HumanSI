@@ -48,6 +48,8 @@ class CameraGroup(pygame.sprite.Group):
         self.internalOffset_y = self.internalSurfaceSize[1] // 2 - self.half_h
 
     def CustomDraw(self):
+        if not game.GAME_RUNNING:
+            return
         # self.centerCameraOnTarget()
         # self.boxTargetCamera()
 
@@ -134,14 +136,29 @@ class Game:
 
         preset = LoadPreset(Directories.PresetDir + "Presets.csv", names[self.spriteIndex])
         sprites = LoadSpritesFromFolder(preset["spritesPath"])
-        print(sprites)
 
         offsetPos = self.cameraGroup.offset - self.cameraGroup.internalOffset + pygame.mouse.get_pos()
+        print(offsetPos)
+
+        pixelColor = pygame.Surface.get_at(self.display,(0,0))
+        if pixelColor[0] == 113 and pixelColor[1] == 221 and pixelColor[2] == 238:
+            print("HEYAAA")
+
+
+
         self.newUnit = Unit(self.display, self.GetRandomSprite(sprites), preset, offsetPos,
                             self.cameraGroup)
         self.visibleSprite[self.newUnit.name] = self.newUnit
 
     def SpawnUnit(self, popPreset, pos):
+        print(pos)
+
+        pixelColor = self.cameraGroup.internalSurface.get_at((round(pos[0], round(pos[1]))))
+        if pixelColor[0] == 113 and pixelColor[1] == 221 and pixelColor[2] == 238:
+            debugFailMsg("unable to spanw on water !")
+            return
+
+
         sprites = LoadSpritesFromFolder(popPreset["spritesPath"])
 
         self.newUnit = Unit(self.display, self.GetRandomSprite(sprites), popPreset, pos,

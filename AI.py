@@ -3,6 +3,7 @@ import random
 import Game
 from Utilities import *
 from Game import *
+import threading
 
 
 class UnitState(Enum):
@@ -26,7 +27,7 @@ class Unit(pygame.sprite.Sprite, BasicObject):
         super().__init__(group)
 
         self.unitPreset = preset
-        self.image = pygame.image.load(Directories.SpritesDir + preset["spritesPath"]+ "/" + sprite)
+        self.image = pygame.image.load(Directories.SpritesDir + preset["spritesPath"] + "/" + sprite)
         self.rect = self.image.get_rect()
         self.speed = int(self.unitPreset["speed"])
         self.moveTimer = int(self.unitPreset["moveTimer"])
@@ -50,7 +51,7 @@ class Unit(pygame.sprite.Sprite, BasicObject):
         self.UpdateLifeSpan()
 
     def UpdateLifeSpan(self):
-        if self.lifeSpawn < 0: #Si le lifeSpan < 0 s'a veut dire que l'unit est imortelle
+        if self.lifeSpawn < 0:  # Si le lifeSpan < 0 s'a veut dire que l'unit est imortelle
             return
 
         self.lifeSpawn -= 1
@@ -130,39 +131,47 @@ class Civilisation(BasicObject):
 
         super().__init__()
 
-        print(str(preset))
-        print(str(popPreset))
-
         self.civilisationPreset = preset
         self.populationPreset = LoadPreset(Directories.PresetDir + "Presets.csv", preset["popName"])
+        self.housePreset = LoadPreset(Directories.PresetDir + "Presets.csv", preset["houseName"])
 
         cityHallPreset = LoadPreset(Directories.PresetDir + "Presets.csv", self.civilisationPreset["cityHallName"])
 
-        self.cityHallPos = pygame.mouse.get_pos()
-        Game.game.SpawnUnit(cityHallPreset, self.cityHallPos)
+        offsetPos = Game.game.cameraGroup.offset - Game.game.cameraGroup.internalOffset + pygame.mouse.get_pos()
+
+        self.cityHallPos = offsetPos
+        self.cityHall = Game.game.SpawnUnit(cityHallPreset, self.cityHallPos)
 
         self.id = random.randint(0, 9999)
         self.name = self.civilisationPreset["name"] + str(self.id)
 
         self.spawnRate = int(self.civilisationPreset["spawnRate"])
-        self.spawnTimer = self.spawnRate
         self.religion = self.civilisationPreset["religion"]
         self.aggressivity = self.civilisationPreset["aggressivity"]
         self.inWar = False
 
+
+        self.timerActive = False
+
+        self.currentZoneSize = 500
         debugSuccessMsg("Civilisation Spawned --> " + self.name)
 
-    def Update(self):
-        self.spawnTimer -= 1
-        if self.spawnTimer > 0:
-            return
-        else:
-            self.spawnTimer = self.spawnRate
+        self.start_time = threading.Timer(self.spawnRate, self.SpawnNewPopulation)
+        self.start_time.start()
 
-        Game.game.SpawnUnit(self.populationPreset, self.cityHallPos)
+    def Update(self):
+        if not Game.game.GAME_RUNNING:
+            self.cityHall.kill()
 
     def SpawnCityHall(self):
         Game.game.SpawnUnit()
 
     def SpawnNewPopulation(self):
-        Game.game.SpawnUnit(self.populationPreset)
+        self.start_time.cancel()
+
+        if not Game.game.GAME_RUNNING:
+            return
+
+        Game.game.SpawnUnit(self.housePreset, SeekNewPos(self.cityHallPos, self.currentZoneSize))
+        self.start_time = threading.Timer(self.spawnRate, self.SpawnNewPopulation)
+        self.start_time.start()
