@@ -27,7 +27,7 @@ class Unit(pygame.sprite.Sprite, BasicObject):
         super().__init__(group)
 
         self.unitPreset = preset
-        self.image = pygame.image.load(Directories.SpritesDir + preset["spritesPath"] + "/" + sprite)
+        self.image = pygame.image.load(Directories.SpritesDir + preset["spritesPath"] + "/" + sprite[0])
         self.rect = self.image.get_rect()
         self.speed = int(self.unitPreset["speed"])
         self.moveTimer = int(self.unitPreset["moveTimer"])

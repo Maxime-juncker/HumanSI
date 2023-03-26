@@ -138,7 +138,7 @@ class Game:
         sprites = LoadSpritesFromFolder(preset["spritesPath"])
 
         offsetPos = self.cameraGroup.offset - self.cameraGroup.internalOffset + pygame.mouse.get_pos()
-        self.newUnit = Unit(self.display, self.GetRandomSprite(sprites), preset, offsetPos,
+        self.newUnit = Unit(self.display, sprites, preset, offsetPos,
                             self.cameraGroup)
         self.visibleSprite[self.newUnit.name] = self.newUnit
 
@@ -158,7 +158,7 @@ class Game:
 
         sprites = LoadSpritesFromFolder(popPreset["spritesPath"])
 
-        self.newUnit = Unit(self.display, self.GetRandomSprite(sprites), popPreset, pos,
+        self.newUnit = Unit(self.display, sprites, popPreset, pos,
                             self.cameraGroup)
         self.visibleSprite[self.newUnit.name] = self.newUnit
 
@@ -194,9 +194,9 @@ class Game:
 
         '''
 
-        civilisations = self.civilisationSpawned
+        """civilisations = self.civilisationSpawned
         for civilisation in civilisations:
-            civilisations[civilisation].Update()
+            civilisations[civilisation].Update()"""
 
         sprites = self.visibleSprite
         for sprite in sprites:
