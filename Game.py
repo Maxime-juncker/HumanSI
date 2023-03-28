@@ -23,8 +23,8 @@ class CameraGroup(pygame.sprite.Group):
         self.half_w = self.displaySurface.get_size()[0] // 2
         self.half_h = self.displaySurface.get_size()[1] // 2
 
-       # self.groundSurface = pygame.image.load("Assets/Graphics/ground.png").convert_alpha()
-       # self.groundRect = self.groundSurface.get_rect(topleft=(0, 0))
+        # self.groundSurface = pygame.image.load("Assets/Graphics/ground.png").convert_alpha()
+        # self.groundRect = self.groundSurface.get_rect(topleft=(0, 0))
 
         # Box setup
         self.cameraBorder = {"left": 200, "right": 200, "top": 100, "bottom": 100}
@@ -60,8 +60,8 @@ class CameraGroup(pygame.sprite.Group):
         self.internalSurface.fill('white')
 
         # Terrain
-        #groundOffset = self.groundRect.topleft - self.offset + self.internalOffset
-        #self.internalSurface.blit(self.groundSurface, groundOffset)
+        # groundOffset = self.groundRect.topleft - self.offset + self.internalOffset
+        # self.internalSurface.blit(self.groundSurface, groundOffset)
 
         # Elements actifs
         for sprite in sorted(self.sprites(), key=lambda sprite: sprite.rect.centery):
@@ -108,6 +108,7 @@ class Game:
         self.civilisationSpawned = {}
         self.spriteIndex = 0
         self.spawnAbleUnit = LoadPreset(Directories.PresetDir + "Presets.csv")
+        self.PopulateSpawnableDict()
 
         # ============ SETUP PYGAME =====================
 
@@ -155,7 +156,6 @@ class Game:
         except:
             print("probleme")
 
-
         sprites = LoadSpritesFromFolder(popPreset["spritesPath"])
 
         self.newUnit = Unit(self.display, sprites, popPreset, pos,
@@ -183,6 +183,13 @@ class Game:
     def GetRandomSprite(self, sprites):
         print(sprites)
         return sprites[random.randint(0, len(sprites) - 1)]
+
+    def PopulateSpawnableDict(self):
+        temp = LoadPreset(Directories.PresetDir + "Presets.csv")
+        self.spawnAbleUnit.clear()
+        for element in temp:
+            if int(temp[element]["isSpawnable"]) == 1:
+                self.spawnAbleUnit[element] = LoadPreset(Directories.PresetDir + "Presets.csv", element)
 
     def Update(self):
         '''
@@ -218,9 +225,10 @@ class Game:
         # on met aussi un petit text (debug)
         l = []
         [l.extend([v]) for v in game.spawnAbleUnit.keys()]
-        font = pygame.font.SysFont("Arial", 27)
-        letter = font.render("Spawn : " + str(l[self.spriteIndex]), 0, (0, 0, 0))
-        self.display.blit(letter, (50, 50))
+        if len(l) > 0:
+            font = pygame.font.SysFont("Arial", 27)
+            letter = font.render("Spawn : " + str(l[self.spriteIndex]), 0, (0, 0, 0))
+            self.display.blit(letter, (50, 50))
 
         self.fps_counter()
 
