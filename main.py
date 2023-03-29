@@ -15,6 +15,8 @@ while game.GAME_RUNNING:
             game.GAME_RUNNING = False
             pygame.quit()
             debugFailMsg("Exiting...")
+            game.KillAllActors()
+            game.slowUpdateTimer.cancel()
 
         if event.type == pygame.MOUSEBUTTONDOWN:
 
@@ -29,7 +31,8 @@ while game.GAME_RUNNING:
             if mouseButton[0]:
                 game.SpawnUnitBaseByIndex()
             if mouseButton[1]:
-                game.SpawnCivilisation("Chief_Yohann")
+                game.KillAllActors()
+
             if mouseButton[2]:
                 # get a list of all sprites that are under the mouse cursor
                 offsetPos = game.cameraGroup.offset - game.cameraGroup.internalOffset + pygame.mouse.get_pos()
@@ -58,4 +61,4 @@ while game.GAME_RUNNING:
                     game.spriteIndex -= 1
 
     game.SuperUpdate()
-    game.Update()
+    game.Tick()

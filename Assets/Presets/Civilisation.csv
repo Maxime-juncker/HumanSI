@@ -1,14 +1,14 @@
-name,cityHallName,religion,aggressivity,spawnRate,fertility,popName,houseName
+name,cityHallName,religion,aggressivity,spawnRate,fertility,popName,houseName,updateWeight
 
-default,DefaultCityHall,none,50,5,1,DefaultHuman,DefaultHouse
+default,DefaultCityHall,none,50,5,1,DefaultHuman,DefaultHouse,2
 
-yellow,YellowCityHall,none,50,5,1,Pop_Yellow,YellowHouse
-red,RedCityHall,crabisme,70,5,1,Pop_Red,RedHouse
-purple,PurpleCityHall,crabisme,0,5,1,Pop_Purple,PurpleHouse
-blue,BlueCityHall,crabisme,30,5,1,Pop_Blue,BlueHouse
-green,GreenCityHall,potitFantome,10,5,1,Pop_Green,GreenHouse
-white,WhiteCityHall,gargantua,50,5,1,Pop_White,WhiteHouse
-black,BlackCityHall,crabisme,10,5,1,Pop_Black,BlackHouse
+yellow,YellowCityHall,none,50,5,1,Pop_Yellow,YellowHouse,2
+red,RedCityHall,crabisme,70,5,1,Pop_Red,RedHouse,2
+purple,PurpleCityHall,crabisme,0,5,1,Pop_Purple,PurpleHouse,2
+blue,BlueCityHall,crabisme,30,5,1,Pop_Blue,BlueHouse,2
+green,GreenCityHall,potitFantome,10,5,1,Pop_Green,GreenHouse,2
+white,WhiteCityHall,gargantua,50,5,1,Pop_White,WhiteHouse,2
+black,BlackCityHall,crabisme,10,5,1,Pop_Black,BlackHouse,2
 
 
 

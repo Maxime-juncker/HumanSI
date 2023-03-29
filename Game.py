@@ -1,4 +1,5 @@
 import pygame
+import threading
 import AI
 from AI import *
 from Utilities import *
@@ -64,13 +65,17 @@ class CameraGroup(pygame.sprite.Group):
         # self.internalSurface.blit(self.groundSurface, groundOffset)
 
         # Elements actifs
-        for sprite in sorted(self.sprites(), key=lambda sprite: sprite.rect.centery):
-            offestPos = sprite.rect.center - self.offset + self.internalOffset
-            self.internalSurface.blit(sprite.image, offestPos)
+        try:
+            sprites = sorted(self.sprites(), key=lambda sprite: sprite.rect.centery)
+            for sprite in sprites:
+                offestPos = sprite.rect.center - self.offset + self.internalOffset
+                self.internalSurface.blit(sprite.image, offestPos)
 
-        scaledSurf = pygame.transform.scale(self.internalSurface, self.internalSurfaceSizeVector * self.zoomScale)
-        scaledRect = scaledSurf.get_rect(center=(self.half_w, self.half_h))
-        self.displaySurface.blit(scaledSurf, scaledRect)
+            scaledSurf = pygame.transform.scale(self.internalSurface, self.internalSurfaceSizeVector * self.zoomScale)
+            scaledRect = scaledSurf.get_rect(center=(self.half_w, self.half_h))
+            self.displaySurface.blit(scaledSurf, scaledRect)
+        except:
+            debugFailMsg("fail to update")
 
     def keyboardControl(self):
         keys = pygame.key.get_pressed()
@@ -102,13 +107,15 @@ class Game:
     def __init__(self):
         # Creation de la fenetre de l'app
 
+        self.slowUpdateTimer = None
         self.newUnit = None
         self.selectedTarget = None
-        self.visibleSprite = {}
         self.civilisationSpawned = {}
         self.spriteIndex = 0
         self.spawnAbleUnit = LoadPreset(Directories.PresetDir + "Presets.csv")
-        self.updateDict = {}
+        self.normalUpdateDict = {}
+        self.slowUpdateDict = {}
+        self.visibleSprite = {}
 
         # ============ SETUP LIST =====================
         self.PopulateSpawnableDict()
@@ -126,6 +133,8 @@ class Game:
         # =================================================
         # C'est bon on a fini le setup la game loop peut commencer :D
         pygame.display.set_caption("HumainSI")
+
+        self.SlowUpdate()
 
         self.GAME_RUNNING = True
 
@@ -145,46 +154,53 @@ class Game:
         self.newUnit = Unit(self.display, sprites, preset, offsetPos,
                             self.cameraGroup)
 
-        if int(preset["updateWeight"]) > 0:
-            self.updateDict[self.newUnit] = preset["updateWeight"]
-
+        if int(preset["updateWeight"]) == 1:
+            self.normalUpdateDict[self.newUnit.name] = self.newUnit
+        elif int(preset["updateWeight"]) > 1:
+            self.slowUpdateDict[self.newUnit.name] = self.newUnit
 
         if "Chief_" in names[self.spriteIndex]:
             self.SpawnCivilisation(names[self.spriteIndex])
 
     def SpawnUnit(self, popPreset, pos):
 
-        try:
+        """try:
             (r, g, b, a) = self.cameraGroup.internalSurface.get_at((int(pos[0]), int(pos[1])))
             if r == 113 and g == 221 and b == 238:
                 debugFailMsg("unable to spawn on water !")
                 return
         except:
-            print("probleme")
+            print("probleme")"""
 
         sprites = LoadSpritesFromFolder(popPreset["spritesPath"])
 
         self.newUnit = Unit(self.display, sprites, popPreset, pos,
                             self.cameraGroup)
-        self.updateDict[self.newUnit] = popPreset["updateWeight"]
+        if int(popPreset["updateWeight"]) == 1:
+            self.normalUpdateDict[self.newUnit.name] = self.newUnit
+        elif int(popPreset["updateWeight"]) > 1:
+            self.slowUpdateDict[self.newUnit.name] = self.newUnit
 
     def SpawnCivilisation(self, civilisationChief):
 
         offsetPos = self.cameraGroup.offset - self.cameraGroup.internalOffset + pygame.mouse.get_pos()
 
-        try:
+        """try:
             (r, g, b, a) = pygame.Surface.get_at(self.display, (int(offsetPos[0]), int(offsetPos[1])))
             if r == 113 and g == 221 and b == 238:
                 debugFailMsg("unable to spawn on water !")
                 return
         except:
-            print("problème")
+            print("problème")"""
 
         popPreset = LoadPreset(Directories.PresetDir + "Presets.csv", civilisationChief)
         preset = LoadPreset(Directories.PresetDir + "Civilisation.csv", popPreset["civilisation"])
         newCivilisation = Civilisation(preset, popPreset)
 
-        self.civilisationSpawned[newCivilisation.name] = newCivilisation
+        if int(preset["updateWeight"]) == 1:
+            self.normalUpdateDict[newCivilisation.name] = newCivilisation
+        elif int(preset["updateWeight"]) > 1:
+            self.slowUpdateDict[newCivilisation.name] = newCivilisation
 
     def GetRandomSprite(self, sprites):
         print(sprites)
@@ -197,7 +213,14 @@ class Game:
             if int(temp[element]["isSpawnable"]) == 1:
                 self.spawnAbleUnit[element] = LoadPreset(Directories.PresetDir + "Presets.csv", element)
 
-    def Update(self):
+    def KillAllActors(self):
+        for sprite in self.cameraGroup:
+            sprite.kill()
+
+        self.slowUpdateDict.clear()
+        self.normalUpdateDict.clear()
+
+    def Tick(self):
         '''
         fonct appeler toutes les frames
 
@@ -211,9 +234,17 @@ class Game:
         for civilisation in civilisations:
             civilisations[civilisation].Update()"""
 
-        sprites = self.updateDict
+        sprites = self.normalUpdateDict
         for sprite in sprites:
-            sprite.Update()
+            self.normalUpdateDict[sprite].Tick()
+
+    def SlowUpdate(self):
+        sprites = self.slowUpdateDict.copy()
+        for sprite in sprites:
+            sprites[sprite].Tick()
+
+        self.slowUpdateTimer = threading.Timer(1, self.SlowUpdate)
+        self.slowUpdateTimer.start()
 
     def SuperUpdate(self):
         '''

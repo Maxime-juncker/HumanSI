@@ -1,12 +1,14 @@
-from enum import Enum
-import random
 import Game
+import pygame
 from Utilities import *
-from Game import *
-import threading
+
+currentResources = {
+    "wood": 0,
+    "stone": 0,
+}
 
 
-class UnitState(Enum):
+class UnitState():
     NONE = -1
     IDLE = 0
     MOVING = 1
@@ -16,7 +18,7 @@ class BasicObject:
     name = ""
     id = 0
 
-    def Update(self):
+    def Tick(self):
         pass
 
 
@@ -46,7 +48,7 @@ class Unit(pygame.sprite.Sprite, BasicObject):
 
         debugSuccessMsg("Unit Spawned --> " + self.name)
 
-    def Update(self):
+    def Tick(self):
         self.StateMachine()
         self.UpdateLifeSpan()
 
@@ -128,7 +130,6 @@ class Unit(pygame.sprite.Sprite, BasicObject):
 class Civilisation(BasicObject):
 
     def __init__(self, preset, popPreset):
-
         super().__init__()
 
         self.civilisationPreset = preset
@@ -152,44 +153,21 @@ class Civilisation(BasicObject):
         self.inWar = False
         self.currentPopulation = 0
 
-        self.timerActive = False
+        Game.game.visibleSprite[self.name] = self
 
         self.currentZoneSize = 100
         debugSuccessMsg("Civilisation Spawned --> " + self.name)
 
-        self.PopTimer = threading.Timer(self.spawnRate, self.SpawnNewPopulation)
-        self.PopTimer.start()
-
-        self.houseTimer = threading.Timer(self.houseSpawnRate, self.SpawnNewHouse)
-        self.houseTimer.start()
-    def Update(self):
-        if not Game.game.GAME_RUNNING:
-            self.cityHall.kill()
-
-    def SpawnCityHall(self):
-        Game.game.SpawnUnit()
+    def Tick(self):
+        self.SpawnNewPopulation()
 
     def SpawnNewPopulation(self):
-        if not Game.game.GAME_RUNNING:
-            return
-
         Game.game.SpawnUnit(self.populationPreset, SeekNewPos(self.cityHallPos, self.currentZoneSize))
         self.currentPopulation += 1
 
         if self.currentPopulation % 5 == 0:
             self.SpawnNewHouse()
 
-        self.PopTimer = threading.Timer(self.spawnRate, self.SpawnNewPopulation)
-        self.PopTimer.start()
-
-
     def SpawnNewHouse(self):
-        self.houseTimer.cancel()
-
-        if not Game.game.GAME_RUNNING:
-            return
-
-        self.currentZoneSize += 20
         Game.game.SpawnUnit(self.housePreset, SeekNewPos(self.cityHallPos, self.currentZoneSize))
-
-
+        self.currentZoneSize += 20
