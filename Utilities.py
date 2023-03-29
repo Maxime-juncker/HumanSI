@@ -59,4 +59,5 @@ def LoadPreset(presetPath, name=""):
 
 def LoadSpritesFromFolder(folderPath):
     return os.listdir(Directories.SpritesDir + folderPath)
-
+def Clamp(num, min_value, max_value):
+    return max(min(num, max_value), min_value)

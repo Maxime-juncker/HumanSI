@@ -1,6 +1,6 @@
 name,cityHallName,religion,aggressivity,spawnRate,fertility,popName,houseName
 
-default,DefaultCityHall,none,5,1,DefaultHuman,DefaultHouse
+default,DefaultCityHall,none,50,5,1,DefaultHuman,DefaultHouse
 
 yellow,YellowCityHall,none,50,5,1,Pop_Yellow,YellowHouse
 red,RedCityHall,crabisme,70,5,1,Pop_Red,RedHouse

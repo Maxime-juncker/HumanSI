@@ -108,6 +108,9 @@ class Game:
         self.civilisationSpawned = {}
         self.spriteIndex = 0
         self.spawnAbleUnit = LoadPreset(Directories.PresetDir + "Presets.csv")
+        self.updateDict = {}
+
+        # ============ SETUP LIST =====================
         self.PopulateSpawnableDict()
 
         # ============ SETUP PYGAME =====================
@@ -141,7 +144,10 @@ class Game:
         offsetPos = self.cameraGroup.offset - self.cameraGroup.internalOffset + pygame.mouse.get_pos()
         self.newUnit = Unit(self.display, sprites, preset, offsetPos,
                             self.cameraGroup)
-        self.visibleSprite[self.newUnit.name] = self.newUnit
+
+        if int(preset["updateWeight"]) > 0:
+            self.updateDict[self.newUnit] = preset["updateWeight"]
+
 
         if "Chief_" in names[self.spriteIndex]:
             self.SpawnCivilisation(names[self.spriteIndex])
@@ -160,7 +166,7 @@ class Game:
 
         self.newUnit = Unit(self.display, sprites, popPreset, pos,
                             self.cameraGroup)
-        self.visibleSprite[self.newUnit.name] = self.newUnit
+        self.updateDict[self.newUnit] = popPreset["updateWeight"]
 
     def SpawnCivilisation(self, civilisationChief):
 
@@ -172,7 +178,7 @@ class Game:
                 debugFailMsg("unable to spawn on water !")
                 return
         except:
-            print("probleme")
+            print("problème")
 
         popPreset = LoadPreset(Directories.PresetDir + "Presets.csv", civilisationChief)
         preset = LoadPreset(Directories.PresetDir + "Civilisation.csv", popPreset["civilisation"])
@@ -205,9 +211,9 @@ class Game:
         for civilisation in civilisations:
             civilisations[civilisation].Update()"""
 
-        sprites = self.visibleSprite
+        sprites = self.updateDict
         for sprite in sprites:
-            sprites[sprite].Update()
+            sprite.Update()
 
     def SuperUpdate(self):
         '''

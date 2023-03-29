@@ -1,4 +1,4 @@
-name,speed,moveTimer,interactionRate,attack,attackSpeed,health,lifeSpan,civilisation,spritesPath,isSpawnable,doUpdate
+name,speed,moveTimer,interactionRate,attack,attackSpeed,health,lifeSpan,civilisation,spritesPath,isSpawnable,updateWeight
 
 Rock,0,0,0,0,0,50,-1,none,Props/Rocks,1,0
 Tree,0,0,0,0,0,50,-1,none,Props/Tree,1,0
@@ -7,7 +7,7 @@ YellowCityHall,0,0,0,0,0,100,-1,none,Civilisations/Yellow/BuildingsYellow/HDV,0,
 YellowHouse,0,0,0,0,0,100,-1,none,Civilisations/Yellow/BuildingsYellow/Buildings,0,0
 
 RedCityHall,0,0,0,0,0,100,-1,none,Civilisations/Red/BuildingsRed/HDV,0,0
-RedHouse,0,0,0,0,0,100,-1,none,Civilisations/Red/BuildingsRed/Buildings,1,0
+RedHouse,0,0,0,0,0,100,-1,none,Civilisations/Red/BuildingsRed/Buildings,0,0
 
 PurpleCityHall,0,0,0,0,0,100,-1,none,Civilisations/Purple/BuildingsPurple/HDV,0,0
 PurpleHouse,0,0,0,0,0,100,-1,none,Civilisations/Purple/BuildingsPurple/Buildings,0,0
@@ -22,10 +22,10 @@ WhiteCityHall,0,0,0,0,0,100,-1,none,Civilisations/White/BuildingsWhite/HDV,0,0
 WhiteHouse,0,0,0,0,0,100,-1,none,Civilisations/White/BuildingsWhite/Buildings,0,0
 
 BlackCityHall,0,0,0,0,0,100,-1,none,Civilisations/Black/BuildingsBlack/HDV,0,0
-BlackHouse,0,0,0,0,0,100,-1,none,Civilisations/Black/BuildingsBlack/Buildings,1,0
+BlackHouse,0,0,0,0,0,100,-1,none,Civilisations/Black/BuildingsBlack/Buildings,0,0
 
-DefaultCityHall,0,0,0,0,0,100,-1,none,Civilisations/Default/BuildingsDefault/HDV,0,0
-DefaultHouse,0,0,0,0,0,100,-1,none,Civilisations/Default/BuildingsDefault/Buildings,0,0
+DefaultCityHall,0,0,0,0,0,100,-1,none,Civilisations/Default/BuildingsDefault/HDV,1,0
+DefaultHouse,0,0,0,0,0,100,-1,none,Civilisations/Default/BuildingsDefault/Buildings,1,0
 
 
 
@@ -37,7 +37,7 @@ Chief_Nathan,1,2,1,2,10,20,-1,blue,Civilisations/Blue/Nathan,1,1
 Chief_Maxime,1,1,3,5,5,50,-1,green,Civilisations/Green/Maxime,1,1
 Chief_Romain,1,5,3,5,5,50,-1,white,Civilisations/White/Romain,1,1
 Chief_Antonin,1,1,3,1,1,2,-1,black,Civilisations/Black/Antonin,1,1
-Chief_Default,1,1,3,1,1,2,-1,none,Civilisations/Default/ChiefDefault,1,1
+Chief_Default,1,1,3,1,1,2,-1,default,Civilisations/Default/ChiefDefault,1,1
 
 
 
