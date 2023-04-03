@@ -8,7 +8,7 @@ currentResources = {
 }
 
 
-class UnitState():
+class UnitState:
     NONE = -1
     IDLE = 0
     MOVING = 1
@@ -24,12 +24,18 @@ class BasicObject:
 
 class Unit(pygame.sprite.Sprite, BasicObject):
 
-    def __init__(self, _display, sprite, preset, pos, group):
+    def __init__(self, _display, spriteSheet, preset, pos, group):
 
         super().__init__(group)
 
         self.unitPreset = preset
-        self.image = pygame.image.load(Directories.SpritesDir + preset["spritesPath"] + "/" + sprite[0])
+
+        # Animations
+        self.sprites = spriteSheet
+        self.currentSprite = 0.0
+        self.image = pygame.image.load(Directories.SpritesDir + preset["spritesPath"] + "/" + spriteSheet[0])
+        self.animTimer = 5
+
         self.rect = self.image.get_rect()
         self.speed = int(self.unitPreset["speed"])
         self.moveTimer = int(self.unitPreset["moveTimer"])
@@ -51,6 +57,16 @@ class Unit(pygame.sprite.Sprite, BasicObject):
     def Tick(self):
         self.StateMachine()
         self.UpdateLifeSpan()
+        # self.DoAnimation()
+
+    def DoAnimation(self):
+        self.currentSprite += 0.05
+
+        if self.currentSprite >= len(self.sprites):
+            self.currentSprite = 0
+        self.image = pygame.image.load(
+            Directories.SpritesDir + self.unitPreset["spritesPath"] + "/" + self.sprites[
+                round(int(self.currentSprite))])
 
     def UpdateLifeSpan(self):
         if self.lifeSpawn < 0:  # Si le lifeSpan < 0 s'a veut dire que l'unit est imortelle
@@ -60,6 +76,7 @@ class Unit(pygame.sprite.Sprite, BasicObject):
         if self.lifeSpawn > 0:
             return
         elif self.lifeSpawn == 0:
+            Game.game.visibleSprite.pop(self.name)
             self.kill()
 
     def StateMachine(self):

@@ -1,49 +1,49 @@
 name,speed,moveTimer,interactionRate,attack,attackSpeed,health,lifeSpan,civilisation,spritesPath,isSpawnable,updateWeight
 
-Rock,0,0,0,0,0,50,-1,none,Props/Rocks,1,0
-Tree,0,0,0,0,0,50,-1,none,Props/Tree,1,0
+Rock,0,0,0,0,0,50,-1,none,Props/Rocks,1,-1
+Tree,0,0,0,0,0,50,-1,none,Props/Trees,1,-1
 
-YellowCityHall,0,0,0,0,0,100,-1,none,Civilisations/Yellow/BuildingsYellow/HDV,0,2
-YellowHouse,0,0,0,0,0,100,-1,none,Civilisations/Yellow/BuildingsYellow/Buildings,0,2
+YellowCityHall,0,0,0,0,0,100,-1,none,Civilisations/Yellow/BuildingsYellow/HDV,0,1
+YellowHouse,0,0,0,0,0,100,-1,none,Civilisations/Yellow/BuildingsYellow/Buildings,0,-1
 
-RedCityHall,0,0,0,0,0,100,-1,none,Civilisations/Red/BuildingsRed/HDV,0,2
-RedHouse,0,0,0,0,0,100,-1,none,Civilisations/Red/BuildingsRed/Buildings,0,2
+RedCityHall,0,0,0,0,0,100,-1,none,Civilisations/Red/BuildingsRed/HDV,0,1
+RedHouse,0,0,0,0,0,100,-1,none,Civilisations/Red/BuildingsRed/Buildings,0,-1
 
-PurpleCityHall,0,0,0,0,0,100,-1,none,Civilisations/Purple/BuildingsPurple/HDV,0,2
-PurpleHouse,0,0,0,0,0,100,-1,none,Civilisations/Purple/BuildingsPurple/Buildings,0,2
+PurpleCityHall,0,0,0,0,0,100,-1,none,Civilisations/Purple/BuildingsPurple/HDV,0,1
+PurpleHouse,0,0,0,0,0,100,-1,none,Civilisations/Purple/BuildingsPurple/Buildings,0,-1
 
-BlueCityHall,0,0,0,0,0,100,-1,none,Civilisations/Blue/BuildingsBlue/HDV,0,2
-BlueHouse,0,0,0,0,0,100,-1,none,Civilisations/Blue/BuildingsBlue/Buildings,0,2
+BlueCityHall,0,0,0,0,0,100,-1,none,Civilisations/Blue/BuildingsBlue/HDV,0,1
+BlueHouse,0,0,0,0,0,100,-1,none,Civilisations/Blue/BuildingsBlue/Buildings,0,-1
 
-GreenCityHall,0,0,0,0,0,100,-1,none,Civilisations/Green/BuildingsGreen/HDV,0,2
-GreenHouse,0,0,0,0,0,100,-1,none,Civilisations/Green/BuildingsGreen/Buildings,0,2
+GreenCityHall,0,0,0,0,0,100,-1,none,Civilisations/Green/BuildingsGreen/HDV,0,1
+GreenHouse,0,0,0,0,0,100,-1,none,Civilisations/Green/BuildingsGreen/Buildings,0,-1
 
-WhiteCityHall,0,0,0,0,0,100,-1,none,Civilisations/White/BuildingsWhite/HDV,0,2
-WhiteHouse,0,0,0,0,0,100,-1,none,Civilisations/White/BuildingsWhite/Buildings,0,2
+WhiteCityHall,0,0,0,0,0,100,-1,none,Civilisations/White/BuildingsWhite/HDV,0,1
+WhiteHouse,0,0,0,0,0,100,-1,none,Civilisations/White/BuildingsWhite/Buildings,0,-1
 
-BlackCityHall,0,0,0,0,0,100,-1,none,Civilisations/Black/BuildingsBlack/HDV,0,2
-BlackHouse,0,0,0,0,0,100,-1,none,Civilisations/Black/BuildingsBlack/Buildings,0,2
+BlackCityHall,0,0,0,0,0,100,-1,none,Civilisations/Black/BuildingsBlack/HDV,0,1
+BlackHouse,0,0,0,0,0,100,-1,none,Civilisations/Black/BuildingsBlack/Buildings,0,-1
 
 DefaultCityHall,0,0,0,0,0,100,-1,none,Civilisations/Default/BuildingsDefault/HDV,1,1
-DefaultHouse,0,0,0,0,0,100,-1,none,Civilisations/Default/BuildingsDefault/Buildings,1,1
+DefaultHouse,0,0,0,0,0,100,-1,none,Civilisations/Default/BuildingsDefault/Buildings,1,-1
 
-Pop_Yellow,1,1,3,5,5,50,500,yellow,Civilisations/Yellow/PopYellow,1,1
-Pop_Red,1,5,3,5,5,50,500,red,Civilisations/Red/PopRed,1,1
-Pop_Purple,1,1,3,5,5,50,500,purple,Civilisations/Purple/PopPurple,1,1
-Pop_Blue,1,1,3,5,5,50,500,blue,Civilisations/Blue/PopBlue,1,1
-Pop_Green,1,1,3,5,5,50,500,green,Civilisations/Green/PopGreen,1,1
-Pop_Black,1,1,3,5,5,50,500,green,Civilisations/Black/PopBlack,1,1
-Pop_White,1,1,3,5,5,50,500,green,Civilisations/White/PopWhite,1,1
-DefaultHuman,1,2,1,1,1,10,500,default,Civilisations/Default/PopDefault,1,1
+Pop_Yellow,1,1,3,5,5,50,500,yellow,Civilisations/Yellow/PopYellow,1,0
+Pop_Red,1,5,3,5,5,50,500,red,Civilisations/Red/PopRed,1,0
+Pop_Purple,1,1,3,5,5,50,500,purple,Civilisations/Purple/PopPurple,1,0
+Pop_Blue,1,1,3,5,5,50,500,blue,Civilisations/Blue/PopBlue,1,0
+Pop_Green,1,1,3,5,5,50,500,green,Civilisations/Green/PopGreen,1,0
+Pop_Black,1,1,3,5,5,50,500,green,Civilisations/Black/PopBlack,1,0
+Pop_White,1,1,3,5,5,50,500,green,Civilisations/White/PopWhite,1,0
+DefaultHuman,1,2,1,1,1,10,500,default,Civilisations/Default/PopDefault,1,0
 
-Chief_Devan,1,2,10,5,5,50,-1,yellow,Civilisations/Yellow/Devan,1,1
-Chief_Yohann,1,5,0,15,2,80,-1,red,Civilisations/Red/Yohann,1,1
-Chief_Alexandre,1,5,3,0,0,10,-1,purple,Civilisations/Purple/Alexandre,1,1
-Chief_Nathan,1,2,1,2,10,20,-1,blue,Civilisations/Blue/Nathan,1,1
-Chief_Maxime,1,1,3,5,5,50,-1,green,Civilisations/Green/Maxime,1,1
-Chief_Romain,1,5,3,5,5,50,-1,white,Civilisations/White/Romain,1,1
-Chief_Antonin,1,1,3,1,1,2,-1,black,Civilisations/Black/Antonin,1,1
-Chief_Default,1,1,3,1,1,2,-1,default,Civilisations/Default/ChiefDefault,1,1
+Chief_Devan,1,2,10,5,5,50,-1,yellow,Civilisations/Yellow/Devan,1,0
+Chief_Yohann,1,5,0,15,2,80,-1,red,Civilisations/Red/Yohann,1,0
+Chief_Alexandre,1,5,3,0,0,10,-1,purple,Civilisations/Purple/Alexandre,1,0
+Chief_Nathan,1,2,1,2,10,20,-1,blue,Civilisations/Blue/Nathan,1,0
+Chief_Maxime,1,1,3,5,5,50,-1,green,Civilisations/Green/Maxime,1,0
+Chief_Romain,1,5,3,5,5,50,-1,white,Civilisations/White/Romain,1,0
+Chief_Antonin,1,1,3,1,1,2,-1,black,Civilisations/Black/Antonin,1,0
+Chief_Default,1,1,3,1,1,2,-1,default,Civilisations/Default/ChiefDefault,1,0
 
 
 

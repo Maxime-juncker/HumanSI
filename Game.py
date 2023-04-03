@@ -154,9 +154,9 @@ class Game:
         self.newUnit = Unit(self.display, sprites, preset, offsetPos,
                             self.cameraGroup)
 
-        if int(preset["updateWeight"]) == 1:
+        if int(preset["updateWeight"]) == 0:
             self.normalUpdateDict[self.newUnit.name] = self.newUnit
-        elif int(preset["updateWeight"]) > 1:
+        elif int(preset["updateWeight"]) == 1:
             self.slowUpdateDict[self.newUnit.name] = self.newUnit
 
         if "Chief_" in names[self.spriteIndex]:
@@ -176,9 +176,9 @@ class Game:
 
         self.newUnit = Unit(self.display, sprites, popPreset, pos,
                             self.cameraGroup)
-        if int(popPreset["updateWeight"]) == 1:
+        if int(popPreset["updateWeight"]) == 0:
             self.normalUpdateDict[self.newUnit.name] = self.newUnit
-        elif int(popPreset["updateWeight"]) > 1:
+        elif int(popPreset["updateWeight"]) == 1:
             self.slowUpdateDict[self.newUnit.name] = self.newUnit
 
     def SpawnCivilisation(self, civilisationChief):
@@ -197,9 +197,9 @@ class Game:
         preset = LoadPreset(Directories.PresetDir + "Civilisation.csv", popPreset["civilisation"])
         newCivilisation = Civilisation(preset, popPreset)
 
-        if int(preset["updateWeight"]) == 1:
+        if int(preset["updateWeight"]) == 0:
             self.normalUpdateDict[newCivilisation.name] = newCivilisation
-        elif int(preset["updateWeight"]) > 1:
+        elif int(preset["updateWeight"]) == 1:
             self.slowUpdateDict[newCivilisation.name] = newCivilisation
 
     def GetRandomSprite(self, sprites):
@@ -234,7 +234,7 @@ class Game:
         for civilisation in civilisations:
             civilisations[civilisation].Update()"""
 
-        sprites = self.normalUpdateDict
+        sprites = self.normalUpdateDict.copy()
         for sprite in sprites:
             self.normalUpdateDict[sprite].Tick()
 
@@ -267,10 +267,19 @@ class Game:
             letter = font.render("Spawn : " + str(l[self.spriteIndex]), 0, (0, 0, 0))
             self.display.blit(letter, (50, 50))
 
-        self.fps_counter()
+        self.UninCounter()
 
         pygame.display.update()
         self.clock.tick(120)
+
+    def UninCounter(self):
+
+        font = pygame.font.SysFont("Arial", 27)
+
+        temp = self.visibleSprite.copy()
+        units = str(len(temp))
+        units_t = font.render(units, 1, pygame.Color("RED"))
+        self.display.blit(units_t, (-0, 0))
 
     def fps_counter(self):
         font = pygame.font.SysFont("Arial", 27)
@@ -278,6 +287,8 @@ class Game:
         fps = str(int(self.clock.get_fps()))
         fps_t = font.render(fps, 1, pygame.Color("RED"))
         self.display.blit(fps_t, (0, 0))
+
+
 
 
 game = Game()
