@@ -1,3 +1,5 @@
+import random
+
 import Game
 import pygame
 from Utilities import *
@@ -12,6 +14,7 @@ class UnitState:
     NONE = -1
     IDLE = 0
     MOVING = 1
+    IN_WAR = 2
 
 
 class BasicObject:
@@ -24,7 +27,7 @@ class BasicObject:
 
 class Unit(pygame.sprite.Sprite, BasicObject):
 
-    def __init__(self, _display, spriteSheet, preset, pos, group):
+    def __init__(self, _display, spriteSheet, preset, civilisation, pos, group):
 
         super().__init__(group)
 
@@ -47,6 +50,8 @@ class Unit(pygame.sprite.Sprite, BasicObject):
 
         self.rect.bottomright = pos
 
+        self.civilisation = civilisation
+
         Game.game.visibleSprite[self.name] = self
 
         self.currentDestination = SeekNewPos(self.rect, 30)
@@ -57,6 +62,7 @@ class Unit(pygame.sprite.Sprite, BasicObject):
     def Tick(self):
         self.StateMachine()
         self.UpdateLifeSpan()
+
         # self.DoAnimation()
 
     def DoAnimation(self):
@@ -80,11 +86,18 @@ class Unit(pygame.sprite.Sprite, BasicObject):
             self.kill()
 
     def StateMachine(self):
+
+        if self.civilisation is not None:
+            if self.civilisation.inWar:
+                self.SetNewState(UnitState.IN_WAR)
+
         if self.state == UnitState.MOVING:
             self.MoveTo(self.currentDestination)
         if self.state == UnitState.IDLE:
             self.currentDestination = SeekNewPos(self.rect, 200)
             self.SetNewState(UnitState.MOVING)
+        if self.state == UnitState.IN_WAR:
+            self.currentDestination = self.civilisation.inWarAgainst.cityHallPos
 
     def SetNewState(self, newState: UnitState):
         '''
@@ -146,8 +159,10 @@ class Unit(pygame.sprite.Sprite, BasicObject):
 
 class Civilisation(BasicObject):
 
-    def __init__(self, preset, popPreset):
+    def __init__(self, preset):
         super().__init__()
+
+        print(preset["popName"])
 
         self.civilisationPreset = preset
 
@@ -157,7 +172,7 @@ class Civilisation(BasicObject):
 
         offsetPos = Game.game.cameraGroup.offset - Game.game.cameraGroup.internalOffset + pygame.mouse.get_pos()
         self.cityHallPos = offsetPos
-        self.cityHall = Game.game.SpawnUnit(cityHallPreset, self.cityHallPos)
+        self.cityHall = Game.game.SpawnUnit(cityHallPreset, self.cityHallPos, self)
 
         self.wonderPreset = None
 
@@ -166,38 +181,37 @@ class Civilisation(BasicObject):
 
         self.id = random.randint(0, 9999)
         self.name = self.civilisationPreset["name"] + str(self.id)
-
         self.spawnRate = int(self.civilisationPreset["fertility"])
         self.houseSpawnRate = int(self.civilisationPreset["spawnRate"])
-
         self.religion = self.civilisationPreset["religion"]
         self.aggressivity = self.civilisationPreset["aggressivity"]
+
         self.inWar = False
+        self.inWarAgainst = None
         self.currentPopulation = 0
+        self.currentZoneSize = 100
+        self.wonderAlreadyExist = False
 
         Game.game.visibleSprite[self.name] = self
         Game.game.civilisationSpawned[self.name] = self
 
-        self.currentZoneSize = 100
         debugSuccessMsg("Civilisation Spawned --> " + self.name)
-
-        self.wonderAlreadyExist = False
 
     def Tick(self):
         self.SpawnNewPopulation()
 
     def SpawnNewPopulation(self):
-        Game.game.SpawnUnit(self.populationPreset, SeekNewPos(self.cityHallPos, self.currentZoneSize))
+        Game.game.SpawnUnit(self.populationPreset, self.cityHallPos, self)
         self.currentPopulation += 1
 
         if self.currentPopulation % 5 == 0:
             self.SpawnNewHouse()
 
-        if self.currentPopulation % 5 == 0:
+        if self.currentPopulation % 50 == 0:
             self.SpawnWonder()
 
     def SpawnNewHouse(self):
-        Game.game.SpawnUnit(self.housePreset, SeekNewPos(self.cityHallPos, self.currentZoneSize))
+        Game.game.SpawnUnit(self.housePreset, SeekNewPos(self.cityHallPos, self.currentZoneSize), self)
         self.currentZoneSize += 20
 
     def SpawnWonder(self):
@@ -205,16 +219,22 @@ class Civilisation(BasicObject):
             return
 
         self.currentZoneSize += 100
+        self.spawnRate * 0.1
         self.wonderAlreadyExist = True
 
-        Game.game.SpawnUnit(self.wonderPreset, SeekNewPos(self.cityHallPos, self.currentZoneSize))
+        Game.game.SpawnUnit(self.wonderPreset, SeekNewPos(self.cityHallPos, self.currentZoneSize), self)
 
     def DeclareWarOnCivilisation(self, civilisation):
-        pass
+        if self.CanDeclareWar(civilisation):
+            self.inWar = True
+            self.inWarAgainst = civilisation
 
     def CanDeclareWar(self, civilisation):
         if self.civilisationPreset["aggressivity"] == 0:
             return False
 
-        if self.civilisationPreset["religion"] != civilisation.civilisationPreset["religion"] and self.civilisationPreset["aggressivity"] >= 25:
+        if self.civilisationPreset["religion"] != civilisation.civilisationPreset["religion"] and \
+                self.civilisationPreset["aggressivity"] >= 25:
             return True
+
+        return random.randint(0, self.civilisationPreset["aggressivity"]) > 80

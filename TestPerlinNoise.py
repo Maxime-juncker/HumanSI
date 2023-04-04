@@ -27,7 +27,7 @@ biomes = {      #dico avec la liste des biomes et leurs characteristiques
     "plage" : (-6/9, BLUE, "plage"),
     "plaine" : (-4/9, LIGTHGREEN, "plaine"),
     "forest" : (-2/9, GREEN,"forest"),
-    #"midForest" : (0, MIDGREEN, "midForest"),      #Si on met se biome le monde devient tres plat
+    "midForest" : (0, MIDGREEN, "midForest"),      #Si on met se biome le monde devient tres plat
     "deepForest" : (2/9, DEEPGREEN, "deepForest"),
     "stonyMontagne" :  (4/9, DARKGREY, "stonyMontagne"),
     "montagne" : (6/9, GREY, "montagne"),
@@ -39,7 +39,7 @@ import pygame
 # ============ SETUP PYGAME =====================
 
 pygame.init() #Important pour pygame
-display = pygame.display.set_mode((200, 200)) #taille de la fenetre pygame
+display = pygame.display.set_mode((600, 600)) #taille de la fenetre pygame
 GAME_RUNNING = True
 genFinished = False
 
@@ -109,14 +109,16 @@ while GAME_RUNNING:
                         print(noise_val)
                         try :
                             internalSurface.set_at((rect.left + x, rect.top + y), (PlaceBiome(rect.left + x, rect.top + y, noise_val, biomes)))
-                            displaySurface.blit(internalSurface, internalRect)
-                            pygame.display.update()
+
 
                             #Clamp(noise_val * 255, 0, 255), Clamp(noise_val * 204, 0, 0), Clamp(noise_val * 255, 0, 255)))
                         except :
                             pass
                         print("Generation : " + str(round(x / rect.width * 100, 1)) + "%")
-                        
+                    displaySurface.blit(internalSurface, internalRect)
+                    pygame.display.update()
+
+
                 debugSuccessMsg("Generation successful \(￣︶￣*\))")
                 genFinished = True
             except:

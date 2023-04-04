@@ -150,8 +150,12 @@ class Game:
         preset = LoadPreset(Directories.PresetDir + "Presets.csv", names[self.spriteIndex])
         sprites = LoadSpritesFromFolder(preset["spritesPath"])
 
+        if "CityHall" in names[self.spriteIndex]:
+            self.SpawnCivilisation(names[self.spriteIndex])
+            return
+
         offsetPos = self.cameraGroup.offset - self.cameraGroup.internalOffset + pygame.mouse.get_pos()
-        self.newUnit = Unit(self.display, sprites, preset, offsetPos,
+        self.newUnit = Unit(self.display, sprites, preset, None, offsetPos,
                             self.cameraGroup)
 
         if int(preset["updateWeight"]) == 0:
@@ -159,10 +163,13 @@ class Game:
         elif int(preset["updateWeight"]) == 1:
             self.slowUpdateDict[self.newUnit.name] = self.newUnit
 
-        if "Chief_" in names[self.spriteIndex]:
-            self.SpawnCivilisation(names[self.spriteIndex])
 
-    def SpawnUnit(self, popPreset, pos):
+
+
+            """if "Chief_" in names[self.spriteIndex]:
+            self.SpawnCivilisation(names[self.spriteIndex])"""
+
+    def SpawnUnit(self, popPreset, pos, civilisation):
 
         """try:
             (r, g, b, a) = self.cameraGroup.internalSurface.get_at((int(pos[0]), int(pos[1])))
@@ -174,14 +181,14 @@ class Game:
 
         sprites = LoadSpritesFromFolder(popPreset["spritesPath"])
 
-        self.newUnit = Unit(self.display, sprites, popPreset, pos,
+        self.newUnit = Unit(self.display, sprites, popPreset, civilisation, pos,
                             self.cameraGroup)
         if int(popPreset["updateWeight"]) == 0:
             self.normalUpdateDict[self.newUnit.name] = self.newUnit
         elif int(popPreset["updateWeight"]) == 1:
             self.slowUpdateDict[self.newUnit.name] = self.newUnit
 
-    def SpawnCivilisation(self, civilisationChief):
+    def SpawnCivilisation(self, civilisationName):
 
         offsetPos = self.cameraGroup.offset - self.cameraGroup.internalOffset + pygame.mouse.get_pos()
 
@@ -193,16 +200,17 @@ class Game:
         except:
             print("problème")"""
 
-        popPreset = LoadPreset(Directories.PresetDir + "Presets.csv", civilisationChief)
-        preset = LoadPreset(Directories.PresetDir + "Civilisation.csv", popPreset["civilisation"])
-        newCivilisation = Civilisation(preset, popPreset)
+        tempPreset = LoadPreset(Directories.PresetDir + "Presets.csv", civilisationName)
+        preset = LoadPreset(Directories.PresetDir + "Civilisation.csv", tempPreset["civilisation"])
+        chiefPreset = LoadPreset(Directories.PresetDir + "Presets.csv", preset["chiefName"])
+        newCivilisation = Civilisation(preset)
+
+        civilisationChief = self.SpawnUnit(chiefPreset, offsetPos, newCivilisation)
 
         if int(preset["updateWeight"]) == 0:
             self.normalUpdateDict[newCivilisation.name] = newCivilisation
         elif int(preset["updateWeight"]) == 1:
             self.slowUpdateDict[newCivilisation.name] = newCivilisation
-
-        print(self.civilisationSpawned)
 
     def GetRandomSprite(self, sprites):
         print(sprites)
