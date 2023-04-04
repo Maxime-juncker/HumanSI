@@ -7,7 +7,9 @@ YellowCityHall,0,0,0,0,0,100,-1,none,Civilisations/Yellow/BuildingsYellow/HDV,0,
 YellowHouse,0,0,0,0,0,100,-1,none,Civilisations/Yellow/BuildingsYellow/Buildings,0,-1
 
 RedCityHall,0,0,0,0,0,100,-1,none,Civilisations/Red/BuildingsRed/HDV,0,1
-RedHouse,0,0,0,0,0,100,-1,none,Civilisations/Red/BuildingsRed/Buildings,0,-1
+RedHouse,0,0,0,0,0,100,-1,none,Civilisations/Red/BuildingsRed/Buildings,1,-1
+RedWonder,0,0,0,0,0,100,-1,none,Civilisations/Red/BuildingsRed/RedWonder,1,-1
+
 
 PurpleCityHall,0,0,0,0,0,100,-1,none,Civilisations/Purple/BuildingsPurple/HDV,0,1
 PurpleHouse,0,0,0,0,0,100,-1,none,Civilisations/Purple/BuildingsPurple/Buildings,0,-1

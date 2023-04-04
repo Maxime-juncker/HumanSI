@@ -153,11 +153,16 @@ class Civilisation(BasicObject):
 
         self.populationPreset = LoadPreset(Directories.PresetDir + "Presets.csv", preset["popName"])
         self.housePreset = LoadPreset(Directories.PresetDir + "Presets.csv", preset["houseName"])
-        cityHallPreset = LoadPreset(Directories.PresetDir + "Presets.csv", self.civilisationPreset["cityHallName"])
+        cityHallPreset = LoadPreset(Directories.PresetDir + "Presets.csv", preset["cityHallName"])
 
         offsetPos = Game.game.cameraGroup.offset - Game.game.cameraGroup.internalOffset + pygame.mouse.get_pos()
         self.cityHallPos = offsetPos
         self.cityHall = Game.game.SpawnUnit(cityHallPreset, self.cityHallPos)
+
+        self.wonderPreset = None
+
+        if preset["wonderName"] != "none":
+            self.wonderPreset = LoadPreset(Directories.PresetDir + "Presets.csv", self.civilisationPreset["wonderName"])
 
         self.id = random.randint(0, 9999)
         self.name = self.civilisationPreset["name"] + str(self.id)
@@ -171,9 +176,12 @@ class Civilisation(BasicObject):
         self.currentPopulation = 0
 
         Game.game.visibleSprite[self.name] = self
+        Game.game.civilisationSpawned[self.name] = self
 
         self.currentZoneSize = 100
         debugSuccessMsg("Civilisation Spawned --> " + self.name)
+
+        self.wonderAlreadyExist = False
 
     def Tick(self):
         self.SpawnNewPopulation()
@@ -185,6 +193,28 @@ class Civilisation(BasicObject):
         if self.currentPopulation % 5 == 0:
             self.SpawnNewHouse()
 
+        if self.currentPopulation % 5 == 0:
+            self.SpawnWonder()
+
     def SpawnNewHouse(self):
         Game.game.SpawnUnit(self.housePreset, SeekNewPos(self.cityHallPos, self.currentZoneSize))
         self.currentZoneSize += 20
+
+    def SpawnWonder(self):
+        if self.wonderAlreadyExist or self.wonderPreset is None:
+            return
+
+        self.currentZoneSize += 100
+        self.wonderAlreadyExist = True
+
+        Game.game.SpawnUnit(self.wonderPreset, SeekNewPos(self.cityHallPos, self.currentZoneSize))
+
+    def DeclareWarOnCivilisation(self, civilisation):
+        pass
+
+    def CanDeclareWar(self, civilisation):
+        if self.civilisationPreset["aggressivity"] == 0:
+            return False
+
+        if self.civilisationPreset["religion"] != civilisation.civilisationPreset["religion"] and self.civilisationPreset["aggressivity"] >= 25:
+            return True

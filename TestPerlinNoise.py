@@ -62,7 +62,15 @@ def PlaceBiome(x, y, valuePerlinNoise, Biomeliste, ) :
             return debugFailMsg("depassement de la valeur de 1 dans : PlaceBiome")
         elif valuePerlinNoise>=Biomeliste[biome][0] and valuePerlinNoise<=Biomeliste[biome][0]+.25 :
             return Biomeliste[CheckForBiomeAt(valuePerlinNoise)][1]
-            
+
+
+displaySurface = pygame.display.get_surface()
+half_w = displaySurface.get_size()[0] // 2
+half_h = displaySurface.get_size()[1] // 2
+internalSurfaceSize = (displaySurface.get_size()[0], displaySurface.get_size()[1])
+internalSurface = pygame.Surface(internalSurfaceSize, pygame.SRCALPHA)
+internalRect = internalSurface.get_rect(center=(half_w, half_h))
+
 
 # Boucle update
 while GAME_RUNNING:
@@ -75,13 +83,12 @@ while GAME_RUNNING:
     rect = pygame.Rect(display.get_rect())
 
     try:
-
         if not genFinished:
-
             try:
-
                 for x in range(rect.width):
                     for y in range(rect.height):
+                        print("ejfe")
+
                         noise_val = noise3([x / rect.width, y / rect.height])  # basic noise
                         noise_val += noise4([x / rect.width, y / rect.height])  # basic noise
                         Buffer = -.25 #Un buffer pour varier les valeur de perlin noise
@@ -101,9 +108,11 @@ while GAME_RUNNING:
                         """
                         print(noise_val)
                         try :
-                            display.set_at((rect.left + x, rect.top + y), (PlaceBiome(rect.left + x, rect.top + y, noise_val, biomes)))
+                            internalSurface.set_at((rect.left + x, rect.top + y), (PlaceBiome(rect.left + x, rect.top + y, noise_val, biomes)))
+                            displaySurface.blit(internalSurface, internalRect)
+                            pygame.display.update()
+
                             #Clamp(noise_val * 255, 0, 255), Clamp(noise_val * 204, 0, 0), Clamp(noise_val * 255, 0, 255)))
-                            pygame.display.flip()
                         except :
                             pass
                         print("Generation : " + str(round(x / rect.width * 100, 1)) + "%")
@@ -116,9 +125,8 @@ while GAME_RUNNING:
     except:
         print("probleme")
 
-pygame.display.flip()
+    displaySurface.blit(internalSurface, internalRect)
+    pygame.display.update()
 
-pygame.quit()
-exit()
 
 

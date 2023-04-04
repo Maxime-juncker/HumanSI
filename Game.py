@@ -202,6 +202,8 @@ class Game:
         elif int(preset["updateWeight"]) == 1:
             self.slowUpdateDict[newCivilisation.name] = newCivilisation
 
+        print(self.civilisationSpawned)
+
     def GetRandomSprite(self, sprites):
         print(sprites)
         return sprites[random.randint(0, len(sprites) - 1)]
@@ -267,28 +269,21 @@ class Game:
             letter = font.render("Spawn : " + str(l[self.spriteIndex]), 0, (0, 0, 0))
             self.display.blit(letter, (50, 50))
 
-        self.UninCounter()
+        self.debugUI()
 
         pygame.display.update()
         self.clock.tick(120)
 
-    def UninCounter(self):
+    def debugUI(self):
 
         font = pygame.font.SysFont("Arial", 27)
 
         temp = self.visibleSprite.copy()
         units = str(len(temp))
-        units_t = font.render(units, 1, pygame.Color("RED"))
-        self.display.blit(units_t, (-0, 0))
-
-    def fps_counter(self):
-        font = pygame.font.SysFont("Arial", 27)
 
         fps = str(int(self.clock.get_fps()))
-        fps_t = font.render(fps, 1, pygame.Color("RED"))
-        self.display.blit(fps_t, (0, 0))
-
-
+        debug_t = font.render("FPS : " + fps + " | " + "units : " + units, 1, pygame.Color("RED"))
+        self.display.blit(debug_t, (0, 0))
 
 
 game = Game()
