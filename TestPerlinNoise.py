@@ -1,5 +1,6 @@
 from perlin_noise import PerlinNoise
 from Utilities import *
+from pygame.locals import *
 
 noise1 = PerlinNoise(octaves=3)
 noise2 = PerlinNoise(octaves=10)
@@ -15,6 +16,7 @@ RED = (255, 0, 0)
 WHITE = (255, 255, 255)
 BLACK = (0, 0, 0)
 GREY = (128, 128, 128)
+DARKGREY = (180, 180, 180)
 DEFAULTCOLOR = (0, 0, 0)
 
 
@@ -24,9 +26,9 @@ biomes = {
     "plaine" : (-.25, LIGTHGREEN),
     "forest" : (0, GREEN),
     "deepForest" : (.25, DEEPGREEN),
-    "biome5" :  (.50, DEFAULTCOLOR),
-    "montagne" : (.75, GREY),
-    "hight montaigne" : (1, WHITE)
+    "stonyMontagne" :  (.50, DARKGREY),
+    "montagne" : (.75,GREY ),
+    "hightMontagne" : (1, WHITE),
 }
 
 import pygame
@@ -47,13 +49,16 @@ def CheckForBiomeAt(value):
     debugFailMsg("failed to find a biome !")
 
 print(CheckForBiomeAt(.3))
+    
 
-
-def PlaceBiomeAt(x, y, valuePerlinNoise) :
-    display.set_at((rect.left + x, rect.top + y),
-                   
-                   )
-
+def PlaceBiome(x, y, valuePerlinNoise, Biomeliste, ) :
+    ScanVal = -1
+    for biome in Biomeliste :
+        if Biomeliste[biome][0]>1 :
+            return debugFailMsg("depassement de la valeur de 1 dans : PlaceBiome")
+        elif valuePerlinNoise>=Biomeliste[biome][0] and valuePerlinNoise<=Biomeliste[biome][0]+.25 :
+            return Biomeliste[CheckForBiomeAt(valuePerlinNoise)][1]
+            
 
 # Boucle update
 while GAME_RUNNING:
@@ -74,21 +79,26 @@ while GAME_RUNNING:
                     for y in range(rect.height):
                         noise_val = noise3([x / rect.width, y / rect.height])  # basic noise
                         noise_val += noise4([x / rect.width, y / rect.height])  # basic noise
-
-
+                        pygame.event.wait()
+                        for event in pygame.event.get():
+                            if event.type == MOUSEBUTTONUP:
+                                None
                         """
                         Display.set_at = funct de pygame pour poser un pixel sur une surface elle prend
                         2 params:
                             - une position (Vecteur 2d)
                             - une couleur sous le format RGB
 
-                        display.set_at((rect.left + x, rect.top + y), (
-                            Clamp(noise_val * 255, 0, 255), Clamp(noise_val * 204, 0, 0), Clamp(noise_val * 255, 0, 255)))
                         """
-                        
-                        pygame.display.flip()
+                        print(noise_val)
+                        try :
+                            display.set_at((rect.left + x, rect.top + y), (PlaceBiome(rect.left + x, rect.top + y, noise_val, biomes)))
+                            #Clamp(noise_val * 255, 0, 255), Clamp(noise_val * 204, 0, 0), Clamp(noise_val * 255, 0, 255)))
+                            pygame.display.flip()
+                        except :
+                            pass
                         print("Generation : " + str(round(x / rect.width * 100, 1)) + "%")
-
+                        
                 debugSuccessMsg("Generation successful \(￣︶￣*\))")
                 genFinished = True
             except:
