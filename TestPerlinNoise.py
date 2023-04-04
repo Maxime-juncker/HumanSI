@@ -7,28 +7,31 @@ noise2 = PerlinNoise(octaves=10)
 noise3 = PerlinNoise(octaves=3)
 noise4 = PerlinNoise(octaves=5)
 
+WHITE = (255, 255, 255)
+DARKWHITE = (225,225,225)
 BLUE = (0, 0, 255)
 YELLOW = (255, 255, 0)
 LIGTHGREEN = (102, 255, 102)
+MIDGREEN = (60, 255, 60)
 GREEN = (0,255,0)
 DEEPGREEN = (0, 153, 0)
 RED = (255, 0, 0)
-WHITE = (255, 255, 255)
-BLACK = (0, 0, 0)
 GREY = (128, 128, 128)
 DARKGREY = (180, 180, 180)
 DEFAULTCOLOR = (0, 0, 0)
+BLACK = (0, 0, 0)
 
 
-biomes = {
-    "ocean" : (-.75, BLUE),
-    "plage" : (-.50, YELLOW),
-    "plaine" : (-.25, LIGTHGREEN),
-    "forest" : (0, GREEN),
-    "deepForest" : (.25, DEEPGREEN),
-    "stonyMontagne" :  (.50, DARKGREY),
-    "montagne" : (.75,GREY ),
-    "hightMontagne" : (1, WHITE),
+biomes = {      #dico avec la liste des biomes et leurs characteristiques
+    "ocean" : (-8/9, YELLOW, "ocean"),
+    "plage" : (-6/9, BLUE, "plage"),
+    "plaine" : (-4/9, LIGTHGREEN, "plaine"),
+    "forest" : (-2/9, GREEN,"forest"),
+    #"midForest" : (0, MIDGREEN, "midForest"),      #Si on met se biome le monde devient tres plat
+    "deepForest" : (2/9, DEEPGREEN, "deepForest"),
+    "stonyMontagne" :  (4/9, DARKGREY, "stonyMontagne"),
+    "montagne" : (6/9, GREY, "montagne"),
+    "hightMontagne" : (8/9, DARKWHITE, "hightMontagne"),
 }
 
 import pygame
@@ -44,6 +47,7 @@ def CheckForBiomeAt(value):
 
     for biome in biomes:
         if biomes[biome][0] >= value:
+            print(biomes[biome][2])
             return(biome)
         
     debugFailMsg("failed to find a biome !")
@@ -52,7 +56,7 @@ print(CheckForBiomeAt(.3))
     
 
 def PlaceBiome(x, y, valuePerlinNoise, Biomeliste, ) :
-    ScanVal = -1
+    
     for biome in Biomeliste :
         if Biomeliste[biome][0]>1 :
             return debugFailMsg("depassement de la valeur de 1 dans : PlaceBiome")
@@ -75,15 +79,20 @@ while GAME_RUNNING:
         if not genFinished:
 
             try:
+
                 for x in range(rect.width):
                     for y in range(rect.height):
                         noise_val = noise3([x / rect.width, y / rect.height])  # basic noise
                         noise_val += noise4([x / rect.width, y / rect.height])  # basic noise
-                        pygame.event.wait()
+                        Buffer = -.25 #Un buffer pour varier les valeur de perlin noise
+                        """if noise_val + Buffer>=-1 and noise_val + Buffer<=1 :
+                            noise_val += Buffer"""
+                            
+                        """pygame.event.wait()
                         for event in pygame.event.get():
                             if event.type == MOUSEBUTTONUP:
                                 None
-                        """
+                        
                         Display.set_at = funct de pygame pour poser un pixel sur une surface elle prend
                         2 params:
                             - une position (Vecteur 2d)
