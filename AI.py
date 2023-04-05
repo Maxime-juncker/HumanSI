@@ -57,7 +57,7 @@ class Unit(pygame.sprite.Sprite, BasicObject):
         self.currentDestination = SeekNewPos(self.rect, 30)
         self.state = UnitState.IDLE
 
-        debugSuccessMsg("Unit Spawned --> " + self.name)
+        # debugSuccessMsg("Unit Spawned --> " + self.name)
 
     def Tick(self):
         self.StateMachine()
@@ -98,6 +98,7 @@ class Unit(pygame.sprite.Sprite, BasicObject):
             self.SetNewState(UnitState.MOVING)
         if self.state == UnitState.IN_WAR:
             self.currentDestination = self.civilisation.inWarAgainst.cityHallPos
+            self.MoveTo(self.currentDestination)
 
     def SetNewState(self, newState: UnitState):
         '''
@@ -133,9 +134,6 @@ class Unit(pygame.sprite.Sprite, BasicObject):
 
     def MoveTo(self, coord):
 
-        if not self.state == UnitState.MOVING:
-            return
-
         if abs(self.rect.y - coord[1]) < 5 and abs(self.rect.x - coord[0]) < 5:
             self.SetNewState(UnitState.IDLE)
             return
@@ -155,6 +153,8 @@ class Unit(pygame.sprite.Sprite, BasicObject):
             self.MoveUp(1)
         elif self.rect.y >= coord[1]:
             self.MoveUp(-1)
+
+        # self.image = pygame.transform.rotate(self.image, 90)
 
 
 class Civilisation(BasicObject):
@@ -199,6 +199,7 @@ class Civilisation(BasicObject):
 
     def Tick(self):
         self.SpawnNewPopulation()
+        self.DeclareWarOnCivilisation()
 
     def SpawnNewPopulation(self):
         Game.game.SpawnUnit(self.populationPreset, self.cityHallPos, self)
@@ -224,17 +225,47 @@ class Civilisation(BasicObject):
 
         Game.game.SpawnUnit(self.wonderPreset, SeekNewPos(self.cityHallPos, self.currentZoneSize), self)
 
-    def DeclareWarOnCivilisation(self, civilisation):
-        if self.CanDeclareWar(civilisation):
-            self.inWar = True
-            self.inWarAgainst = civilisation
+    def DeclareWarOnCivilisation(self):
+        if self.inWar:
+            return
+
+        if len(self.CheckNeighnorsCivilisation()) >= 1:
+            # on prend une cible au pif dans les voisins
+            temp = random.choice(list(self.CheckNeighnorsCivilisation()))
+            target = Game.game.civilisationSpawned[temp]
+
+            if self.CanDeclareWar(target):
+                self.inWar = True
+                self.inWarAgainst = target
+                debugFailMsg(self.name + "declare la guerre a " + target.name)
 
     def CanDeclareWar(self, civilisation):
         if self.civilisationPreset["aggressivity"] == 0:
             return False
 
         if self.civilisationPreset["religion"] != civilisation.civilisationPreset["religion"] and \
-                self.civilisationPreset["aggressivity"] >= 25:
+                int(self.civilisationPreset["aggressivity"]) >= 25:
             return True
+        return True
 
-        return random.randint(0, self.civilisationPreset["aggressivity"]) > 80
+        # return random.randint(0, self.civilisationPreset["aggressivity"]) > 80
+
+    def CheckNeighnorsCivilisation(self):
+
+        """
+        cette funct return la distance entre tous les voisins dans une liste triée
+        """
+
+        if len(Game.game.civilisationSpawned) == 1:
+            return {}
+        result = {}
+        temp = Game.game.civilisationSpawned.copy()
+        temp.pop(self.name)  # c'est un peu debile de calculer la distance avec soi même...
+
+        for civilisation in temp:
+            distance = self.cityHallPos.distance_to(Game.game.civilisationSpawned[civilisation].cityHallPos)
+
+            if distance <= int(self.civilisationPreset["aggroDistance"]):
+                result[civilisation] = distance
+        result = {key: val for key, val in sorted(result.items(), key=lambda ele: ele[0])}
+        return result

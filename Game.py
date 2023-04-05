@@ -205,7 +205,7 @@ class Game:
         chiefPreset = LoadPreset(Directories.PresetDir + "Presets.csv", preset["chiefName"])
         newCivilisation = Civilisation(preset)
 
-        civilisationChief = self.SpawnUnit(chiefPreset, offsetPos, newCivilisation)
+        self.SpawnUnit(chiefPreset, offsetPos, newCivilisation)
 
         if int(preset["updateWeight"]) == 0:
             self.normalUpdateDict[newCivilisation.name] = newCivilisation
@@ -229,6 +229,7 @@ class Game:
 
         self.slowUpdateDict.clear()
         self.normalUpdateDict.clear()
+        self.visibleSprite.clear()
 
     def Tick(self):
         '''
