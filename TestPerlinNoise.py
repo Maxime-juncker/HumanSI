@@ -39,7 +39,7 @@ import pygame
 # ============ SETUP PYGAME =====================
 
 pygame.init() #Important pour pygame
-display = pygame.display.set_mode((600, 600)) #taille de la fenetre pygame
+display = pygame.display.set_mode((200, 200)) #taille de la fenetre pygame
 GAME_RUNNING = True
 genFinished = False
 

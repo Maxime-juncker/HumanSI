@@ -27,7 +27,7 @@ class BasicObject:
 
 class Unit(pygame.sprite.Sprite, BasicObject):
 
-    def __init__(self, _display, spriteSheet, preset, civilisation, pos, group):
+    def __init__(self, _display, spriteSheet, preset, civilisation, size, pos, group):
 
         super().__init__(group)
 
@@ -37,6 +37,9 @@ class Unit(pygame.sprite.Sprite, BasicObject):
         self.sprites = spriteSheet
         self.currentSprite = 0.0
         self.image = pygame.image.load(Directories.SpritesDir + preset["spritesPath"] + "/" + spriteSheet[0])
+        self.image = pygame.transform.scale(self.image, (size*self.image.get_size()[0] \
+                                                        , size*self.image.get_size()[1]))
+
         self.animTimer = 5
 
         self.rect = self.image.get_rect()

@@ -3,6 +3,7 @@ import threading
 import AI
 from AI import *
 from Utilities import *
+from Interfaces import *
 
 '''
 TRUC IMPORTANT. 
@@ -47,6 +48,11 @@ class CameraGroup(pygame.sprite.Group):
         self.internalOffset = pygame.math.Vector2()
         self.internalOffset_x = self.internalSurfaceSize[0] // 2 - self.half_w
         self.internalOffset_y = self.internalSurfaceSize[1] // 2 - self.half_h
+        
+        #ça devrai a peu pres contrer les effets de quand on change de resolution
+        #apres la tout de suite y'a plus mass temps du coup plus tard si quelqu'un
+        #a le temps pour faire ça au propre ça serai sympas merci.
+        self.spriteSizeMultiplier = self.internalSurfaceSizeVector.length() / 2500
 
     def CustomDraw(self):
         if not game.GAME_RUNNING:
@@ -60,21 +66,25 @@ class CameraGroup(pygame.sprite.Group):
 
         self.internalSurface.fill('white')
 
-        # Terrain
-        # groundOffset = self.groundRect.topleft - self.offset + self.internalOffset
-        # self.internalSurface.blit(self.groundSurface, groundOffset)
-
         # Elements actifs
         try:
+
             sprites = sorted(self.sprites(), key=lambda sprite: sprite.rect.centery)
             for sprite in sprites:
                 offestPos = sprite.rect.center - self.offset + self.internalOffset
                 self.internalSurface.blit(sprite.image, offestPos)
 
+                interfaces = sorted(list(game.interfaces.values()), key=lambda interface: interface.rect.centery)
+                if len(interfaces) > 0:
+                    for interface in interfaces:
+                        offestPos = interface.rect.center - self.offset + self.internalOffset
+                        self.internalSurface.blit(interface.image, offestPos)
+
             scaledSurf = pygame.transform.scale(self.internalSurface, self.internalSurfaceSizeVector * self.zoomScale)
             scaledRect = scaledSurf.get_rect(center=(self.half_w, self.half_h))
             self.displaySurface.blit(scaledSurf, scaledRect)
         except:
+
             debugFailMsg("fail to update")
 
     def keyboardControl(self):
@@ -116,6 +126,7 @@ class Game:
         self.normalUpdateDict = {}
         self.slowUpdateDict = {}
         self.visibleSprite = {}
+        self.interfaces = {}
 
         # ============ SETUP LIST =====================
         self.PopulateSpawnableDict()
@@ -125,11 +136,10 @@ class Game:
         pygame.init()
         pygame.display.set_caption("Chargement...")
 
-        self.display = pygame.display.set_mode((1920, 1080))
+        self.display = pygame.display.set_mode((1920, 1080), pygame.FULLSCREEN)
         self.cameraGroup = CameraGroup()
 
         self.clock = pygame.time.Clock()
-
         # =================================================
         # C'est bon on a fini le setup la game loop peut commencer :D
         pygame.display.set_caption("HumainSI")
@@ -137,6 +147,10 @@ class Game:
         self.SlowUpdate()
 
         self.GAME_RUNNING = True
+
+
+    def CreateDescPanel(self):
+        self.interfaces["tkt"] = DescriptionPanel(self.cameraGroup.spriteSizeMultiplier,(1050, 0))
 
     def SpawnUnitBaseByIndex(self):
         '''
@@ -155,16 +169,13 @@ class Game:
             return
 
         offsetPos = self.cameraGroup.offset - self.cameraGroup.internalOffset + pygame.mouse.get_pos()
-        self.newUnit = Unit(self.display, sprites, preset, None, offsetPos,
-                            self.cameraGroup)
+        self.newUnit = Unit(self.display, sprites, preset, None,self.cameraGroup.spriteSizeMultiplier,\
+            offsetPos, self.cameraGroup)
 
         if int(preset["updateWeight"]) == 0:
             self.normalUpdateDict[self.newUnit.name] = self.newUnit
         elif int(preset["updateWeight"]) == 1:
             self.slowUpdateDict[self.newUnit.name] = self.newUnit
-
-
-
 
             """if "Chief_" in names[self.spriteIndex]:
             self.SpawnCivilisation(names[self.spriteIndex])"""
@@ -181,8 +192,9 @@ class Game:
 
         sprites = LoadSpritesFromFolder(popPreset["spritesPath"])
 
-        self.newUnit = Unit(self.display, sprites, popPreset, civilisation, pos,
-                            self.cameraGroup)
+        self.newUnit = Unit(self.display, sprites, popPreset, civilisation, \
+            self.cameraGroup.spriteSizeMultiplier, pos, self.cameraGroup)
+        
         if int(popPreset["updateWeight"]) == 0:
             self.normalUpdateDict[self.newUnit.name] = self.newUnit
         elif int(popPreset["updateWeight"]) == 1:
@@ -248,6 +260,10 @@ class Game:
         sprites = self.normalUpdateDict.copy()
         for sprite in sprites:
             self.normalUpdateDict[sprite].Tick()
+
+
+        if len(self.interfaces) >0:
+            self.interfaces["tkt"].rect.center = self.cameraGroup.offset + self.interfaces["tkt"].pos
 
     def SlowUpdate(self):
         sprites = self.slowUpdateDict.copy()
