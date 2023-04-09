@@ -23,6 +23,13 @@ class BasicObject:
 
     def Tick(self):
         pass
+    
+    def GetSprite(self):
+        return None
+    
+    def GetPreset(self):
+        return None
+    
 
 
 class Unit(pygame.sprite.Sprite, BasicObject):
@@ -30,6 +37,7 @@ class Unit(pygame.sprite.Sprite, BasicObject):
     def __init__(self, _display, spriteSheet, preset, civilisation, size, pos, group):
 
         super().__init__(group)
+        
 
         self.unitPreset = preset
 
@@ -68,6 +76,12 @@ class Unit(pygame.sprite.Sprite, BasicObject):
 
         # self.DoAnimation()
 
+    def GetSprite(self):
+        return self.image
+
+    def GetPreset(self):
+        return self.unitPreset
+    
     def DoAnimation(self):
         self.currentSprite += 0.05
 
@@ -165,8 +179,6 @@ class Civilisation(BasicObject):
     def __init__(self, preset):
         super().__init__()
 
-        print(preset["popName"])
-
         self.civilisationPreset = preset
 
         self.populationPreset = LoadPreset(Directories.PresetDir + "Presets.csv", preset["popName"])
@@ -176,7 +188,6 @@ class Civilisation(BasicObject):
         offsetPos = Game.game.cameraGroup.offset - Game.game.cameraGroup.internalOffset + pygame.mouse.get_pos()
         self.cityHallPos = offsetPos
         self.cityHall = Game.game.SpawnUnit(cityHallPreset, self.cityHallPos, self)
-
         self.wonderPreset = None
 
         if preset["wonderName"] != "none":
@@ -194,6 +205,9 @@ class Civilisation(BasicObject):
         self.currentPopulation = 0
         self.currentZoneSize = 100
         self.wonderAlreadyExist = False
+        
+        print(self.cityHall)
+        
 
         Game.game.visibleSprite[self.name] = self
         Game.game.civilisationSpawned[self.name] = self
@@ -203,6 +217,12 @@ class Civilisation(BasicObject):
     def Tick(self):
         self.SpawnNewPopulation()
         self.DeclareWarOnCivilisation()
+        
+    def GetSprite(self):
+        return self.cityHall.image
+    
+    def GetPreset(self):
+        return self.civilisationPreset
 
     def SpawnNewPopulation(self):
         Game.game.SpawnUnit(self.populationPreset, self.cityHallPos, self)

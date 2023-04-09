@@ -38,9 +38,12 @@ while game.GAME_RUNNING:
                 offsetPos = game.cameraGroup.offset - game.cameraGroup.internalOffset + pygame.mouse.get_pos()
                 clicked_sprites = [s for s in game.cameraGroup if s.rect.collidepoint(offsetPos)]
 
-                game.CreateDescPanel()
                 if len(clicked_sprites) > 0:
                     game.selectedTarget = clicked_sprites[0]
+                    game.UpdateDescPanel(clicked_sprites[0])
+                else:
+                    game.UpdateDescPanel(None)
+                    
 
         """if event.type == pygame.MOUSEWHEEL:
 
@@ -48,6 +51,10 @@ while game.GAME_RUNNING:
                 game.cameraGroup.zoomScale += event.y * 0.3"""
 
         if event.type == pygame.KEYDOWN:
+            
+            if event.key == pygame.K_ESCAPE:
+                game.descriptionPanel.HidePanel()
+            
 
             if event.key == pygame.K_a:
                 if game.spriteIndex + 1 > len(game.spawnAbleUnit) - 1:

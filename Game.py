@@ -123,12 +123,12 @@ class Game:
         self.civilisationSpawned = {}
         self.spriteIndex = 0
         self.spawnAbleUnit = LoadPreset(Directories.PresetDir + "Presets.csv")
+
+        # ============ SETUP LIST =====================
         self.normalUpdateDict = {}
         self.slowUpdateDict = {}
         self.visibleSprite = {}
         self.interfaces = {}
-
-        # ============ SETUP LIST =====================
         self.PopulateSpawnableDict()
 
         # ============ SETUP PYGAME =====================
@@ -141,6 +141,13 @@ class Game:
 
         self.clock = pygame.time.Clock()
         # =================================================
+        
+                
+        # ============ HUD VARS =====================
+        self.descriptionPanel = DescriptionPanel(self.cameraGroup.spriteSizeMultiplier,(930, 0))
+        self.interfaces["descriptionPanel"] = self.descriptionPanel
+        
+        
         # C'est bon on a fini le setup la game loop peut commencer :D
         pygame.display.set_caption("HumainSI")
 
@@ -149,8 +156,22 @@ class Game:
         self.GAME_RUNNING = True
 
 
-    def CreateDescPanel(self):
-        self.interfaces["tkt"] = DescriptionPanel(self.cameraGroup.spriteSizeMultiplier,(1050, 0))
+    def UpdateDescPanel(self, clickedSprite):
+        
+        """
+        en gros le but ici c'est de a partir du sprite qu'on a clicker il faut retrouver l'unit qui 
+        le possede pour ça on use les id() pour associer un sprite avec une unit
+        (en vrai maintenant que j'y pense y'a pas besoin de id(), mais balec ça fait plus stylé)
+        :D
+        """
+        
+        if clickedSprite is None:
+            self.descriptionPanel.HidePanel()
+            
+        objects = self.visibleSprite.copy()
+        for object in objects:
+            if id(objects[object].GetSprite() == id(clickedSprite)): 
+                self.descriptionPanel.ShowPanel(objects[object].GetPreset())
 
     def SpawnUnitBaseByIndex(self):
         '''
@@ -179,6 +200,9 @@ class Game:
 
             """if "Chief_" in names[self.spriteIndex]:
             self.SpawnCivilisation(names[self.spriteIndex])"""
+            
+        return self.newUnit
+
 
     def SpawnUnit(self, popPreset, pos, civilisation):
 
@@ -199,6 +223,8 @@ class Game:
             self.normalUpdateDict[self.newUnit.name] = self.newUnit
         elif int(popPreset["updateWeight"]) == 1:
             self.slowUpdateDict[self.newUnit.name] = self.newUnit
+            
+        return self.newUnit
 
     def SpawnCivilisation(self, civilisationName):
 
@@ -225,7 +251,6 @@ class Game:
             self.slowUpdateDict[newCivilisation.name] = newCivilisation
 
     def GetRandomSprite(self, sprites):
-        print(sprites)
         return sprites[random.randint(0, len(sprites) - 1)]
 
     def PopulateSpawnableDict(self):
@@ -262,8 +287,7 @@ class Game:
             self.normalUpdateDict[sprite].Tick()
 
 
-        if len(self.interfaces) >0:
-            self.interfaces["tkt"].rect.center = self.cameraGroup.offset + self.interfaces["tkt"].pos
+
 
     def SlowUpdate(self):
         sprites = self.slowUpdateDict.copy()
@@ -282,19 +306,35 @@ class Game:
         du coup pour l'instant c'est surtout les update de pygame
         que je met là vue que ça a l'air plutot important :D
         '''
+        
+        if len(self.interfaces) > 0:
+            self.descriptionPanel.rect.center = self.cameraGroup.offset + self.descriptionPanel.pos
 
         self.cameraGroup.update()
         self.cameraGroup.CustomDraw()
 
         # on met aussi un petit text (debug)
+        font = pygame.font.SysFont("Arial", 27)
         l = []
         [l.extend([v]) for v in game.spawnAbleUnit.keys()]
         if len(l) > 0:
-            font = pygame.font.SysFont("Arial", 27)
             letter = font.render("Spawn : " + str(l[self.spriteIndex]), 0, (0, 0, 0))
             self.display.blit(letter, (50, 50))
 
         self.debugUI()
+        
+        
+        descFont = pygame.font.SysFont("Arial", 15)
+        
+        if self.descriptionPanel.Update() is not None:
+            text = self.descriptionPanel.Update()
+            
+            for i in range(len(text)):
+                stats = descFont.render(text[i], 0, (255, 255, 255))    
+                self.display.blit(stats, (1140, \
+                                          190 + 20*i))
+        
+        
 
         pygame.display.update()
         self.clock.tick(120)
