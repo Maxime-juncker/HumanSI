@@ -5,8 +5,10 @@ import Game
 from Utilities import *
 from Game import *
 
+
 # Boucle update
 while game.GAME_RUNNING:
+    
 
     # Si on ferme la fenetre
     for event in pygame.event.get():
@@ -61,12 +63,19 @@ while game.GAME_RUNNING:
                     game.spriteIndex = 0
                 else:
                     game.spriteIndex += 1
+                game.UpdateFantomeSprite()
 
             elif event.key == pygame.K_e:
                 if game.spriteIndex - 1 < 0:
                     game.spriteIndex = len(game.spawnAbleUnit) - 1
                 else:
                     game.spriteIndex -= 1
+                game.UpdateFantomeSprite()
+                
 
     game.SuperUpdate()
     game.Tick()
+
+
+
+    

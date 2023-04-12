@@ -1,13 +1,13 @@
-name,cityHallName,religion,aggressivity,aggroDistance,spawnRate,fertility,popName,houseName,wonderName,updateWeight,chiefName
+name,cityHallName,religion,aggressivity,aggroDistance,maxBasePop,maxPopIncrease,popName,houseName,wonderName,updateWeight,chiefName,houseRessourcesMultiplier, wonderRessourcesIncomes
 
-default,DefaultCityHall,none,50,1000,5,1,DefaultHuman,DefaultHouse,none,1,Chief_Default
-yellow,YellowCityHall,none,50,1000,5,1,Pop_Yellow,YellowHouse,none,1,Chief_Devan
-red,RedCityHall,crabisme,100,10000000,5,1,Pop_Red,RedHouse,RedWonder,1,Chief_Yohann
-purple,PurpleCityHall,crabisme,1000,0,5,1,Pop_Purple,PurpleHouse,none,1,Chief_Alexandre
-blue,BlueCityHall,crabisme,30,1000,5,1,Pop_Blue,BlueHouse,none,1,Chief_Nathan
-green,GreenCityHall,potitFantome,50,1000,5,1,Pop_Green,GreenHouse,none,1,Chief_Maxime
-white,WhiteCityHall,gargantua,50,1000,5,1,Pop_White,WhiteHouse,none,1,Chief_Romain
-black,BlackCityHall,crabisme,10,1000,5,1,Pop_Black,BlackHouse,none,1,Chief_Antonin
+default,DefaultCityHall,none,50,1000,10,1,DefaultHuman,DefaultHouse,none,1,Chief_Default,1,5
+yellow,YellowCityHall,none,50,1000,10,1,Pop_Yellow,YellowHouse,none,1,Chief_Devan,1,5
+red,RedCityHall,crabisme,100,10000000,10,1,Pop_Red,RedHouse,RedWonder,1,Chief_Yohann,1,5
+purple,PurpleCityHall,crabisme,1000,0,10,1,Pop_Purple,PurpleHouse,none,1,Chief_Alexandre,1,5
+blue,BlueCityHall,crabisme,30,1000,20,2,Pop_Blue,BlueHouse,none,1,Chief_Nathan,2,7
+green,GreenCityHall,potitFantome,50,1000,10,1,Pop_Green,GreenHouse,none,1,Chief_Maxime,1,5
+white,WhiteCityHall,gargantua,50,1000,10,1,Pop_White,WhiteHouse,none,1,Chief_Romain,1,5
+black,BlackCityHall,crabisme,10,1000,10,1,Pop_Black,BlackHouse,none,1,Chief_Antonin,1,5
 
 
 

@@ -99,7 +99,9 @@ class Unit(pygame.sprite.Sprite, BasicObject):
         if self.lifeSpawn > 0:
             return
         elif self.lifeSpawn == 0:
+            self.civilisation.currentPopulation -= 1
             Game.game.visibleSprite.pop(self.name)
+            Game.game.cameraGroup.remove(self)
             self.kill()
 
     def StateMachine(self):
@@ -195,28 +197,45 @@ class Civilisation(BasicObject):
 
         self.id = random.randint(0, 9999)
         self.name = self.civilisationPreset["name"] + str(self.id)
-        self.spawnRate = int(self.civilisationPreset["fertility"])
-        self.houseSpawnRate = int(self.civilisationPreset["spawnRate"])
         self.religion = self.civilisationPreset["religion"]
-        self.aggressivity = self.civilisationPreset["aggressivity"]
+        self.aggressivity = int(self.civilisationPreset["aggressivity"])
+        self.maxPop = int(self.civilisationPreset["maxBasePop"])
+        
 
         self.inWar = False
         self.inWarAgainst = None
-        self.currentPopulation = 0
         self.currentZoneSize = 100
         self.wonderAlreadyExist = False
+        self.currentPopulation = 0
+        self.currentHousing = 0
+        self.ressources = 0
         
-        print(self.cityHall)
-        
-
         Game.game.visibleSprite[self.name] = self
         Game.game.civilisationSpawned[self.name] = self
 
         debugSuccessMsg("Civilisation Spawned --> " + self.name)
 
     def Tick(self):
+        
+        self.ressources += self.IncreaseRessources()
+    
         self.SpawnNewPopulation()
         self.DeclareWarOnCivilisation()
+        
+    def IncreaseRessources(self):
+        """
+        Formule pour ajouter des ressources a la civilisation en fonction des bat, pop, et merveille
+        chacun des preset peut etre modifier pour ajouter un multiplier + ou - grand
+        (PS : vue que c'est des multiplicateur eviter de mettre des truc trop grand)
+        
+        Returns:
+            int : les ressources suplémentaire
+        """
+        result = 1 + self.currentPopulation + self.currentHousing * int(self.civilisationPreset["houseRessourcesMultiplier"])
+        if self.wonderAlreadyExist:
+            result += int(self.civilisationPreset["wonderRessourcesIncomes"])
+            
+        return result
         
     def GetSprite(self):
         return self.cityHall.image
@@ -225,23 +244,37 @@ class Civilisation(BasicObject):
         return self.civilisationPreset
 
     def SpawnNewPopulation(self):
-        Game.game.SpawnUnit(self.populationPreset, self.cityHallPos, self)
-        self.currentPopulation += 1
-
-        if self.currentPopulation % 5 == 0:
-            self.SpawnNewHouse()
-
-        if self.currentPopulation % 50 == 0:
+        """
+        fonct pour générer une nouvelle pop / merveille / battiment en fonction des ressources de
+        la civilisation (plus un truc est en haut plus il sera priorisé pour la construction)
+        chaque unit a un prix qui peut etre mofif dans les presets 
+        le nom c'est unitCost
+        """
+        
+        if self.currentPopulation < self.maxPop:    
+            if int(self.populationPreset["unitCost"]) <= self.ressources:
+                Game.game.SpawnUnit(self.populationPreset, self.cityHallPos, self)
+                self.currentPopulation += 1
+                self.ressources -= int(self.populationPreset["unitCost"])
+            
+        
+        if self.wonderPreset is not None and int(self.wonderPreset["unitCost"]) <= self.ressources:
             self.SpawnWonder()
+        elif int(self.housePreset["unitCost"]) <= self.ressources:
+            self.SpawnNewHouse()
+        
 
     def SpawnNewHouse(self):
         Game.game.SpawnUnit(self.housePreset, SeekNewPos(self.cityHallPos, self.currentZoneSize), self)
+        self.ressources -= int(self.housePreset["unitCost"])
         self.currentZoneSize += 20
+        self.currentHousing += 1
+        self.maxPop += int(self.civilisationPreset["maxPopIncrease"])
 
     def SpawnWonder(self):
         if self.wonderAlreadyExist or self.wonderPreset is None:
             return
-
+        self.ressources -= int(self.wonderPreset["unitCost"])
         self.currentZoneSize += 100
         self.spawnRate * 0.1
         self.wonderAlreadyExist = True
@@ -292,3 +325,43 @@ class Civilisation(BasicObject):
                 result[civilisation] = distance
         result = {key: val for key, val in sorted(result.items(), key=lambda ele: ele[0])}
         return result
+    
+class FantomeSprite(BasicObject, pygame.sprite.Sprite):
+
+    def __init__(self, spriteSheet, preset, size, pos, group):
+
+        super().__init__(group)
+        
+        self.image = pygame.image.load(Directories.SpritesDir + preset["spritesPath"] + "/" + spriteSheet[0])
+        self.image = pygame.transform.scale(self.image, (size*self.image.get_size()[0] \
+                                                        , size*self.image.get_size()[1]))
+
+        self.rect = self.image.get_rect()
+        self.rect.bottomright = pos
+        self.image.set_alpha(150)
+        self.isAddingAlpha = True # True = ça monte False = ça déscend
+        
+    def DestroySprite(self):
+        Game.game.cameraGroup.remove(self)
+        
+        self.kill()
+        
+    def Tick(self):
+        if self.isAddingAlpha:
+            self.AddAlpha()
+        else:
+            self.SubstractAlpha()
+    
+    def AddAlpha(self):
+        self.image.set_alpha(self.image.get_alpha()+2)
+        if self.image.get_alpha() > 150:
+            self.isAddingAlpha = False
+            
+    def SubstractAlpha(self):
+        self.image.set_alpha(self.image.get_alpha()-2)
+        if self.image.get_alpha() < 30:
+            self.isAddingAlpha = True
+            
+        
+        
+    

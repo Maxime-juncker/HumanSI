@@ -33,9 +33,9 @@ class DescriptionPanel(Panel):
         super().__init__(size, pos)
         self.statsToShow = None
         
-    def ShowPanel(self, stats):
-        print(stats)
-        self.statsToShow = stats
+    def ShowPanel(self, object):
+        #print(object)
+        self.statsToShow = object.GetPreset()
         self.image.set_alpha(255)
         
     

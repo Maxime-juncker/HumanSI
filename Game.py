@@ -111,19 +111,27 @@ class CameraGroup(pygame.sprite.Group):
         self.offset.x = game.newUnit.rect.centerx - self.half_w
         self.offset.y = game.newUnit.rect.centery - self.half_h
 
-
 class Game:
 
     def __init__(self):
-        # Creation de la fenetre de l'app
-
+        """
+        Init permet de crée et setup la var Game qui est basiquement le truc qui 
+        relie tous le sytemes ensembre du coup si ça marche pas rien ne marchera 
+        a la fin on passe la var GAME_RUNNING a True tant qu'elle est a fausse
+        il n'y a ni update ni aucun autre truc a par cette fonction qui marche .
+        """
+        
+        # ============== VARS =============================
+        self.descPanelLocation = (930, 0)
         self.slowUpdateTimer = None
         self.newUnit = None
         self.selectedTarget = None
+        self.currentFantomeSprite = None
         self.civilisationSpawned = {}
         self.spriteIndex = 0
         self.spawnAbleUnit = LoadPreset(Directories.PresetDir + "Presets.csv")
-
+        
+        # =================================================
         # ============ SETUP LIST =====================
         self.normalUpdateDict = {}
         self.slowUpdateDict = {}
@@ -140,11 +148,14 @@ class Game:
         self.cameraGroup = CameraGroup()
 
         self.clock = pygame.time.Clock()
+        
+        self.font = pygame.font.SysFont("Arial", 27)
+        self.descFont = pygame.font.SysFont("Arial", 15)
         # =================================================
         
                 
         # ============ HUD VARS =====================
-        self.descriptionPanel = DescriptionPanel(self.cameraGroup.spriteSizeMultiplier,(930, 0))
+        self.descriptionPanel = DescriptionPanel(self.cameraGroup.spriteSizeMultiplier, self.descPanelLocation)
         self.interfaces["descriptionPanel"] = self.descriptionPanel
         
         
@@ -152,9 +163,9 @@ class Game:
         pygame.display.set_caption("HumainSI")
 
         self.SlowUpdate()
+        self.UpdateFantomeSprite()
 
         self.GAME_RUNNING = True
-
 
     def UpdateDescPanel(self, clickedSprite):
         
@@ -171,7 +182,27 @@ class Game:
         objects = self.visibleSprite.copy()
         for object in objects:
             if id(objects[object].GetSprite() == id(clickedSprite)): 
-                self.descriptionPanel.ShowPanel(objects[object].GetPreset())
+                print(objects[object].name)
+                self.descriptionPanel.ShowPanel(objects[object])
+                return
+            
+    def UpdateFantomeSprite(self):
+        if self.currentFantomeSprite is not None:
+            self.currentFantomeSprite.DestroySprite()
+            
+        names = []
+        [names.extend([v]) for v in self.spawnAbleUnit.keys()]
+
+        if "none" in names[self.spriteIndex]:
+            return
+        preset = LoadPreset(Directories.PresetDir + "Presets.csv", names[self.spriteIndex])
+        sprites = LoadSpritesFromFolder(preset["spritesPath"])
+        
+
+        offsetPos = self.cameraGroup.offset - self.cameraGroup.internalOffset + pygame.mouse.get_pos()
+        self.currentFantomeSprite = FantomeSprite(sprites, preset,self.cameraGroup.spriteSizeMultiplier,\
+            offsetPos, self.cameraGroup)
+        
 
     def SpawnUnitBaseByIndex(self):
         '''
@@ -182,8 +213,12 @@ class Game:
         names = []
         [names.extend([v]) for v in self.spawnAbleUnit.keys()]
 
+        if "none" in names[self.spriteIndex]:
+            return
+
         preset = LoadPreset(Directories.PresetDir + "Presets.csv", names[self.spriteIndex])
         sprites = LoadSpritesFromFolder(preset["spritesPath"])
+        
 
         if "CityHall" in names[self.spriteIndex]:
             self.SpawnCivilisation(names[self.spriteIndex])
@@ -202,7 +237,6 @@ class Game:
             self.SpawnCivilisation(names[self.spriteIndex])"""
             
         return self.newUnit
-
 
     def SpawnUnit(self, popPreset, pos, civilisation):
 
@@ -286,9 +320,6 @@ class Game:
         for sprite in sprites:
             self.normalUpdateDict[sprite].Tick()
 
-
-
-
     def SlowUpdate(self):
         sprites = self.slowUpdateDict.copy()
         for sprite in sprites:
@@ -309,32 +340,33 @@ class Game:
         
         if len(self.interfaces) > 0:
             self.descriptionPanel.rect.center = self.cameraGroup.offset + self.descriptionPanel.pos
+            
+        if self.currentFantomeSprite is not None:
+            offsetPos = self.cameraGroup.offset - self.cameraGroup.internalOffset + pygame.mouse.get_pos()
+            self.currentFantomeSprite.rect.bottomright = offsetPos
+            self.currentFantomeSprite.Tick()
 
         self.cameraGroup.update()
         self.cameraGroup.CustomDraw()
 
         # on met aussi un petit text (debug)
-        font = pygame.font.SysFont("Arial", 27)
+
         l = []
         [l.extend([v]) for v in game.spawnAbleUnit.keys()]
         if len(l) > 0:
-            letter = font.render("Spawn : " + str(l[self.spriteIndex]), 0, (0, 0, 0))
+            letter = self.font.render("Spawn : " + str(l[self.spriteIndex]), 0, (0, 0, 0))
             self.display.blit(letter, (50, 50))
 
         self.debugUI()
-        
-        
-        descFont = pygame.font.SysFont("Arial", 15)
+               
         
         if self.descriptionPanel.Update() is not None:
             text = self.descriptionPanel.Update()
             
             for i in range(len(text)):
-                stats = descFont.render(text[i], 0, (255, 255, 255))    
-                self.display.blit(stats, (1140, \
-                                          190 + 20*i))
-        
-        
+                stats = self.descFont.render(text[i], 0, (255, 255, 255))    
+                self.display.blit(stats, (self.descPanelLocation[0] + 200, \
+                                          self.descPanelLocation[1] + 190 + 20*i))
 
         pygame.display.update()
         self.clock.tick(120)
