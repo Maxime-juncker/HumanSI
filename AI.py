@@ -44,9 +44,10 @@ class Unit(pygame.sprite.Sprite, BasicObject):
         # Animations
         self.sprites = spriteSheet
         self.currentSprite = 0.0
-        self.image = pygame.image.load(Directories.SpritesDir + preset["spritesPath"] + "/" + spriteSheet[0])
-        self.image = pygame.transform.scale(self.image, (size*self.image.get_size()[0] \
-                                                        , size*self.image.get_size()[1]))
+        scale = Clamp(size * random.random() + 0.4, 0.75, 1.1)
+        self.image = pygame.image.load(Directories.SpritesDir + preset["spritesPath"] + "/" + spriteSheet[random.randrange(0, len(spriteSheet))])
+        self.image = pygame.transform.scale(self.image, (scale*self.image.get_size()[0] \
+                                                        , scale*self.image.get_size()[1]))
 
         self.animTimer = 5
 
@@ -60,7 +61,8 @@ class Unit(pygame.sprite.Sprite, BasicObject):
         self.lifeSpawn = int(self.unitPreset["lifeSpan"])
 
         self.rect.bottomright = pos
-
+        self.image = pygame.transform.rotate(self.image, random.randint(-6,6))
+        self.rect = self.image.get_rect(center=self.rect.center)
         self.civilisation = civilisation
 
         Game.game.visibleSprite[self.name] = self
@@ -353,12 +355,12 @@ class FantomeSprite(BasicObject, pygame.sprite.Sprite):
             self.SubstractAlpha()
     
     def AddAlpha(self):
-        self.image.set_alpha(self.image.get_alpha()+2)
+        self.image.set_alpha(self.image.get_alpha()+1)
         if self.image.get_alpha() > 150:
             self.isAddingAlpha = False
             
     def SubstractAlpha(self):
-        self.image.set_alpha(self.image.get_alpha()-2)
+        self.image.set_alpha(self.image.get_alpha()-1)
         if self.image.get_alpha() < 30:
             self.isAddingAlpha = True
             

@@ -3,6 +3,7 @@ name,speed,moveTimer,interactionRate,attack,attackSpeed,health,lifeSpan,civilisa
 none,0,0,0,0,0,-1,-1,none,-1,none,1,-1
 Rock,0,0,0,0,0,50,-1,none,-1,Props/Rocks,1,-1
 Tree,0,0,0,0,0,50,-1,none,-1,Props/Trees,1,-1
+Forest,0,0,0,0,0,50,-1,none,-1,Props/Forests,1,-1
 
 YellowCityHall,0,0,0,0,0,100,-1,yellow,-1,Civilisations/Yellow/BuildingsYellow/HDV,1,1
 YellowHouse,0,0,0,0,0,100,-1,yellow,35,Civilisations/Yellow/BuildingsYellow/Buildings,0,-1
