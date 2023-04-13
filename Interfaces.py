@@ -35,7 +35,7 @@ class DescriptionPanel(Panel):
         
     def ShowPanel(self, object):
         #print(object)
-        self.statsToShow = object.GetPreset()
+        self.statsToShow = object.GetInfos()
         self.image.set_alpha(255)
         
     

@@ -120,75 +120,55 @@ class Game:
         a la fin on passe la var GAME_RUNNING a True tant qu'elle est a fausse
         il n'y a ni update ni aucun autre truc a par cette fonction qui marche .
         """
-        
-        # ============== VARS =============================
-        self.descPanelLocation = (930, 0)
-        self.slowUpdateTimer = None
-        self.newUnit = None
-        self.selectedTarget = None
-        self.currentFantomeSprite = None
-        self.civilisationSpawned = {}
-        self.spriteIndex = 0
-        self.spawnAbleUnit = LoadPreset(Directories.PresetDir + "Presets.csv")
-        
-        # =================================================
-        # ============ SETUP LIST =====================
-        self.normalUpdateDict = {}
-        self.slowUpdateDict = {}
-        self.visibleSprite = {}
-        self.interfaces = {}
-        self.PopulateSpawnableDict()
+        try:
+            # ============ SETUP PYGAME =====================
+            pygame.init()
+            pygame.display.set_caption("Chargement...")
+            self.display = pygame.display.set_mode((1920, 1080), pygame.FULLSCREEN)
+            self.cameraGroup = CameraGroup()
+            self.clock = pygame.time.Clock()
+            self.font = pygame.font.SysFont("Arial", 27)
+            self.descFont = pygame.font.SysFont("Arial", 15)
+            # =================================================
+            # ============== VARS =============================
+            self.descPanelLocation = (self.display.get_rect().right - 560, 0)
+            debugFailMsg(  self.display.get_rect().right)
+            self.slowUpdateTimer = None
+            self.newUnit = None
+            self.selectedTarget = None
+            self.currentFantomeSprite = None
+            self.civilisationSpawned = {}
+            self.normalUpdateDict = {}
+            self.slowUpdateDict = {}
+            self.visibleSprite = {}
+            self.interfaces = {}
+            self.spriteIndex = 0
+            self.spawnAbleUnit = LoadPreset(Directories.PresetDir + "Presets.csv")
+            self.descriptionPanel = DescriptionPanel(self.cameraGroup.spriteSizeMultiplier, self.descPanelLocation)
+            self.interfaces["descriptionPanel"] = self.descriptionPanel
+            self.PopulateSpawnableDict()       
+            # =================================================
+            
+            # C'est bon on a fini le setup la game loop peut commencer :D
+            pygame.display.set_caption("HumainSI")
 
-        # ============ SETUP PYGAME =====================
+            self.SlowUpdate()
+            self.UpdateFantomeSprite()
 
-        pygame.init()
-        pygame.display.set_caption("Chargement...")
-
-        self.display = pygame.display.set_mode((1920, 1080), pygame.FULLSCREEN)
-        self.cameraGroup = CameraGroup()
-
-        self.clock = pygame.time.Clock()
-        
-        self.font = pygame.font.SysFont("Arial", 27)
-        self.descFont = pygame.font.SysFont("Arial", 15)
-        # =================================================
-        
-                
-        # ============ HUD VARS =====================
-        self.descriptionPanel = DescriptionPanel(self.cameraGroup.spriteSizeMultiplier, self.descPanelLocation)
-        self.interfaces["descriptionPanel"] = self.descriptionPanel
-        
-        
-        # C'est bon on a fini le setup la game loop peut commencer :D
-        pygame.display.set_caption("HumainSI")
-
-        self.SlowUpdate()
-        self.UpdateFantomeSprite()
-
-        self.GAME_RUNNING = True
+            self.GAME_RUNNING = True
+            debugSuccessMsg("l'init c'est bien déroulé ! \n lancement de HumanSI...")
+        except:
+            debugFailMsg("/!\ FAIL DE L'INIT DANS Game.py \n HumanSI ne peut pas démarer !")
 
     def UpdateDescPanel(self, clickedSprite):
-        
-        """
-        en gros le but ici c'est de a partir du sprite qu'on a clicker il faut retrouver l'unit qui 
-        le possede pour ça on use les id() pour associer un sprite avec une unit
-        (en vrai maintenant que j'y pense y'a pas besoin de id(), mais balec ça fait plus stylé)
-        :D
-        """
-        
-        if clickedSprite is None:
+        if clickedSprite == None:
             self.descriptionPanel.HidePanel()
-            
-        objects = self.visibleSprite.copy()
-        for object in objects:
-            if id(objects[object].GetSprite() == id(clickedSprite)): 
-                print(objects[object].name)
-                self.descriptionPanel.ShowPanel(objects[object])
-                return
+            return
+        self.descriptionPanel.ShowPanel(self.visibleSprite[clickedSprite])
             
     def UpdateFantomeSprite(self):
         if self.currentFantomeSprite is not None:
-            self.currentFantomeSprite.DestroySprite()
+            self.currentFantomeSprite.Destroy()
             
         names = []
         [names.extend([v]) for v in self.spawnAbleUnit.keys()]
@@ -232,9 +212,6 @@ class Game:
             self.normalUpdateDict[self.newUnit.name] = self.newUnit
         elif int(preset["updateWeight"]) == 1:
             self.slowUpdateDict[self.newUnit.name] = self.newUnit
-
-            """if "Chief_" in names[self.spriteIndex]:
-            self.SpawnCivilisation(names[self.spriteIndex])"""
             
         return self.newUnit
 
@@ -295,12 +272,36 @@ class Game:
                 self.spawnAbleUnit[element] = LoadPreset(Directories.PresetDir + "Presets.csv", element)
 
     def KillAllActors(self):
-        for sprite in self.cameraGroup:
-            sprite.kill()
-
+        
+        for object in self.visibleSprite.copy():
+            self.visibleSprite[object].Destroy()
         self.slowUpdateDict.clear()
         self.normalUpdateDict.clear()
         self.visibleSprite.clear()
+        
+    def GetClosestObjectToLocation(self, location:tuple, maxDistance, exeption=""):
+        """
+        fonct pour get l'object le plus proche d'un point 
+        c'est surtout utiliser pour quand le user click sur un object 
+        et veut ses stats
+        Args:
+            location (tuple): coordoner d'un point
+        Returns:
+            string: le nom de l'objet le plus proche du point
+        """
+        temp = self.visibleSprite.copy()
+        result = {}
+
+        for object in temp:
+            if object == exeption:
+                continue
+            distance = location.distance_to(temp[object].GetLocation())
+            if distance <= maxDistance: 
+                result[object] = distance
+        if len(result) == 0:
+            return None
+        result = {key: val for key, val in sorted(result.items(), key=lambda ele: ele[1])}
+        return list(result.keys())[0]
 
     def Tick(self):
         '''

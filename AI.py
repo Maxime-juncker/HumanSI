@@ -4,11 +4,6 @@ import Game
 import pygame
 from Utilities import *
 
-currentResources = {
-    "wood": 0,
-    "stone": 0,
-}
-
 
 class UnitState:
     NONE = -1
@@ -27,8 +22,14 @@ class BasicObject:
     def GetSprite(self):
         return None
     
-    def GetPreset(self):
+    def GetInfos(self):
         return None
+    
+    def GetLocation(self):
+        return (0,0)
+    
+    def Destroy(self):
+        del self
     
 
 
@@ -59,10 +60,12 @@ class Unit(pygame.sprite.Sprite, BasicObject):
         self.id = str(random.randint(0, 99999))
         self.name = self.unitPreset["name"] + str(self.id)
         self.lifeSpawn = int(self.unitPreset["lifeSpan"])
+        self.health = int(self.unitPreset["health"])
+        self.currentTarget = None
 
-        self.rect.bottomright = pos
         self.image = pygame.transform.rotate(self.image, random.randint(-6,6))
         self.rect = self.image.get_rect(center=self.rect.center)
+        self.rect.bottomright = pos
         self.civilisation = civilisation
 
         Game.game.visibleSprite[self.name] = self
@@ -81,8 +84,30 @@ class Unit(pygame.sprite.Sprite, BasicObject):
     def GetSprite(self):
         return self.image
 
-    def GetPreset(self):
-        return self.unitPreset
+    def GetInfos(self):
+        result = {}
+        result["id"] = self.name
+        result["pv"] = self.health
+        result["vitesse"] = self.unitPreset["speed"]
+        result["atk"] = self.unitPreset["attack"]
+        result["vitesse atk"] = self.unitPreset["attackSpeed"]
+        result["civilisation"] = self.unitPreset["civilisation"]
+        result["coût objet"] = self.unitPreset["unitCost"]
+        result["chemin des sprites"] = self.unitPreset["spritesPath"]
+        result["est spawnable"] = self.unitPreset["isSpawnable"]
+        result["updateWeight"] = self.unitPreset["updateWeight"]
+        if self.currentTarget != None:
+            result["target"] = self.currentTarget.name
+        return result
+    
+    def GetLocation(self):
+        return pygame.Vector2(self.rect.bottomright)
+
+    def Destroy(self):
+        Game.game.visibleSprite.pop(self.name)
+        Game.game.cameraGroup.remove(self)
+        self.kill()
+        return super().Destroy()
     
     def DoAnimation(self):
         self.currentSprite += 0.05
@@ -104,22 +129,34 @@ class Unit(pygame.sprite.Sprite, BasicObject):
             self.civilisation.currentPopulation -= 1
             Game.game.visibleSprite.pop(self.name)
             Game.game.cameraGroup.remove(self)
-            self.kill()
+            self.Destroy()
+
 
     def StateMachine(self):
-
+        
+        #si y'a le temps faut deplacer ça dans les civilisations pour que ça soit pas appeler chaques frames
+        #==================A DEPLACER======================================================
         if self.civilisation is not None:
             if self.civilisation.inWar:
                 self.SetNewState(UnitState.IN_WAR)
-
+        #=================================================================================
+        
         if self.state == UnitState.MOVING:
             self.MoveTo(self.currentDestination)
         if self.state == UnitState.IDLE:
             self.currentDestination = SeekNewPos(self.rect, 200)
             self.SetNewState(UnitState.MOVING)
         if self.state == UnitState.IN_WAR:
-            self.currentDestination = self.civilisation.inWarAgainst.cityHallPos
+            self.AttackNearbyEnemies()
             self.MoveTo(self.currentDestination)
+            
+    def AttackNearbyEnemies(self):
+        target = Game.game.GetClosestObjectToLocation(self.GetLocation(), 50, self.name)
+        if target == None:
+            self.currentTarget = self.civilisation.inWarAgainst.cityHall
+        else:
+            self.currentTarget = Game.game.visibleSprite[target]
+        self.currentDestination = self.currentTarget.GetLocation()
 
     def SetNewState(self, newState: UnitState):
         '''
@@ -224,6 +261,9 @@ class Civilisation(BasicObject):
         self.SpawnNewPopulation()
         self.DeclareWarOnCivilisation()
         
+    def Destroy(self):
+        return super().Destroy()
+        
     def IncreaseRessources(self):
         """
         Formule pour ajouter des ressources a la civilisation en fonction des bat, pop, et merveille
@@ -242,8 +282,32 @@ class Civilisation(BasicObject):
     def GetSprite(self):
         return self.cityHall.image
     
-    def GetPreset(self):
-        return self.civilisationPreset
+    def GetInfos(self):
+        result = {}
+        result["nom"] = self.name
+        result["religion"] = self.civilisationPreset["religion"]
+        result["aggressiviter"] = self.civilisationPreset["aggressivity"]
+        result["distance d'influance"] = self.currentZoneSize
+        result["population"] = self.currentPopulation
+        result["max pop"] = self.maxPop
+        result["maisons"] = self.currentHousing
+        result["ressources"] = self.ressources
+        if self.wonderPreset != None:
+            result["merveille"] = self.wonderPreset["name"]
+            result["merveille construite ?"] = self.wonderAlreadyExist
+            
+        if self.inWar:
+            result["en guerre contre"] = self.inWarAgainst.name
+        else:
+            result["civilisation"] = "en paix"
+            
+        result["chef"] = self.civilisationPreset["chiefName"]
+
+        return result
+    
+    def GetLocation(self):
+        return pygame.Vector2(self.cityHallPos)
+
 
     def SpawnNewPopulation(self):
         """
@@ -286,8 +350,7 @@ class Civilisation(BasicObject):
     def DeclareWarOnCivilisation(self):
         if self.inWar:
             return
-
-        if len(self.CheckNeighnorsCivilisation()) >= 1:
+        if len(self.CheckNeighnorsCivilisation()) > 0:
             # on prend une cible au pif dans les voisins
             temp = random.choice(list(self.CheckNeighnorsCivilisation()))
             target = Game.game.civilisationSpawned[temp]
@@ -298,16 +361,25 @@ class Civilisation(BasicObject):
                 debugFailMsg(self.name + "declare la guerre a " + target.name)
 
     def CanDeclareWar(self, civilisation):
-        if self.civilisationPreset["aggressivity"] == 0:
+        """
+        La formule pour savoir si une civilisation declare la guerre a une autre
+        Args:
+            civilisation (civilisation): la civilisation target
+        Returns:
+            bool: oui ou non la civilisation entre en guerre
+        """
+        
+        if int(self.civilisationPreset["aggressivity"]) == 0:
             return False
-
+        if int(self.civilisationPreset["aggressivity"]) == 100:
+            return True
         if self.civilisationPreset["religion"] != civilisation.civilisationPreset["religion"] and \
                 int(self.civilisationPreset["aggressivity"]) >= 25:
             return True
-        return True
-
-        # return random.randint(0, self.civilisationPreset["aggressivity"]) > 80
-
+        if random.randint(0, 100) <= int(self.civilisationPreset["aggressivity"]):
+            return True
+        return False
+    
     def CheckNeighnorsCivilisation(self):
 
         """
@@ -323,9 +395,10 @@ class Civilisation(BasicObject):
         for civilisation in temp:
             distance = self.cityHallPos.distance_to(Game.game.civilisationSpawned[civilisation].cityHallPos)
 
-            if distance <= int(self.civilisationPreset["aggroDistance"]):
+            if distance >= self.currentZoneSize:
                 result[civilisation] = distance
         result = {key: val for key, val in sorted(result.items(), key=lambda ele: ele[0])}
+        
         return result
     
 class FantomeSprite(BasicObject, pygame.sprite.Sprite):
@@ -342,11 +415,12 @@ class FantomeSprite(BasicObject, pygame.sprite.Sprite):
         self.rect.bottomright = pos
         self.image.set_alpha(150)
         self.isAddingAlpha = True # True = ça monte False = ça déscend
-        
-    def DestroySprite(self):
+
+    def Destroy(self):
         Game.game.cameraGroup.remove(self)
-        
         self.kill()
+        return super().Destroy()
+        
         
     def Tick(self):
         if self.isAddingAlpha:

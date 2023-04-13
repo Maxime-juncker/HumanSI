@@ -9,7 +9,6 @@ from Game import *
 # Boucle update
 while game.GAME_RUNNING:
     
-
     # Si on ferme la fenetre
     for event in pygame.event.get():
         # l'événement de fermeture de la window
@@ -36,16 +35,10 @@ while game.GAME_RUNNING:
                 game.KillAllActors()
 
             if mouseButton[2]:
-                # get a list of all sprites that are under the mouse cursor
                 offsetPos = game.cameraGroup.offset - game.cameraGroup.internalOffset + pygame.mouse.get_pos()
-                clicked_sprites = [s for s in game.cameraGroup if s.rect.collidepoint(offsetPos)]
-
-                if len(clicked_sprites) > 0:
-                    game.selectedTarget = clicked_sprites[0]
-                    game.UpdateDescPanel(clicked_sprites[0])
-                else:
-                    game.UpdateDescPanel(None)
-                    
+                closestObject = game.GetClosestObjectToLocation(offsetPos, 45)
+                #L'update du panneau de desc peut supporter les valuer None c'est pas un probleme
+                game.UpdateDescPanel(closestObject) 
 
         """if event.type == pygame.MOUSEWHEEL:
 
@@ -56,6 +49,8 @@ while game.GAME_RUNNING:
             
             if event.key == pygame.K_ESCAPE:
                 game.descriptionPanel.HidePanel()
+                game.spriteIndex = 0
+                game.UpdateFantomeSprite()
             
 
             if event.key == pygame.K_a:

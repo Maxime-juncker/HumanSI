@@ -19,7 +19,7 @@ class bcolors:  # /!\ les couleurs ne marche que sur sur certains IDE (ex : edup
     UNDERLINE = '\033[4m'
 
 def debugSuccessMsg(info):
-    print(bcolors.OKGREEN + "Success : " + bcolors.OKCYAN + str(info) + bcolors.ENDC)
+    print(bcolors.OKCYAN + "Success : " + bcolors.OKGREEN + str(info) + bcolors.ENDC)
 
 
 def debugFailMsg(info):
