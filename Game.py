@@ -132,7 +132,6 @@ class Game:
             # =================================================
             # ============== VARS =============================
             self.descPanelLocation = (self.display.get_rect().right - 560, 0)
-            debugFailMsg(  self.display.get_rect().right)
             self.slowUpdateTimer = None
             self.newUnit = None
             self.selectedTarget = None
@@ -152,21 +151,25 @@ class Game:
             # C'est bon on a fini le setup la game loop peut commencer :D
             pygame.display.set_caption("HumainSI")
 
-            self.SlowUpdate()
+            # self.SlowUpdate()
             self.UpdateFantomeSprite()
 
             self.GAME_RUNNING = True
             debugSuccessMsg("l'init c'est bien déroulé ! \n lancement de HumanSI...")
-        except:
+        except Exception as e:
             debugFailMsg("/!\ FAIL DE L'INIT DANS Game.py \n HumanSI ne peut pas démarer !")
+            debugFailMsg(e)
 
     def UpdateDescPanel(self, clickedSprite):
         if clickedSprite == None:
+            self.selectedTarget = None
             self.descriptionPanel.HidePanel()
             return
+        self.selectedTarget = self.visibleSprite[clickedSprite]
         self.descriptionPanel.ShowPanel(self.visibleSprite[clickedSprite])
             
     def UpdateFantomeSprite(self):
+        
         if self.currentFantomeSprite is not None:
             self.currentFantomeSprite.Destroy()
             
@@ -208,11 +211,6 @@ class Game:
         self.newUnit = Unit(self.display, sprites, preset, None,self.cameraGroup.spriteSizeMultiplier,\
             offsetPos, self.cameraGroup)
 
-        if int(preset["updateWeight"]) == 0:
-            self.normalUpdateDict[self.newUnit.name] = self.newUnit
-        elif int(preset["updateWeight"]) == 1:
-            self.slowUpdateDict[self.newUnit.name] = self.newUnit
-            
         return self.newUnit
 
     def SpawnUnit(self, popPreset, pos, civilisation):
@@ -229,12 +227,7 @@ class Game:
 
         self.newUnit = Unit(self.display, sprites, popPreset, civilisation, \
             self.cameraGroup.spriteSizeMultiplier, pos, self.cameraGroup)
-        
-        if int(popPreset["updateWeight"]) == 0:
-            self.normalUpdateDict[self.newUnit.name] = self.newUnit
-        elif int(popPreset["updateWeight"]) == 1:
-            self.slowUpdateDict[self.newUnit.name] = self.newUnit
-            
+                   
         return self.newUnit
 
     def SpawnCivilisation(self, civilisationName):
@@ -255,11 +248,6 @@ class Game:
         newCivilisation = Civilisation(preset)
 
         self.SpawnUnit(chiefPreset, offsetPos, newCivilisation)
-
-        if int(preset["updateWeight"]) == 0:
-            self.normalUpdateDict[newCivilisation.name] = newCivilisation
-        elif int(preset["updateWeight"]) == 1:
-            self.slowUpdateDict[newCivilisation.name] = newCivilisation
 
     def GetRandomSprite(self, sprites):
         return sprites[random.randint(0, len(sprites) - 1)]
@@ -302,6 +290,31 @@ class Game:
             return None
         result = {key: val for key, val in sorted(result.items(), key=lambda ele: ele[1])}
         return list(result.keys())[0]
+    
+    def GetClosestObjectToOtherObject(self, unit, maxDistance, exeption=""):
+        """
+        fonct pour get l'object le plus proche d'un point 
+        c'est surtout utiliser pour quand le user click sur un object 
+        et veut ses stats
+        Args:
+            location (tuple): coordoner d'un point
+        Returns:
+            string: le nom de l'objet le plus proche du point
+        """
+        temp = self.visibleSprite.copy()
+        result = {}
+
+        for object in temp:
+            if object == exeption or temp[object].GetCivilisation() == unit.GetCivilisation():
+                continue
+            distance = unit.GetLocation().distance_to(temp[object].GetLocation())
+            if distance <= maxDistance: 
+                result[object] = distance
+        if len(result) == 0:
+            return None
+        result = {key: val for key, val in sorted(result.items(), key=lambda ele: ele[1])}
+        return list(result.keys())[0]
+
 
     def Tick(self):
         '''
@@ -345,7 +358,7 @@ class Game:
         if self.currentFantomeSprite is not None:
             offsetPos = self.cameraGroup.offset - self.cameraGroup.internalOffset + pygame.mouse.get_pos()
             self.currentFantomeSprite.rect.bottomright = offsetPos
-            self.currentFantomeSprite.Tick()
+            #self.currentFantomeSprite.Update()
 
         self.cameraGroup.update()
         self.cameraGroup.CustomDraw()

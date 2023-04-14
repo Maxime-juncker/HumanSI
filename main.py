@@ -7,6 +7,7 @@ from Game import *
 
 
 # Boucle update
+
 while game.GAME_RUNNING:
     
     # Si on ferme la fenetre
@@ -14,10 +15,9 @@ while game.GAME_RUNNING:
         # l'événement de fermeture de la window
         if event.type == pygame.QUIT:
             game.GAME_RUNNING = False
+            game.KillAllActors()
             pygame.quit()
             debugFailMsg("Exiting...")
-            game.KillAllActors()
-            game.slowUpdateTimer.cancel()
 
         if event.type == pygame.MOUSEBUTTONDOWN:
 
@@ -48,7 +48,7 @@ while game.GAME_RUNNING:
         if event.type == pygame.KEYDOWN:
             
             if event.key == pygame.K_ESCAPE:
-                game.descriptionPanel.HidePanel()
+                game.UpdateDescPanel(None)
                 game.spriteIndex = 0
                 game.UpdateFantomeSprite()
             
@@ -69,7 +69,7 @@ while game.GAME_RUNNING:
                 
 
     game.SuperUpdate()
-    game.Tick()
+    #game.Tick()
 
 
 
