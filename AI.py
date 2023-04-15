@@ -10,12 +10,13 @@ class UnitState:
     NONE = -1
     IDLE = 0
     MOVING = 1
-    IN_WAR = 2
+    DED = 2
 
 
 class BasicObject:
     name = ""
     id = 0
+    category = None
 
     def Update(self):
         pass
@@ -68,6 +69,7 @@ class Unit(pygame.sprite.Sprite, BasicObject):
         self.name = self.unitPreset["name"] + str(self.id)
         self.lifeSpawn = int(self.unitPreset["lifeSpan"])
         self.health = int(self.unitPreset["health"])
+        self.category = self.unitPreset["category"]
         self.currentTarget = None
 
         self.image = pygame.transform.rotate(self.image, random.randint(-6,6))
@@ -87,7 +89,7 @@ class Unit(pygame.sprite.Sprite, BasicObject):
             threading.Thread(target=self.Update, daemon=True).start()
 
     def Update(self):
-        while True:
+        while self.state != UnitState.DED:
             self.StateMachine()
             self.UpdateLifeSpan()
             # self.DoAnimation()
@@ -103,7 +105,7 @@ class Unit(pygame.sprite.Sprite, BasicObject):
 
     def GetInfos(self):
         if "CityHall" in self.name:
-            return self.civilisation.GetInfos()       
+            return self.civilisation.GetInfos()
         
         result = {}
         result["id"] = self.name
@@ -111,7 +113,8 @@ class Unit(pygame.sprite.Sprite, BasicObject):
         result["vitesse"] = self.unitPreset["speed"]
         result["dégats"] = self.unitPreset["damage"]
         result["vitesse atk"] = self.unitPreset["attackSpeed"]
-        result["civilisation"] = self.civilisation.name
+        if self.civilisation != None:
+            result["civilisation"] = self.civilisation.name
         result["coût objet"] = self.unitPreset["unitCost"]
         result["chemin des sprites"] = self.unitPreset["spritesPath"]
         result["est spawnable"] = self.unitPreset["isSpawnable"]
@@ -124,12 +127,23 @@ class Unit(pygame.sprite.Sprite, BasicObject):
         return pygame.Vector2(self.rect.bottomright)
 
     def Destroy(self):
+        self.SetNewState(UnitState.DED)
+        
         if Game.game.selectedTarget == self:
             Game.game.UpdateDescPanel(None)
             
-        if self.civilisation != None:
-            self.civilisation.currentPopulation.pop(self.name)
+        if "building" in self.unitPreset["category"]:
+            Game.game.SpawnUnit(LoadPreset(Directories.PresetDir + "Presets.csv", "Ruines"), self.rect.bottomright, None)
             
+            
+        if self.civilisation is not None:
+            if self.unitPreset["category"] == "unit":
+                self.civilisation.currentPopulation.pop(self.name)
+            elif self.unitPreset["category"] == "building":
+                self.civilisation.currentHousing.pop(self.name)
+                
+        if "CityHall" in self.name:
+            self.civilisation.Destroy()
         
         Game.game.visibleSprite.pop(self.name)
         Game.game.cameraGroup.remove(self)
@@ -162,7 +176,8 @@ class Unit(pygame.sprite.Sprite, BasicObject):
         #==================A DEPLACER======================================================
         if self.civilisation is not None:
             if self.civilisation.inWar:
-                self.SetNewState(UnitState.IN_WAR)
+                self.CheckForNearbyEnemies()
+                self.AttackNearbyEnemies()
         #=================================================================================
         
         if self.state == UnitState.MOVING:
@@ -170,15 +185,16 @@ class Unit(pygame.sprite.Sprite, BasicObject):
         if self.state == UnitState.IDLE:
             self.currentDestination = SeekNewPos(self.rect, 200)
             self.SetNewState(UnitState.MOVING)
-        if self.state == UnitState.IN_WAR:
-            self.CheckForNearbyEnemies()
-            self.AttackNearbyEnemies()
-            self.MoveTo(self.currentDestination)
             
     def AttackNearbyEnemies(self):
         if self.currentTarget == None:
             return
-        if self.GetLocation().distance_to(self.currentTarget.GetLocation()) < 20:
+        if self.currentTarget.category == "building":
+            reach = 40
+        else:
+            reach = 25
+            
+        if self.GetLocation().distance_to(self.currentTarget.GetLocation()) < reach:
             self.currentTarget.Damage(int(self.unitPreset["damage"]))
             time.sleep(float(self.unitPreset["attackSpeed"]))
         self.canAttack = True
@@ -186,8 +202,6 @@ class Unit(pygame.sprite.Sprite, BasicObject):
     def Damage(self, amount):
         self.health -= amount
         if self.health <= 0:
-            if "CityHall" in self.name:
-                self.civilisation.Destroy()
             self.Destroy()
             
         if Game.game.selectedTarget == self:
@@ -197,7 +211,7 @@ class Unit(pygame.sprite.Sprite, BasicObject):
         
     def CheckForNearbyEnemies(self):
         target = Game.game.GetClosestObjectToOtherObject(self, 50, self.name)
-        if target == None:
+        if target == None and self.civilisation.inWarAgainst != None:
             self.currentTarget = self.civilisation.inWarAgainst.cityHall
         else:
             self.currentTarget = Game.game.visibleSprite[target]
@@ -285,6 +299,7 @@ class Civilisation(BasicObject):
         self.religion = self.civilisationPreset["religion"]
         self.aggressivity = int(self.civilisationPreset["aggressivity"])
         self.maxPop = int(self.civilisationPreset["maxBasePop"])
+        self.category = "Civilisation"
         
 
         self.inWar = False
@@ -292,31 +307,50 @@ class Civilisation(BasicObject):
         self.currentZoneSize = 100
         self.wonderAlreadyExist = False
         self.currentPopulation = {}
-        self.currentHousing = 0
+        self.currentHousing = {}
         self.ressources = 0
+        self.chief = None
+        self.isCivilisationAlived = True
         
-        Game.game.visibleSprite[self.name] = self
         Game.game.civilisationSpawned[self.name] = self
         
         if float(self.civilisationPreset["updateWeight"]) > -1:
             threading.Thread(target=self.Update, daemon=True).start()
-
+            
+        self.SpawnChief()
+        self.currentHousing[self.cityHall.name] = self.cityHall
         debugSuccessMsg("Civilisation Spawned --> " + self.name)
 
     def Update(self):
-        while True:
+        while self.isCivilisationAlived:
+            #debugSuccessMsg(self.isCivilisationAlived)
             
             self.ressources += self.IncreaseRessources()
         
             self.SpawnNewPopulation()
-            self.DeclareWarOnCivilisation()
+            self.TryToDeclareWarOnCivilisation()
             time.sleep(float(self.civilisationPreset["updateWeight"]))
         
     def Destroy(self):
+        if not self.isCivilisationAlived:
+            return
         
-        for unit in self.currentPopulation:
+        self.isCivilisationAlived = False
+        for unit in self.currentPopulation.copy():
             self.currentPopulation[unit].Destroy()
-        
+        for building in self.currentHousing.copy():
+            self.currentHousing[building].Destroy()
+            
+        for civilisation in Game.game.civilisationSpawned.copy():
+            if Game.game.civilisationSpawned[civilisation].inWarAgainst == self:
+                target = Game.game.civilisationSpawned[civilisation] 
+                target.MakePeace()
+                for unit in target.currentPopulation:
+                    target.currentPopulation[unit].currentTarget = None
+
+        if self.inWar:
+            self.MakePeace()
+        Game.game.civilisationSpawned.pop(self.name)
         return super().Destroy()
         
     def IncreaseRessources(self):
@@ -329,7 +363,7 @@ class Civilisation(BasicObject):
             int : les ressources suplémentaire
         """
 
-        result = 1 + len(self.currentPopulation) + self.currentHousing
+        result = 1 + len(self.currentPopulation) + len(self.currentHousing)
         if self.wonderAlreadyExist:
             result += int(self.civilisationPreset["wonderRessourcesIncomes"])
         
@@ -353,8 +387,9 @@ class Civilisation(BasicObject):
         result["distance d'influance"] = self.currentZoneSize
         result["population"] = len(self.currentPopulation)
         result["max pop"] = self.maxPop
-        result["maisons"] = self.currentHousing
+        result["maisons"] = len(self.currentHousing)
         result["ressources"] = self.ressources
+        
         if self.wonderPreset != None:
             result["merveille"] = self.wonderPreset["name"]
             result["merveille construite ?"] = self.wonderAlreadyExist
@@ -370,6 +405,11 @@ class Civilisation(BasicObject):
     
     def GetLocation(self):
         return pygame.Vector2(self.cityHallPos)
+    
+    def SpawnChief(self):
+        chiefPreset = LoadPreset(Directories.PresetDir + "Presets.csv", self.civilisationPreset["chiefName"])
+        self.chief = Game.game.SpawnUnit(chiefPreset, self.cityHallPos, self)
+        self.currentPopulation[self.chief.name] = self.chief
 
 
     def SpawnNewPopulation(self):
@@ -385,6 +425,7 @@ class Civilisation(BasicObject):
                 unit = Game.game.SpawnUnit(self.populationPreset, self.cityHallPos, self)
                 self.currentPopulation[unit.name] = unit
                 self.ressources -= int(self.populationPreset["unitCost"])
+                self.currentZoneSize += 5
             
         
         if self.wonderPreset is not None and int(self.wonderPreset["unitCost"]) <= self.ressources \
@@ -397,9 +438,8 @@ class Civilisation(BasicObject):
             Game.game.UpdateDescPanel(self.cityHall.name)
             
     def Damage(self, amount):
-        self.cityHall.Damage(amount)
-        if Game.game.selectedTarget == self.cityHall:
-            Game.game.UpdateDescPanel(self.cityHall.name)
+        pass
+        #self.cityHall.Damage(amount)
 
 
     def SpawnNewHouse(self):
@@ -409,22 +449,26 @@ class Civilisation(BasicObject):
         PS: le prix est + 4 * la pop sinon il constuise des tonne de maison et ça devient
         exponentielle
         """
-        Game.game.SpawnUnit(self.housePreset, SeekNewPos(self.cityHallPos, self.currentZoneSize), self)
+        building = Game.game.SpawnUnit(self.housePreset, SeekNewPos(self.cityHallPos, self.currentZoneSize), self)
         self.ressources -= int(self.housePreset["unitCost"]) + len(self.currentPopulation)*4
-        self.currentZoneSize += 20
-        self.currentHousing += 1
+        self.currentZoneSize += 50
+        self.currentHousing[building.name] = building
         self.maxPop += int(self.civilisationPreset["maxPopIncrease"])
 
     def SpawnWonder(self):
         if self.wonderAlreadyExist or self.wonderPreset is None:
             return
         self.ressources -= int(self.wonderPreset["unitCost"])
-        self.currentZoneSize += 100
+        self.currentZoneSize += 400
         self.wonderAlreadyExist = True
 
         Game.game.SpawnUnit(self.wonderPreset, SeekNewPos(self.cityHallPos, self.currentZoneSize), self)
 
-    def DeclareWarOnCivilisation(self):
+    def TryToDeclareWarOnCivilisation(self):
+        """
+        fonct pour essayer de declarer la guerre au civilisation qui ce trouve dans
+        la zone d'incluence de celle ci.
+        """
         if self.inWar:
             return
         if len(self.CheckNeighnorsCivilisation()) > 0:
@@ -433,13 +477,22 @@ class Civilisation(BasicObject):
             target = Game.game.civilisationSpawned[temp]
 
             if self.CanDeclareWar(target):
-                self.inWar = True
-                self.inWarAgainst = target
-                debugFailMsg(self.name + "declare la guerre a " + target.name)
-                
-                if Game.game.selectedTarget == self.cityHall:
-                    Game.game.UpdateDescPanel(self.cityHall.name)
+                self.DeclareWar(target)
         
+    def DeclareWar(self, target):
+        self.inWar = True
+        self.inWarAgainst = target
+        debugFailMsg(self.name + "declare la guerre a " + target.name)
+        
+        if not target.inWar: # si on fait pas ça, ça revien a aller frapper un enfant sans défence.
+            target.DeclareWar(self)
+                
+        if Game.game.selectedTarget == self.cityHall:
+            Game.game.UpdateDescPanel(self.cityHall.name)
+            
+    def MakePeace(self):
+        self.inWar = False
+        self.inWarAgainst = None
 
     def CanDeclareWar(self, civilisation):
         """
@@ -476,7 +529,7 @@ class Civilisation(BasicObject):
         for civilisation in temp:
             distance = self.cityHallPos.distance_to(Game.game.civilisationSpawned[civilisation].cityHallPos)
 
-            if distance >= self.currentZoneSize:
+            if distance <= self.currentZoneSize:
                 result[civilisation] = distance
         result = {key: val for key, val in sorted(result.items(), key=lambda ele: ele[0])}
         

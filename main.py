@@ -15,9 +15,9 @@ while game.GAME_RUNNING:
         # l'événement de fermeture de la window
         if event.type == pygame.QUIT:
             game.GAME_RUNNING = False
+            debugFailMsg("Exiting...")
             game.KillAllActors()
             pygame.quit()
-            debugFailMsg("Exiting...")
 
         if event.type == pygame.MOUSEBUTTONDOWN:
 

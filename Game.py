@@ -200,9 +200,12 @@ class Game:
             return
 
         preset = LoadPreset(Directories.PresetDir + "Presets.csv", names[self.spriteIndex])
-        sprites = LoadSpritesFromFolder(preset["spritesPath"])
         
-
+        if "tool" in preset["category"]:
+            self.ToolAction(preset)
+            return
+        
+        sprites = LoadSpritesFromFolder(preset["spritesPath"])
         if "CityHall" in names[self.spriteIndex]:
             self.SpawnCivilisation(names[self.spriteIndex])
             return
@@ -212,6 +215,19 @@ class Game:
             offsetPos, self.cameraGroup)
 
         return self.newUnit
+    
+    def ToolAction(self, preset):
+        if preset["name"] == "oppenheimer":
+            offsetPos = self.cameraGroup.offset - self.cameraGroup.internalOffset + pygame.mouse.get_pos()
+            closestObject = game.GetClosestObjectToLocation(offsetPos, 45)
+            if closestObject != None:
+                self.visibleSprite[closestObject].Destroy()
+                
+        if preset["name"] == "badaboom":
+            offsetPos = self.cameraGroup.offset - self.cameraGroup.internalOffset + pygame.mouse.get_pos()
+            closestObject = game.GetClosestObjectToLocation(offsetPos, 45)
+            if closestObject != None:
+                self.visibleSprite[closestObject].Damage(int(preset["damage"]))
 
     def SpawnUnit(self, popPreset, pos, civilisation):
 
@@ -244,10 +260,10 @@ class Game:
 
         tempPreset = LoadPreset(Directories.PresetDir + "Presets.csv", civilisationName)
         preset = LoadPreset(Directories.PresetDir + "Civilisation.csv", tempPreset["civilisation"])
-        chiefPreset = LoadPreset(Directories.PresetDir + "Presets.csv", preset["chiefName"])
         newCivilisation = Civilisation(preset)
+    
+    
 
-        self.SpawnUnit(chiefPreset, offsetPos, newCivilisation)
 
     def GetRandomSprite(self, sprites):
         return sprites[random.randint(0, len(sprites) - 1)]
@@ -312,6 +328,10 @@ class Game:
                 result[object] = distance
         if len(result) == 0:
             return None
+        
+        for ele in result:
+            if "CityHall" in ele:
+                return ele
         result = {key: val for key, val in sorted(result.items(), key=lambda ele: ele[1])}
         return list(result.keys())[0]
 
