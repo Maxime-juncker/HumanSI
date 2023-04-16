@@ -1,15 +1,14 @@
 name,speed,moveTimer,interactionRate,damage,attackSpeed,health,lifeSpan,civilisation,category,unitCost,spritesPath,isSpawnable,updateWeight
 
 none,0,0,0,0,0,-1,-1,none,none,-1,none,1,-1
+
 badaboom,0,0,0,10,0,-1,-1,none,tool,-1,Civilisations/Yellow/BuildingsYellow/HDV,1,-1
 oppenheimer,0,0,0,99999,0,-1,-1,none,tool,-1,Civilisations/Yellow/BuildingsYellow/HDV,1,-1
 
 Rock,0,0,0,0,0,50,-1,none,ressources,-1,Props/Rocks,1,-1
 Tree,0,0,0,0,0,50,-1,none,ressources,-1,Props/Trees,1,-1
 Forest,0,0,0,0,0,50,-1,none,ressources,-1,Props/Forests,1,-1
-
-Ruines,0,0,0,0,0,100,-1,none,none,-1,Props/Ruines,1,-1
-
+Ruines,0,0,0,0,0,100,-1,none,none,-1,Props/Ruines,0,-1
 
 YellowCityHall,0,0,0,0,0,100,-1,yellow,building,-1,Civilisations/Yellow/BuildingsYellow/HDV,1,-1
 YellowHouse,0,0,0,0,0,100,-1,yellow,building,50,Civilisations/Yellow/BuildingsYellow/Buildings,0,-1
@@ -18,7 +17,6 @@ YellowWonder,0,0,0,0,0,300,-1,red,building,250,Civilisations/Yellow/BuildingsYel
 RedCityHall,0,0,0,0,0,100,-1,red,building,-1,Civilisations/Red/BuildingsRed/HDV,1,-1
 RedHouse,0,0,0,0,0,160,-1,red,building,100,Civilisations/Red/BuildingsRed/Buildings,0,-1
 RedWonder,0,0,0,0,0,100,-1,red,building,300,Civilisations/Red/BuildingsRed/RedWonder,0,-1
-
 
 PurpleCityHall,0,0,0,0,0,100,-1,purple,building,-1,Civilisations/Purple/BuildingsPurple/HDV,1,-1
 PurpleHouse,0,0,0,0,0,100,-1,purple,building,30,Civilisations/Purple/BuildingsPurple/Buildings,0,-1
@@ -45,8 +43,8 @@ Pop_Blue,1,1,3,1,0.3,50,1500,blue,unit,2,Civilisations/Blue/PopBlue,1,0.02
 Pop_Green,1,1,3,6,1,50,1500,green,unit,6,Civilisations/Green/PopGreen,1,0.02
 Pop_Black,1,1,3,3,1,50,1500,black,unit,6,Civilisations/Black/PopBlack,1,0.02
 Pop_White,1,1,3,2,1,50,1500,white,unit,8,Civilisations/White/PopWhite,1,0.02
-DefaultHuman,1,2,1,1,1,10,1500,default,unit,6,Civilisations/Default/PopDefault,1,0.02
 
+DefaultHuman,1,2,1,1,1,10,1500,default,unit,6,Civilisations/Default/PopDefault,1,0.02
 Chief_Devan,1,2,10,5,5,50,-1,yellow,unit,-1,Civilisations/Yellow/Devan,0,0.02
 Chief_Yohann,1,3,0,15,2,80,-1,red,unit,-1,Civilisations/Red/Yohann,0,0.02
 Chief_Alexandre,1,5,3,0,0,10,-1,purple,unit,-1,Civilisations/Purple/Alexandre,0,0.02
@@ -55,6 +53,3 @@ Chief_Maxime,1,1,3,5,5,50,-1,green,unit,-1,Civilisations/Green/Maxime,0,0.02
 Chief_Romain,1,5,3,5,5,50,-1,white,unit,-1,Civilisations/White/Romain,0,0.02
 Chief_Antonin,1,1,3,1,1,2,-1,black,unit,-1,Civilisations/Black/Antonin,0,0.02
 Chief_Default,1,1,3,1,1,2,-1,default,unit,-1,Civilisations/Default/ChiefDefault,0,0.02
-
-
-

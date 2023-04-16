@@ -1,6 +1,7 @@
 import random
 import csv
 import os
+import pygame
 
 class Directories:
     PresetDir = "Assets/Presets/"
@@ -17,6 +18,7 @@ class bcolors:  # /!\ les couleurs ne marche que sur sur certains IDE (ex : edup
     ENDC = '\033[0m'
     BOLD = '\033[1m'
     UNDERLINE = '\033[4m'
+
 
 def debugSuccessMsg(info):
     print(bcolors.OKCYAN + "Success : " + bcolors.OKGREEN + str(info) + bcolors.ENDC)
@@ -59,7 +61,20 @@ def LoadPreset(presetPath, name=""):
 
 def LoadSpritesFromFolder(folderPath):
     return os.listdir(Directories.SpritesDir + folderPath)
+
+
 def Clamp(num, min_value, max_value):
     return max(min(num, max_value), min_value)
 
 
+def LoadSpriteFromSpriteSheet(sheet="spriteSheet/PopSpriteSheet.png", x=0, y=0):
+    """
+    De base j'ai essayer de faire une sprite sheet pour les perf mais j'ai pas l'impression que ça ai changé grand chose...
+    """
+    x_coord = 12 * x  # This would be the third column.
+    y_coord = 16 * y
+    width = 12
+    height = 16
+
+    sheet = pygame.image.load(Directories.SpritesDir + sheet).convert_alpha()
+    return sheet.subsurface((x_coord, y_coord, width, height))

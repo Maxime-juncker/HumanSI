@@ -1,4 +1,6 @@
 import pygame
+from pygame.locals import *
+
 import threading
 import AI
 from AI import *
@@ -48,20 +50,19 @@ class CameraGroup(pygame.sprite.Group):
         self.internalOffset = pygame.math.Vector2()
         self.internalOffset_x = self.internalSurfaceSize[0] // 2 - self.half_w
         self.internalOffset_y = self.internalSurfaceSize[1] // 2 - self.half_h
-        
-        #ça devrai a peu pres contrer les effets de quand on change de resolution
-        #apres la tout de suite y'a plus mass temps du coup plus tard si quelqu'un
-        #a le temps pour faire ça au propre ça serai sympas merci.
+
+        # ça devrai a peu pres contrer les effets de quand on change de resolution
+        # apres la tout de suite y'a plus mass temps du coup plus tard si quelqu'un
+        # a le temps pour faire ça au propre ça serai sympas merci.
         self.spriteSizeMultiplier = self.internalSurfaceSizeVector.length() / 2500
 
     def CustomDraw(self):
         if not game.GAME_RUNNING:
             return
         # self.centerCameraOnTarget()
-        # self.boxTargetCamera()
 
-        if game.selectedTarget is not None:
-            self.centerCameraOnTarget(game.selectedTarget)
+        """if game.selectedTarget is not None:
+            self.centerCameraOnTarget(game.selectedTarget)"""
         self.keyboardControl()
 
         self.internalSurface.fill('white')
@@ -124,7 +125,9 @@ class Game:
             # ============ SETUP PYGAME =====================
             pygame.init()
             pygame.display.set_caption("Chargement...")
-            self.display = pygame.display.set_mode((1920, 1080), pygame.FULLSCREEN)
+            flags = FULLSCREEN | DOUBLEBUF | HWSURFACE
+            self.display = pygame.display.set_mode((1920, 1080), flags)
+            pygame.event.set_allowed([QUIT, KEYDOWN, KEYUP])
             self.cameraGroup = CameraGroup()
             self.clock = pygame.time.Clock()
             self.font = pygame.font.SysFont("Arial", 27)
@@ -145,9 +148,10 @@ class Game:
             self.spawnAbleUnit = LoadPreset(Directories.PresetDir + "Presets.csv")
             self.descriptionPanel = DescriptionPanel(self.cameraGroup.spriteSizeMultiplier, self.descPanelLocation)
             self.interfaces["descriptionPanel"] = self.descriptionPanel
-            self.PopulateSpawnableDict()       
+            self.PopulateSpawnableDict()
+            self.sprites = self.PreLoadSprites()
             # =================================================
-            
+
             # C'est bon on a fini le setup la game loop peut commencer :D
             pygame.display.set_caption("HumainSI")
 
@@ -160,6 +164,18 @@ class Game:
             debugFailMsg("/!\ FAIL DE L'INIT DANS Game.py \n HumanSI ne peut pas démarer !")
             debugFailMsg(e)
 
+    def PreLoadSprites(self):
+        file = open(Directories.PresetDir + "Presets.csv", "r")
+        content = csv.DictReader(file, delimiter=",")
+
+        result = {}
+        for ligne in content:
+            if ligne["name"] != "none":
+                temp = LoadSpritesFromFolder(ligne["spritesPath"])
+                result[ligne["name"]] = pygame.image.load(Directories.SpritesDir + ligne["spritesPath"] + "/" + temp[
+                    random.randrange(0, len(temp))]).convert_alpha()
+        return result
+
     def UpdateDescPanel(self, clickedSprite):
         if clickedSprite == None:
             self.selectedTarget = None
@@ -167,12 +183,12 @@ class Game:
             return
         self.selectedTarget = self.visibleSprite[clickedSprite]
         self.descriptionPanel.ShowPanel(self.visibleSprite[clickedSprite])
-            
+
     def UpdateFantomeSprite(self):
-        
+
         if self.currentFantomeSprite is not None:
             self.currentFantomeSprite.Destroy()
-            
+
         names = []
         [names.extend([v]) for v in self.spawnAbleUnit.keys()]
 
@@ -180,12 +196,10 @@ class Game:
             return
         preset = LoadPreset(Directories.PresetDir + "Presets.csv", names[self.spriteIndex])
         sprites = LoadSpritesFromFolder(preset["spritesPath"])
-        
 
         offsetPos = self.cameraGroup.offset - self.cameraGroup.internalOffset + pygame.mouse.get_pos()
-        self.currentFantomeSprite = FantomeSprite(sprites, preset,self.cameraGroup.spriteSizeMultiplier,\
-            offsetPos, self.cameraGroup)
-        
+        self.currentFantomeSprite = FantomeSprite(sprites, preset, self.cameraGroup.spriteSizeMultiplier, \
+                                                  offsetPos, self.cameraGroup)
 
     def SpawnUnitBaseByIndex(self):
         '''
@@ -200,29 +214,29 @@ class Game:
             return
 
         preset = LoadPreset(Directories.PresetDir + "Presets.csv", names[self.spriteIndex])
-        
+
         if "tool" in preset["category"]:
             self.ToolAction(preset)
             return
-        
+
         sprites = LoadSpritesFromFolder(preset["spritesPath"])
         if "CityHall" in names[self.spriteIndex]:
             self.SpawnCivilisation(names[self.spriteIndex])
             return
 
         offsetPos = self.cameraGroup.offset - self.cameraGroup.internalOffset + pygame.mouse.get_pos()
-        self.newUnit = Unit(self.display, sprites, preset, None,self.cameraGroup.spriteSizeMultiplier,\
-            offsetPos, self.cameraGroup)
+        self.newUnit = Unit(self.display, sprites, preset, None, self.cameraGroup.spriteSizeMultiplier, \
+                            offsetPos, self.cameraGroup)
 
         return self.newUnit
-    
+
     def ToolAction(self, preset):
         if preset["name"] == "oppenheimer":
             offsetPos = self.cameraGroup.offset - self.cameraGroup.internalOffset + pygame.mouse.get_pos()
             closestObject = game.GetClosestObjectToLocation(offsetPos, 45)
             if closestObject != None:
                 self.visibleSprite[closestObject].Destroy()
-                
+
         if preset["name"] == "badaboom":
             offsetPos = self.cameraGroup.offset - self.cameraGroup.internalOffset + pygame.mouse.get_pos()
             closestObject = game.GetClosestObjectToLocation(offsetPos, 45)
@@ -242,8 +256,8 @@ class Game:
         sprites = LoadSpritesFromFolder(popPreset["spritesPath"])
 
         self.newUnit = Unit(self.display, sprites, popPreset, civilisation, \
-            self.cameraGroup.spriteSizeMultiplier, pos, self.cameraGroup)
-                   
+                            self.cameraGroup.spriteSizeMultiplier, pos, self.cameraGroup)
+
         return self.newUnit
 
     def SpawnCivilisation(self, civilisationName):
@@ -261,9 +275,6 @@ class Game:
         tempPreset = LoadPreset(Directories.PresetDir + "Presets.csv", civilisationName)
         preset = LoadPreset(Directories.PresetDir + "Civilisation.csv", tempPreset["civilisation"])
         newCivilisation = Civilisation(preset)
-    
-    
-
 
     def GetRandomSprite(self, sprites):
         return sprites[random.randint(0, len(sprites) - 1)]
@@ -276,14 +287,14 @@ class Game:
                 self.spawnAbleUnit[element] = LoadPreset(Directories.PresetDir + "Presets.csv", element)
 
     def KillAllActors(self):
-        
+
         for object in self.visibleSprite.copy():
             self.visibleSprite[object].Destroy()
         self.slowUpdateDict.clear()
         self.normalUpdateDict.clear()
         self.visibleSprite.clear()
-        
-    def GetClosestObjectToLocation(self, location:tuple, maxDistance, exeption=""):
+
+    def GetClosestObjectToLocation(self, location: tuple, maxDistance, exeption=""):
         """
         fonct pour get l'object le plus proche d'un point 
         c'est surtout utiliser pour quand le user click sur un object 
@@ -300,13 +311,13 @@ class Game:
             if object == exeption:
                 continue
             distance = location.distance_to(temp[object].GetLocation())
-            if distance <= maxDistance: 
+            if distance <= maxDistance:
                 result[object] = distance
         if len(result) == 0:
             return None
         result = {key: val for key, val in sorted(result.items(), key=lambda ele: ele[1])}
         return list(result.keys())[0]
-    
+
     def GetClosestObjectToOtherObject(self, unit, maxDistance, exeption=""):
         """
         fonct pour get l'object le plus proche d'un point 
@@ -324,17 +335,16 @@ class Game:
             if object == exeption or temp[object].GetCivilisation() == unit.GetCivilisation():
                 continue
             distance = unit.GetLocation().distance_to(temp[object].GetLocation())
-            if distance <= maxDistance: 
+            if distance <= maxDistance:
                 result[object] = distance
         if len(result) == 0:
             return None
-        
+
         for ele in result:
             if "CityHall" in ele:
                 return ele
         result = {key: val for key, val in sorted(result.items(), key=lambda ele: ele[1])}
         return list(result.keys())[0]
-
 
     def Tick(self):
         '''
@@ -371,18 +381,18 @@ class Game:
         du coup pour l'instant c'est surtout les update de pygame
         que je met là vue que ça a l'air plutot important :D
         '''
-        
+
         if len(self.interfaces) > 0:
             self.descriptionPanel.rect.center = self.cameraGroup.offset + self.descriptionPanel.pos
-            
+
         if self.currentFantomeSprite is not None:
             offsetPos = self.cameraGroup.offset - self.cameraGroup.internalOffset + pygame.mouse.get_pos()
             self.currentFantomeSprite.rect.bottomright = offsetPos
-            #self.currentFantomeSprite.Update()
+            # self.currentFantomeSprite.Update()
+
 
         self.cameraGroup.update()
         self.cameraGroup.CustomDraw()
-
         # on met aussi un petit text (debug)
 
         l = []
@@ -392,18 +402,16 @@ class Game:
             self.display.blit(letter, (50, 50))
 
         self.debugUI()
-               
-        
+
         if self.descriptionPanel.Update() is not None:
             text = self.descriptionPanel.Update()
-            
-            for i in range(len(text)):
-                stats = self.descFont.render(text[i], 0, (255, 255, 255))    
-                self.display.blit(stats, (self.descPanelLocation[0] + 200, \
-                                          self.descPanelLocation[1] + 190 + 20*i))
 
-        pygame.display.update()
-        self.clock.tick(120)
+            for i in range(len(text)):
+                stats = self.descFont.render(text[i], 0, (255, 255, 255))
+                self.display.blit(stats, (self.descPanelLocation[0] + 200, self.descPanelLocation[1] + 190 + 20 * i))
+
+        pygame.display.flip()
+        self.clock.tick(30)
 
     def debugUI(self):
 

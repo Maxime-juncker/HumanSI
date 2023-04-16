@@ -54,9 +54,11 @@ class Unit(pygame.sprite.Sprite, BasicObject):
         self.sprites = spriteSheet
         self.currentSprite = 0.0
         scale = Clamp(size * random.random() + 0.4, 0.75, 1.1)
-        self.image = pygame.image.load(Directories.SpritesDir + preset["spritesPath"] + "/" + spriteSheet[random.randrange(0, len(spriteSheet))])
+        self.image = Game.game.sprites[preset["name"]]
+        #self.image = LoadSpriteFromSpriteSheet()
         self.image = pygame.transform.scale(self.image, (scale*self.image.get_size()[0] \
-                                                        , scale*self.image.get_size()[1]))
+                                                        , scale*self.image.get_size()[1])).convert_alpha()
+        self.image = pygame.transform.rotate(self.image, random.randint(-6,6)).convert_alpha()
 
         self.animTimer = 5
 
@@ -72,7 +74,6 @@ class Unit(pygame.sprite.Sprite, BasicObject):
         self.category = self.unitPreset["category"]
         self.currentTarget = None
 
-        self.image = pygame.transform.rotate(self.image, random.randint(-6,6))
         self.rect = self.image.get_rect(center=self.rect.center)
         self.rect.bottomright = pos
         self.civilisation = civilisation
