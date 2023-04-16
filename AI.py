@@ -2,7 +2,6 @@ import random
 import Game
 import time
 import threading
-import pygame
 from Utilities import *
 
 

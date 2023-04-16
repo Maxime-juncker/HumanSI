@@ -1,7 +1,6 @@
 import random
 import csv
 import os
-import pygame
 
 class Directories:
     PresetDir = "Assets/Presets/"

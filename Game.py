@@ -1,11 +1,12 @@
-import pygame
-from pygame.locals import *
 
 import threading
 import AI
 from AI import *
 from Utilities import *
 from Interfaces import *
+from pyglet import *
+from pyglet.window import *
+
 
 '''
 TRUC IMPORTANT. 
