@@ -18,101 +18,6 @@ SI VOUS AJOUTEZ DES SPRITE AJOUTER LES A CAMERAGROUP
 '''
 
 
-class CameraGroup(pygame.sprite.Group):
-
-    def __init__(self):
-        super().__init__()
-        self.displaySurface = pygame.display.get_surface()
-
-        self.offset = pygame.math.Vector2(0, 0)
-        self.half_w = self.displaySurface.get_size()[0] // 2
-        self.half_h = self.displaySurface.get_size()[1] // 2
-
-        # self.groundSurface = pygame.image.load("Assets/Graphics/ground.png").convert_alpha()
-        # self.groundRect = self.groundSurface.get_rect(topleft=(0, 0))
-
-        # Box setup
-        self.cameraBorder = {"left": 200, "right": 200, "top": 100, "bottom": 100}
-        l = self.cameraBorder["left"]
-        t = self.cameraBorder["top"]
-        w = self.displaySurface.get_size()[0] - (self.cameraBorder["left"] + self.cameraBorder["right"])
-        h = self.displaySurface.get_size()[1] - (self.cameraBorder["top"] + self.cameraBorder["bottom"])
-        self.cameraRect = pygame.Rect(l, t, w, h)
-
-        # Camera Speed
-        self.keyboardSpeed = 20
-
-        # zoom (honetement j'ai aucune idée de pk ça marche mais tkt...)
-        self.zoomScale = 1
-        self.internalSurfaceSize = (self.displaySurface.get_size()[0], self.displaySurface.get_size()[1])
-        self.internalSurface = pygame.Surface(self.internalSurfaceSize, pygame.SRCALPHA)
-        self.internalRect = self.internalSurface.get_rect(center=(self.half_w, self.half_h))
-        self.internalSurfaceSizeVector = pygame.math.Vector2(self.internalSurfaceSize)
-        self.internalOffset = pygame.math.Vector2()
-        self.internalOffset_x = self.internalSurfaceSize[0] // 2 - self.half_w
-        self.internalOffset_y = self.internalSurfaceSize[1] // 2 - self.half_h
-
-        # ça devrai a peu pres contrer les effets de quand on change de resolution
-        # apres la tout de suite y'a plus mass temps du coup plus tard si quelqu'un
-        # a le temps pour faire ça au propre ça serai sympas merci.
-        self.spriteSizeMultiplier = self.internalSurfaceSizeVector.length() / 2500
-
-    def CustomDraw(self):
-        if not game.GAME_RUNNING:
-            return
-        # self.centerCameraOnTarget()
-
-        """if game.selectedTarget is not None:
-            self.centerCameraOnTarget(game.selectedTarget)"""
-        self.keyboardControl()
-
-        self.internalSurface.fill('white')
-
-        # Elements actifs
-        try:
-
-            sprites = sorted(self.sprites(), key=lambda sprite: sprite.rect.centery)
-            for sprite in sprites:
-                offestPos = sprite.rect.center - self.offset + self.internalOffset
-                self.internalSurface.blit(sprite.image, offestPos)
-
-                interfaces = sorted(list(game.interfaces.values()), key=lambda interface: interface.rect.centery)
-                if len(interfaces) > 0:
-                    for interface in interfaces:
-                        offestPos = interface.rect.center - self.offset + self.internalOffset
-                        self.internalSurface.blit(interface.image, offestPos)
-
-            scaledSurf = pygame.transform.scale(self.internalSurface, self.internalSurfaceSizeVector * self.zoomScale)
-            scaledRect = scaledSurf.get_rect(center=(self.half_w, self.half_h))
-            self.displaySurface.blit(scaledSurf, scaledRect)
-        except:
-
-            debugFailMsg("fail to update")
-
-    def keyboardControl(self):
-        keys = pygame.key.get_pressed()
-        if keys[pygame.K_q]:
-            self.cameraRect.x -= self.keyboardSpeed
-            game.selectedTarget = None
-        if keys[pygame.K_d]:
-            self.cameraRect.x += self.keyboardSpeed
-            game.selectedTarget = None
-
-        if keys[pygame.K_z]:
-            self.cameraRect.y -= self.keyboardSpeed
-            game.selectedTarget = None
-
-        if keys[pygame.K_s]:
-            self.cameraRect.y += self.keyboardSpeed
-            game.selectedTarget = None
-
-        self.offset.x = self.cameraRect.left - self.cameraBorder['left']
-        self.offset.y = self.cameraRect.top - self.cameraBorder['top']
-
-    def centerCameraOnTarget(self, target):
-        self.offset.x = game.newUnit.rect.centerx - self.half_w
-        self.offset.y = game.newUnit.rect.centery - self.half_h
-
 class Game:
 
     def __init__(self):
@@ -123,18 +28,10 @@ class Game:
         il n'y a ni update ni aucun autre truc a par cette fonction qui marche .
         """
         try:
-            # ============ SETUP PYGAME =====================
-            pygame.init()
-            pygame.display.set_caption("Chargement...")
-            flags = FULLSCREEN | DOUBLEBUF | HWSURFACE
-            self.display = pygame.display.set_mode((1920, 1080), flags)
-            pygame.event.set_allowed([QUIT, KEYDOWN, KEYUP])
-            self.cameraGroup = CameraGroup()
-            self.clock = pygame.time.Clock()
-            self.font = pygame.font.SysFont("Arial", 27)
-            self.descFont = pygame.font.SysFont("Arial", 15)
-            # =================================================
+
             # ============== VARS =============================
+            self.batch = pyglet.graphics.Batch()
+
             self.descPanelLocation = (self.display.get_rect().right - 560, 0)
             self.slowUpdateTimer = None
             self.newUnit = None
@@ -144,6 +41,7 @@ class Game:
             self.normalUpdateDict = {}
             self.slowUpdateDict = {}
             self.visibleSprite = {}
+            self.activeSprite = []
             self.interfaces = {}
             self.spriteIndex = 0
             self.spawnAbleUnit = LoadPreset(Directories.PresetDir + "Presets.csv")
@@ -151,6 +49,7 @@ class Game:
             self.interfaces["descriptionPanel"] = self.descriptionPanel
             self.PopulateSpawnableDict()
             self.sprites = self.PreLoadSprites()
+            self.mouse_pos = 0,0
             # =================================================
 
             # C'est bon on a fini le setup la game loop peut commencer :D
@@ -173,8 +72,8 @@ class Game:
         for ligne in content:
             if ligne["name"] != "none":
                 temp = LoadSpritesFromFolder(ligne["spritesPath"])
-                result[ligne["name"]] = pygame.image.load(Directories.SpritesDir + ligne["spritesPath"] + "/" + temp[
-                    random.randrange(0, len(temp))]).convert_alpha()
+                result[ligne["name"]] = pyglet.image.load(Directories.SpritesDir + ligne["spritesPath"] + "/" + temp[
+                    random.randrange(0, len(temp))])
         return result
 
     def UpdateDescPanel(self, clickedSprite):

@@ -1,11 +1,19 @@
 from pyglet import *
-from pyglet.window import Window
+from pyglet.window import *
 #from Game import *
 import pyglet
+from Utilities import *
+
+
+
+mouse_pos = 0, 0
 
 window = Window(500, 500)
 
-batch = pyglet.graphics.Batch()
+main_batch = pyglet.graphics.Batch()
+
+
+
 
 keyPress = {
     "Z": False,
@@ -21,8 +29,8 @@ def on_draw():
 
     # Draw your world scene using the world camera
     with world_camera:
-        draw_square(10, 10, 10)
-        batch.draw()
+        draw_square(0,0,10)
+        main_batch.draw()
 
     # Can also be written as:
     # camera.begin()
@@ -36,8 +44,10 @@ def on_draw():
 
 def draw_square(x, y, size, color=(255, 255, 255, 0)):
     # Créer l'image
-    img = image.create(size, size, image.SolidColorImagePattern(color))
-    img.blit(x, y)
+    ball_image = pyglet.image.load(Directories.SpritesDir + "Civilisations/Yellow/BuildingsYellow/HDV/HdvD1.png")
+    ball = pyglet.sprite.Sprite(ball_image, x=50, y=50)
+
+    ball.draw()
 
 
 @window.event
@@ -71,6 +81,11 @@ def on_key_press(symbol, modifiers):
             game.spriteIndex -= 1
         game.UpdateFantomeSprite()"""
 
+
+@window.event
+def on_mouse_motion(x, y, dx, dy):
+    mouse_pos = x, y
+    #game.mouse_pos = x,y
 
 @window.event
 def on_key_release(symbol, modifiers):
