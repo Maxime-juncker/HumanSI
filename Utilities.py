@@ -1,6 +1,8 @@
+import math
 import random
 import csv
 import os
+
 
 class Directories:
     PresetDir = "Assets/Presets/"
@@ -67,13 +69,23 @@ def Clamp(num, min_value, max_value):
 
 
 def LoadSpriteFromSpriteSheet(sheet="spriteSheet/PopSpriteSheet.png", x=0, y=0):
+    pass
+
     """
     De base j'ai essayer de faire une sprite sheet pour les perf mais j'ai pas l'impression que ça ai changé grand chose...
+    en plus on utilise plus pygame donc bon...
+    par contre l'idée de faire une sprite sheet est a garder on utilisera ça plus tard a la place.
+    ça sera plus sexy que 10 000 png.
     """
-    x_coord = 12 * x  # This would be the third column.
+    """x_coord = 12 * x  # This would be the third column.
     y_coord = 16 * y
     width = 12
     height = 16
 
     sheet = pygame.image.load(Directories.SpritesDir + sheet).convert_alpha()
-    return sheet.subsurface((x_coord, y_coord, width, height))
+    return sheet.subsurface((x_coord, y_coord, width, height))"""
+
+
+def GetDistanceFromVector(vect1: tuple = (0, 0), vect2: tuple = (0, 0)):
+    return math.sqrt((vect1[0] - vect2[0]) ** 2 + (vect1[1] - vect2[1]) ** 2)
+

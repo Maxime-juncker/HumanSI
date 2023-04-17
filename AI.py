@@ -4,7 +4,8 @@ import time
 import threading
 from Utilities import *
 import pyglet
-
+from pyglet import *
+from pyglet.window import *
 
 class UnitState:
     NONE = -1
@@ -18,7 +19,7 @@ class BasicObject:
     id = 0
     category = None
 
-    def Update(self):
+    def Update(self,dt):
         pass
 
     def GetSprite(self):
@@ -51,18 +52,11 @@ class Unit():
         self.x = pos[0]
         self.y = pos[1]
 
-        # Animations
-        self.currentSprite = 0.0
-        scale = Clamp(size * random.random() + 0.4, 0.75, 1.1)
-        self.image = pyglet.sprite.Sprite(Game.game.sprites[preset["name"]], pos[0], pos[1], batch=batch)
+        print(civilisation, size, pos, batch)
+        print(preset)
 
-        # self.image = LoadSpriteFromSpriteSheet()
-        # self.image = pyglet.image.load('ball.png')
-        """self.image = pygame.transform.scale(self.image, (scale*self.image.get_size()[0] \
-                                                        , scale*self.image.get_size()[1])).convert_alpha()
-        self.image = pygame.transform.rotate(self.image, random.randint(-6,6)).convert_alpha()"""
-
-        self.animTimer = 5
+        debugSuccessMsg(Game.game.sprites[preset["name"]])
+        self.image = pyglet.sprite.Sprite(Game.game.sprites[preset["name"]], x=self.x, y=self.y, batch=batch)
 
         self.speed = int(self.unitPreset["speed"])
         self.moveTimer = int(self.unitPreset["moveTimer"])
@@ -80,19 +74,18 @@ class Unit():
 
         Game.game.visibleSprite[self.name] = self
 
-        self.currentDestination = SeekNewPos(self.rect, 30)
+        self.currentDestination = SeekNewPos(self.GetLocation(), 30)
         self.state = UnitState.IDLE
 
         # debugSuccessMsg("Unit Spawned --> " + self.name)
         if float(self.unitPreset["updateWeight"]) > -1:
-            threading.Thread(target=self.Update, daemon=True).start()
+            clock.schedule_interval(self.Update, float(self.unitPreset["updateWeight"]))
 
-    def Update(self):
-        while self.state != UnitState.DED:
-            self.StateMachine()
-            self.UpdateLifeSpan()
-            # self.DoAnimation()
-            time.sleep(float(self.unitPreset["updateWeight"]))
+    def Update(self,dt):
+        self.StateMachine()
+        self.UpdateLifeSpan()
+        # self.DoAnimation()
+        self.image.update(self.x,self.y)
 
     def GetSprite(self):
         return self.image
@@ -113,7 +106,6 @@ class Unit():
         if self.civilisation != None:
             result["civilisation"] = self.civilisation.name
         result["coût objet"] = self.unitPreset["unitCost"]
-        result["chemin des sprites"] = self.unitPreset["spritesPath"]
         result["est spawnable"] = self.unitPreset["isSpawnable"]
         result["updateWeight"] = self.unitPreset["updateWeight"]
         if self.currentTarget != None:
@@ -202,10 +194,10 @@ class Unit():
             reach = 25
 
         # ==========================A FAIRE ============================================================================
-        """if self.GetLocation().distance_to(self.currentTarget.GetLocation()) < reach:
+        if GetDistanceFromVector(self.GetLocation(), self.currentTarget.GetLocation()) < reach:
             self.currentTarget.Damage(int(self.unitPreset["damage"]))
             time.sleep(float(self.unitPreset["attackSpeed"]))
-        self.canAttack = True"""
+        self.canAttack = True
         # ==============================================================================================================
 
     def Damage(self, amount):
@@ -258,7 +250,7 @@ class Unit():
 
     def MoveTo(self, coord):
 
-        if abs(self.rect.y - coord[1]) < 5 and abs(self.rect.x - coord[0]) < 5:
+        if abs(self.y - coord[1]) < 5 and abs(self.x - coord[0]) < 5:
             self.SetNewState(UnitState.IDLE)
             return
 
@@ -269,13 +261,13 @@ class Unit():
         else:
             self.moveTimer = self.maxMoveTimer
 
-        if self.rect.x <= coord[0]:
+        if self.x <= coord[0]:
             self.MoveRight(1)
-        elif self.rect.x >= coord[0]:
+        elif self.x >= coord[0]:
             self.MoveRight(-1)
-        if self.rect.y <= coord[1]:
+        if self.y <= coord[1]:
             self.MoveUp(1)
-        elif self.rect.y >= coord[1]:
+        elif self.y >= coord[1]:
             self.MoveUp(-1)
 
         # self.image = pygame.transform.rotate(self.image, 90)
@@ -292,8 +284,7 @@ class Civilisation(BasicObject):
         self.housePreset = LoadPreset(Directories.PresetDir + "Presets.csv", preset["houseName"])
         cityHallPreset = LoadPreset(Directories.PresetDir + "Presets.csv", preset["cityHallName"])
 
-        #offsetPos = Game.game.cameraGroup.offset - Game.game.cameraGroup.internalOffset + pygame.mouse.get_pos()
-        self.cityHallPos = Game.game.mouse_pos # normalement la y'a offset pos
+        self.cityHallPos = Game.game.GetMouseOffset()
         debugWarningMsg("suppr ce msg si tout vas bien mais si le sprite \n"
                         "spawn pas au bon endroit c'est a cause de la ligne 298 dans AI.py :)")
 
@@ -323,21 +314,17 @@ class Civilisation(BasicObject):
         Game.game.civilisationSpawned[self.name] = self
 
         if float(self.civilisationPreset["updateWeight"]) > -1:
-            threading.Thread(target=self.Update, daemon=True).start()
+            clock.schedule_interval(self.Update, float(self.civilisationPreset["updateWeight"]))
 
         self.SpawnChief()
         self.currentHousing[self.cityHall.name] = self.cityHall
         debugSuccessMsg("Civilisation Spawned --> " + self.name)
 
-    def Update(self):
-        while self.isCivilisationAlived:
-            # debugSuccessMsg(self.isCivilisationAlived)
-
-            self.ressources += self.IncreaseRessources()
-
-            self.SpawnNewPopulation()
-            self.TryToDeclareWarOnCivilisation()
-            time.sleep(float(self.civilisationPreset["updateWeight"]))
+    def Update(self, dt):
+        debugSuccessMsg("updating")
+        self.ressources += self.IncreaseRessources()
+        self.SpawnNewPopulation()
+        self.TryToDeclareWarOnCivilisation()
 
     def Destroy(self):
         if not self.isCivilisationAlived:
@@ -415,6 +402,7 @@ class Civilisation(BasicObject):
         return self.cityHallPos
 
     def SpawnChief(self):
+
         chiefPreset = LoadPreset(Directories.PresetDir + "Presets.csv", self.civilisationPreset["chiefName"])
         self.chief = Game.game.SpawnUnit(chiefPreset, self.cityHallPos, self)
         self.currentPopulation[self.chief.name] = self.chief
@@ -508,6 +496,8 @@ class Civilisation(BasicObject):
             bool: oui ou non la civilisation entre en guerre
         """
 
+        return True
+
         if int(self.civilisationPreset["aggressivity"]) == 0:
             return False
         if int(self.civilisationPreset["aggressivity"]) == 100:
@@ -532,10 +522,9 @@ class Civilisation(BasicObject):
         temp.pop(self.name)  # c'est un peu debile de calculer la distance avec soi même...
 
         for civilisation in temp:
-            distance = 0 #self.cityHallPos.distance_to(Game.game.civilisationSpawned[civilisation].cityHallPos)
-            debugWarningMsg("Faut recalculer la distance a la ligne 536 dans AI.py")
+            distance = GetDistanceFromVector(self.cityHallPos,Game.game.civilisationSpawned[civilisation].cityHallPos)
 
-            if distance <= self.currentZoneSize:
+            if distance <=  1000000:#self.currentZoneSize:
                 result[civilisation] = distance
         result = {key: val for key, val in sorted(result.items(), key=lambda ele: ele[0])}
 
@@ -544,23 +533,26 @@ class Civilisation(BasicObject):
 
 class FantomeSprite(BasicObject):
 
-    def __init__(self, preset, civilisation, size, pos, batch): # le batch doit etre gros pour qui passe devant tout
+    def __init__(self, preset, size, pos, batch): # le batch doit etre gros pour qui passe devant tout
 
         super().__init__()
 
-        self.unitPreset = preset
+        self.preset = preset
 
         self.x = pos[0]
         self.y = pos[1]
 
         self.currentSprite = 0.0
         scale = Clamp(size * random.random() + 0.4, 0.75, 1.1)
+        self.image = Game.game.sprites[preset["name"]]
+        self.image.anchor_x = self.image.width // 2
+        self.image.anchor_y = self.image.height // 2
         self.image = pyglet.sprite.Sprite(Game.game.sprites[preset["name"]], pos[0], pos[1], batch=batch)
 
-        self.image.color[3] = 150 # pas sur mais tkt
+        #self.image.color[3] = 150 # pas sur mais tkt
         self.isAddingAlpha = True  # True = ça monte False = ça déscend
 
-        threading.Thread(target=self.Update, daemon=True).start()
+        #threading.Thread(target=self.Update, daemon=True).start()
 
     def Destroy(self):
         #Game.game.cameraGroup.remove(self)
@@ -570,12 +562,14 @@ class FantomeSprite(BasicObject):
         return super().Destroy()
 
     def Update(self):
-        while True:
+        self.image = pyglet.sprite.Sprite(Game.game.sprites[self.preset["name"]], self.x, self.y, batch=Game.game.batch)
+
+        """while True:
             if self.isAddingAlpha:
                 self.AddAlpha()
             else:
                 self.SubstractAlpha()
-            time.sleep(0.1)
+            time.sleep(0.1)"""
 
     def AddAlpha(self):
         self.image.color[3] += 6
