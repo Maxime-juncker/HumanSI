@@ -118,9 +118,7 @@ class Unit():
     # ============ A FAIRE =============================================================================================
     def Destroy(self):
         pass
-        debugWarningMsg("Trouve un moyen pour enlever un sprite du batch (ligne 129 AI.py)")
-
-        """self.SetNewState(UnitState.DED)
+        self.SetNewState(UnitState.DED)
         
         if Game.game.selectedTarget == self:
             Game.game.UpdateDescPanel(None)
@@ -139,9 +137,7 @@ class Unit():
             self.civilisation.Destroy()
         
         Game.game.visibleSprite.pop(self.name)
-        Game.game.cameraGroup.remove(self)
-        self.kill()
-        return super().Destroy()"""
+        return super().Destroy()
 
     # ==================================================================================================================
 
@@ -176,7 +172,6 @@ class Unit():
         if self.civilisation is not None:
             if self.civilisation.inWar:
                 self.CheckForNearbyEnemies()
-                self.AttackNearbyEnemies()
         # =================================================================================
 
         if self.state == UnitState.MOVING:
@@ -196,7 +191,7 @@ class Unit():
         # ==========================A FAIRE ============================================================================
         if GetDistanceFromVector(self.GetLocation(), self.currentTarget.GetLocation()) < reach:
             self.currentTarget.Damage(int(self.unitPreset["damage"]))
-            time.sleep(float(self.unitPreset["attackSpeed"]))
+            clock.schedule_interval(self.AttackNearbyEnemies, float(self.unitPreset["attackSpeed"]))
         self.canAttack = True
         # ==============================================================================================================
 
@@ -321,7 +316,6 @@ class Civilisation(BasicObject):
         debugSuccessMsg("Civilisation Spawned --> " + self.name)
 
     def Update(self, dt):
-        debugSuccessMsg("updating")
         self.ressources += self.IncreaseRessources()
         self.SpawnNewPopulation()
         self.TryToDeclareWarOnCivilisation()
@@ -469,6 +463,10 @@ class Civilisation(BasicObject):
             temp = random.choice(list(self.CheckNeighnorsCivilisation()))
             target = Game.game.civilisationSpawned[temp]
 
+            for unit in self.currentPopulation:
+                self.currentPopulation[unit].AttackNearbyEnemies()
+
+
             if self.CanDeclareWar(target):
                 self.DeclareWar(target)
 
@@ -550,6 +548,8 @@ class FantomeSprite(BasicObject):
         self.image = pyglet.sprite.Sprite(Game.game.sprites[preset["name"]], pos[0], pos[1], batch=batch)
 
         #self.image.color[3] = 150 # pas sur mais tkt
+        debugSuccessMsg(self.image.opacity)
+        self.image.opacity = 150
         self.isAddingAlpha = True  # True = ça monte False = ça déscend
 
         #threading.Thread(target=self.Update, daemon=True).start()
@@ -557,7 +557,6 @@ class FantomeSprite(BasicObject):
     def Destroy(self):
         #Game.game.cameraGroup.remove(self)
         #self.kill()
-        debugWarningMsg("Trouve un moyen pour enlever un sprite du batch (ligne 565 AI.py)")
 
         return super().Destroy()
 

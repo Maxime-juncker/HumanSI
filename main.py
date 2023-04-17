@@ -57,7 +57,7 @@ def on_key_press(symbol, modifiers):
     if symbol == pyglet.window.key.D:
         keyPress["D"] = True
     # =========== Description Panel ==========
-    if symbol == pyglet.window.key.ESCAPE:
+    if symbol == pyglet.window.key.F:
         game.UpdateDescPanel(None)
         game.spriteIndex = 0
         game.UpdateFantomeSprite()
@@ -140,6 +140,7 @@ def update(dt):
     draw_square(i*20, 5+i, 10,main_batch)
 print(temp)"""
 clock.schedule_interval(update, 1/40)
+print(pyglet.__version__)
 
 app.run()
 

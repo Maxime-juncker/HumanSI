@@ -13,6 +13,8 @@ class Panel(pygame.sprite.Sprite, AI.BasicObject):
 
         self.x, self.y = pos[0], pos[1]
         img = pyglet.image.load(Directories.SpritesDir + "Interfaces/descriptionPanel.png")
+        img.anchor_x = img.width // 2
+        img.anchor_y = img.height // 2
         self.image = pyglet.sprite.Sprite(img, x=self.x, y=self.y)
         self.image.update(self.x,self.y,scale_x=self.image.scale_x*0.8,scale_y=self.image.scale_y*0.8)
 
@@ -39,19 +41,12 @@ class DescriptionPanel(Panel):
         result = ""
         for info in infos:
             space = 300 - len(info+" : " + str(infos[info]))
-            print(space)
             result += info+" : " + str(infos[info]) + " " * space
-
-
-        print(result)
         self.statsToShow = result
 
     def GetInfos(self):
         if self.statsToShow is not None:
             return self.statsToShow
-
-
-        #self.image.set_alpha(255)
 
     def HidePanel(self):
         self.image.visible = False

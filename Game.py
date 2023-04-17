@@ -3,7 +3,6 @@ import pyglet.clock
 from AI import *
 from Utilities import *
 from Interfaces import *
-from pyglet import *
 from pyglet.window import *
 from Settings import *
 
@@ -119,22 +118,20 @@ class Game:
             self.fps_display.label.font_size = 15
             self.fps_display.label.x = -self.window.width // 2 + 20
             self.fps_display.label.y = self.window.height // 2 - 20
-
-            self.spawnLabel = pyglet.text.Label('Hello, world',
+            self.spawnLabel = pyglet.text.Label("",
                                                 font_name='Times New Roman',
                                                 font_size=20,
                                                 x=-self.window.width // 2 + 20, y=self.window.height // 2 - 50,
                                                 anchor_x='left', anchor_y='center')
-            self.descLabel = pyglet.text.Label('Hello, world',
+
+            self.descriptionPanel = DescriptionPanel((self.window.width //3, -self.window.height // 15 + 100))
+            self.descLabel = pyglet.text.Label("",
                                                 font_name='Times New Roman',
                                                 font_size=15,
-                                                x=-0, y=0,
-                                                anchor_x='left', anchor_y='center',
+                                                x=self.descriptionPanel.x, y=self.descriptionPanel.y,
+                                                anchor_x='center', anchor_y='center',
                                                 multiline=True,
-                                                width=300
-                                                )
-
-
+                                                width=300)
             self.slowUpdateTimer = None
             self.newUnit = None
             self.selectedTarget = None
@@ -147,7 +144,6 @@ class Game:
             self.interfaces = {}
             self.spriteIndex = 0
             self.spawnAbleUnit = LoadPreset(Directories.PresetDir + "Presets.csv")
-            self.descriptionPanel = DescriptionPanel((200, -self.window.height//2+80))
             # self.interfaces["descriptionPanel"] = self.descriptionPanel
             self.PopulateSpawnableDict()
             self.sprites = self.PreLoadSprites()
