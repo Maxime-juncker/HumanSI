@@ -238,7 +238,7 @@ class Game:
 
         for object in temp:
             if object == exeption or temp[object].GetCivilisation() == unit.GetCivilisation() or temp[
-                object].name == "Ruines":
+                object].category == "none":
                 continue
             distance = GetDistanceFromVector(unit.GetLocation(), temp[object].GetLocation())
             if distance <= maxDistance:

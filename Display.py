@@ -92,7 +92,8 @@ class MyWindow(pyglet.window.Window):
         super().__init__(*args, **kwargs)
 
         # Set la taille
-        self.set_size(WIDTH, HEIGHT)
+        if not FULLSCREEN:
+            self.set_size(WIDTH, HEIGHT)
         # Background
         glClearColor(255, 255, 255, 1.0)  # red, green, blue, and alpha(transparency)
 
@@ -122,14 +123,12 @@ class MyWindow(pyglet.window.Window):
         # quand on draw avec le gui les element ne bouge pas avec l'offset de la cam
         with self.guiCamera:
             self.guiBatch.draw()
-
-
 screen = None
 
 
 def CreateWindow(updateMain, startGame):
     global screen
-    screen = MyWindow(WIDTH, HEIGHT, "HumanSI")
+    screen = MyWindow(WIDTH, HEIGHT, "HumanSI",fullscreen=FULLSCREEN)
     screen.AddToUpdate(updateMain)
     game = startGame(screen)
     pyglet.clock.schedule_interval(screen.Update, 1 / 120)

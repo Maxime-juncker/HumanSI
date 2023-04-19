@@ -595,7 +595,7 @@ class FantomeSprite(BasicObject):
             debugWarningMsg("Fantome sprite update: " + str(preset))
 
     def Update(self):
-        self.image.update(self.x, self.y,scale=self.image.scale * Game.game.screen.worldCamera.sizeMultiplier)
+        self.image.update(self.x, self.y,scale=self.image.scale)
 
         """while True:
             if self.isAddingAlpha:
