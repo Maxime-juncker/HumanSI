@@ -5,14 +5,14 @@ import AI
 
 class Panel(AI.BasicObject):
 
-    def __init__(self, pos,scale):
+    def __init__(self, pos,scale,batch):
         super().__init__()
 
         self.x, self.y = pos[0], pos[1]
         img = pyglet.image.load(Directories.SpritesDir + "Interfaces/descriptionPanel.png")
         img.anchor_x = img.width // 2
         img.anchor_y = img.height // 2
-        self.image = pyglet.sprite.Sprite(img, x=self.x, y=self.y)
+        self.image = pyglet.sprite.Sprite(img, x=self.x, y=self.y,batch=batch)
         self.image.update(self.x,self.y,scale=self.image.scale*scale)
 
 
@@ -29,8 +29,8 @@ class Panel(AI.BasicObject):
 
 
 class DescriptionPanel(Panel):
-    def __init__(self, pos, scale):
-        super().__init__(pos,scale)
+    def __init__(self, pos, scale,batch):
+        super().__init__(pos,scale,batch)
         self.statsToShow = None
 
     def ShowPanel(self, object):

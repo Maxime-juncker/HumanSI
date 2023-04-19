@@ -132,7 +132,7 @@ def CreateWindow(updateMain, startGame):
     screen = MyWindow(WIDTH, HEIGHT, "HumanSI")
     screen.AddToUpdate(updateMain)
     game = startGame(screen)
-    pyglet.clock.schedule_interval(screen.Update, 1 / 60)
+    pyglet.clock.schedule_interval(screen.Update, 1 / 120)
     return screen,game
 
 def StartWindow():

@@ -7,10 +7,9 @@ from Settings import *
 from Display import *
 
 
-
 class Game:
 
-    def __init__(self,window):
+    def __init__(self, window):
         """
         Init permet de crée et setup la var Game qui est basiquement le truc qui 
         relie tous le sytemes ensembre du coup si ça marche pas rien ne marchera 
@@ -25,20 +24,25 @@ class Game:
             self.fps_display.label.font_size = 15
             self.fps_display.label.x = -window.width // 2 + 20
             self.fps_display.label.y = window.height // 2 - 20
+            self.fps_display.label.batch = self.screen.guiBatch
             self.spawnLabel = pyglet.text.Label("",
                                                 font_name='Times New Roman',
                                                 font_size=20,
+                                                color=(0, 0, 0, 255),
                                                 x=-window.width // 2 + 20, y=window.height // 2 - 50,
                                                 anchor_x='left', anchor_y='center')
 
-            self.descriptionPanel = DescriptionPanel((window.width //3, -window.height // 15 + 100), window.worldCamera.sizeMultiplier)
+            self.descriptionPanel = DescriptionPanel((window.width // 3, -window.height // 15 + 100),
+                                                     window.worldCamera.sizeMultiplier,self.screen.guiBatch)
             self.descLabel = pyglet.text.Label("",
-                                                font_name='Times New Roman',
-                                                font_size=15,
-                                                x=self.descriptionPanel.x, y=self.descriptionPanel.y,
-                                                anchor_x='center', anchor_y='center',
-                                                multiline=True,
-                                                width=300)
+                                               font_name='Times New Roman',
+                                               font_size=15,
+                                               color=(255, 255, 255, 255),
+                                               x=self.descriptionPanel.x, y=self.descriptionPanel.y,
+                                               anchor_x='center', anchor_y='center',
+                                               multiline=True,
+                                               width=300,
+                                               batch=self.screen.guiBatch)
             self.slowUpdateTimer = None
             self.newUnit = None
             self.selectedTarget = None
@@ -108,9 +112,7 @@ class Game:
         if self.currentFantomeSprite is None:
             self.currentFantomeSprite = FantomeSprite(preset, self.GetMouseOffset(), self.screen.worldBatch)
 
-
         self.currentFantomeSprite.UpdateSprite(preset)
-
 
     def SpawnUnitBaseByIndex(self):
         '''
@@ -134,7 +136,7 @@ class Game:
             self.SpawnCivilisation(names[self.spriteIndex])
             return
 
-        self.newUnit = Unit(preset, None,self.GetMouseOffset(), self.screen.worldBatch)
+        self.newUnit = Unit(preset, None, self.GetMouseOffset(), self.screen.worldBatch)
 
         return self.newUnit
 
@@ -235,7 +237,8 @@ class Game:
         result = {}
 
         for object in temp:
-            if object == exeption or temp[object].GetCivilisation() == unit.GetCivilisation() or temp[object].name == "Ruines":
+            if object == exeption or temp[object].GetCivilisation() == unit.GetCivilisation() or temp[
+                object].name == "Ruines":
                 continue
             distance = GetDistanceFromVector(unit.GetLocation(), temp[object].GetLocation())
             if distance <= maxDistance:
@@ -285,8 +288,9 @@ class Game:
             self.currentFantomeSprite.Update()
 
 
-
 game = None
+
+
 def StartGame(window):
     global game
     game = Game(window)

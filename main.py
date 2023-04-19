@@ -9,7 +9,6 @@ from Display import *
 if MAIN_DEBUG:
     debugWarningMsg("Version de pyglet: " + str(pyglet.__version__))
 
-
 """@game.window.event
 def on_draw():
     if not game.GAME_RUNNING:
@@ -26,7 +25,6 @@ def on_draw():
         if game.descLabel.text != "":
             game.descLabel.draw()"""
 
-
 keyPress = {
     "Z": False,
     "Q": False,
@@ -34,26 +32,28 @@ keyPress = {
     "D": False
 }
 
+
 def update(dt):
     if game is not None and not game.GAME_RUNNING:
         return
 
     if keyPress["Z"]:
-        game.worldCamera.move(0, 2)
+        screen.worldCamera.move(0, 2)
     if keyPress["S"]:
-        game.worldCamera.move(0, -2)
+        screen.worldCamera.move(0, -2)
     if keyPress["Q"]:
-        game.worldCamera.move(-2, 0)
+        screen.worldCamera.move(-2, 0)
     if keyPress["D"]:
-        game.worldCamera.move(2, 0)
+        screen.worldCamera.move(2, 0)
 
     if game is not None:
         game.SuperUpdate()
 
-temp, game = CreateWindow(update,StartGame)
+
+screen, game = CreateWindow(update, StartGame)
 
 
-@temp.event
+@screen.event
 def on_key_press(symbol, modifiers):
     if MAIN_DEBUG:
         debugSuccessMsg(str(symbol) + " | " + str(modifiers))
@@ -88,12 +88,12 @@ def on_key_press(symbol, modifiers):
         game.UpdateFantomeSprite()
 
 
-@temp.event
+@screen.event
 def on_mouse_motion(x, y, dx, dy):
     game.mouse_pos = x, y
 
 
-@temp.event
+@screen.event
 def on_key_release(symbol, modifiers):
     if MAIN_DEBUG:
         debugSuccessMsg(str(symbol) + " | " + str(modifiers))
@@ -108,7 +108,7 @@ def on_key_release(symbol, modifiers):
         keyPress["D"] = False
 
 
-@temp.event
+@screen.event
 def on_mouse_press(x, y, button, modifiers):
     if MAIN_DEBUG:
         debugWarningMsg(str(button) + " | " + str(modifiers))
@@ -126,11 +126,9 @@ def on_mouse_press(x, y, button, modifiers):
         game.UpdateDescPanel(closestObject)
 
 
-@temp.event
+@screen.event
 def on_mouse_scroll(x, y, scroll_x, scroll_y):
-    game.worldCamera.zoom += scroll_y
-
-
+    screen.worldCamera.zoom += scroll_y
 
 
 StartWindow()
