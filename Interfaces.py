@@ -1,14 +1,11 @@
 import pyglet
-
 from Utilities import *
-import pygame
 import AI
-import ptext
 
 
-class Panel(pygame.sprite.Sprite, AI.BasicObject):
+class Panel(AI.BasicObject):
 
-    def __init__(self, pos):
+    def __init__(self, pos,scale):
         super().__init__()
 
         self.x, self.y = pos[0], pos[1]
@@ -16,7 +13,8 @@ class Panel(pygame.sprite.Sprite, AI.BasicObject):
         img.anchor_x = img.width // 2
         img.anchor_y = img.height // 2
         self.image = pyglet.sprite.Sprite(img, x=self.x, y=self.y)
-        self.image.update(self.x,self.y,scale_x=self.image.scale_x*0.8,scale_y=self.image.scale_y*0.8)
+        self.image.update(self.x,self.y,scale=self.image.scale*scale)
+
 
         self.HidePanel()  # on cache instant le pannel si jamais faut pas override la funct
 
@@ -31,8 +29,8 @@ class Panel(pygame.sprite.Sprite, AI.BasicObject):
 
 
 class DescriptionPanel(Panel):
-    def __init__(self, pos):
-        super().__init__(pos)
+    def __init__(self, pos, scale):
+        super().__init__(pos,scale)
         self.statsToShow = None
 
     def ShowPanel(self, object):
@@ -40,8 +38,7 @@ class DescriptionPanel(Panel):
         infos = object.GetInfos()
         result = ""
         for info in infos:
-            space = 300 - len(info+" : " + str(infos[info]))
-            result += info+" : " + str(infos[info]) + " " * space
+            result += info + " : " + str(infos[info]) + "                                        "
         self.statsToShow = result
 
     def GetInfos(self):

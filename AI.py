@@ -1,11 +1,11 @@
 import random
+from Settings import *
 import Game
-import time
-import threading
 from Utilities import *
 import pyglet
 from pyglet import *
 from pyglet.window import *
+from Display import *
 
 class UnitState:
     NONE = -1
@@ -19,7 +19,7 @@ class BasicObject:
     id = 0
     category = None
 
-    def Update(self,dt):
+    def Update(self, dt):
         pass
 
     def GetSprite(self):
@@ -29,7 +29,7 @@ class BasicObject:
         return None
 
     def GetLocation(self):
-        return (0, 0)
+        return 0, 0
 
     def GetCivilisation(self):
         return None
@@ -41,9 +41,10 @@ class BasicObject:
         del self
 
 
-class Unit():
+class Unit(BasicObject):
 
-    def __init__(self, preset, civilisation, size, pos, batch): # le batch doit etre different entre les buildings et les unit pour le truc de z clipping
+    def __init__(self, preset, civilisation, pos,
+                 batch):  # le batch doit etre different entre les buildings et les unit pour le truc de z clipping
 
         super().__init__()
 
@@ -52,11 +53,13 @@ class Unit():
         self.x = pos[0]
         self.y = pos[1]
 
-        print(civilisation, size, pos, batch)
-        print(preset)
+        """Le taux de mutation vas definir le multiplier qui vas alterer les differente stats"""
+        mutationMultiplier = Clamp(MUTATION_FORCE * random.random() + 0.4, 0.75, 1.1)
 
-        debugSuccessMsg(Game.game.sprites[preset["name"]])
         self.image = pyglet.sprite.Sprite(Game.game.sprites[preset["name"]], x=self.x, y=self.y, batch=batch)
+        self.image.update(self.x, self.y, \
+                          scale=self.image.scale * Game.game.screen.worldCamera.sizeMultiplier * mutationMultiplier,\
+                          rotation=random.randint(-10,10))
 
         self.speed = int(self.unitPreset["speed"])
         self.moveTimer = int(self.unitPreset["moveTimer"])
@@ -67,9 +70,7 @@ class Unit():
         self.health = int(self.unitPreset["health"])
         self.category = self.unitPreset["category"]
         self.currentTarget = None
-
         self.civilisation = civilisation
-
         self.canAttack = True
 
         Game.game.visibleSprite[self.name] = self
@@ -77,15 +78,18 @@ class Unit():
         self.currentDestination = SeekNewPos(self.GetLocation(), 30)
         self.state = UnitState.IDLE
 
-        # debugSuccessMsg("Unit Spawned --> " + self.name)
         if float(self.unitPreset["updateWeight"]) > -1:
             clock.schedule_interval(self.Update, float(self.unitPreset["updateWeight"]))
+        if float(self.unitPreset["lifeSpan"]) > -1:
+            clock.schedule_once(self.Update, float(self.unitPreset["lifeSpan"]))
 
-    def Update(self,dt):
+        if AI_DEBUG:
+            debugSuccessMsg("Unit Spawned --> " + self.name)
+
+    def Update(self, dt):
+        self.image.update(self.x, self.y)
         self.StateMachine()
-        self.UpdateLifeSpan()
         # self.DoAnimation()
-        self.image.update(self.x,self.y)
 
     def GetSprite(self):
         return self.image
@@ -117,26 +121,29 @@ class Unit():
 
     # ============ A FAIRE =============================================================================================
     def Destroy(self):
-        pass
+        clock.unschedule(self.Update)
         self.SetNewState(UnitState.DED)
-        
         if Game.game.selectedTarget == self:
             Game.game.UpdateDescPanel(None)
-            
+
         if "building" in self.unitPreset["category"]:
-            Game.game.SpawnUnit(LoadPreset(Directories.PresetDir + "Presets.csv", "Ruines"), self.rect.bottomright, None)
-            
-            
+            Game.game.SpawnUnit(LoadPreset(Directories.PresetDir + "Presets.csv", "Ruines"), (self.x, self.y),
+                                None)
         if self.civilisation is not None:
             if self.unitPreset["category"] == "unit":
                 self.civilisation.currentPopulation.pop(self.name)
             elif self.unitPreset["category"] == "building":
                 self.civilisation.currentHousing.pop(self.name)
-                
         if "CityHall" in self.name:
             self.civilisation.Destroy()
-        
+        if "Chief" in self.name and self.civilisation.isCivilisationAlived:
+            clock.schedule_once(self.civilisation.SpawnChief, 15)
         Game.game.visibleSprite.pop(self.name)
+
+        if AI_DEBUG:
+            debugFailMsg(self.name + " est détruit.")
+
+        self.image.delete()
         return super().Destroy()
 
     # ==================================================================================================================
@@ -155,16 +162,6 @@ class Unit():
 
     # ==================================================================================================================
 
-    def UpdateLifeSpan(self):
-        if self.lifeSpawn < 0:  # Si le lifeSpan < 0 s'a veut dire que l'unit est imortelle
-            return
-
-        self.lifeSpawn -= 1
-        if self.lifeSpawn > 0:
-            return
-        elif self.lifeSpawn == 0:
-            self.Destroy()
-
     def StateMachine(self):
 
         # si y'a le temps faut deplacer ça dans les civilisations pour que ça soit pas appeler chaques frames
@@ -172,6 +169,7 @@ class Unit():
         if self.civilisation is not None:
             if self.civilisation.inWar:
                 self.CheckForNearbyEnemies()
+                self.AttackNearbyEnemies()
         # =================================================================================
 
         if self.state == UnitState.MOVING:
@@ -188,12 +186,9 @@ class Unit():
         else:
             reach = 25
 
-        # ==========================A FAIRE ============================================================================
         if GetDistanceFromVector(self.GetLocation(), self.currentTarget.GetLocation()) < reach:
             self.currentTarget.Damage(int(self.unitPreset["damage"]))
-            clock.schedule_interval(self.AttackNearbyEnemies, float(self.unitPreset["attackSpeed"]))
         self.canAttack = True
-        # ==============================================================================================================
 
     def Damage(self, amount):
         self.health -= amount
@@ -203,8 +198,11 @@ class Unit():
         if Game.game.selectedTarget == self:
             Game.game.UpdateDescPanel(self.name)
 
+        if AI_DEBUG:
+            debugWarningMsg(str(self) + " a prix " + str(amount) + "| hp: " + str(self.health))
+
     def CheckForNearbyEnemies(self):
-        target = Game.game.GetClosestObjectToOtherObject(self, 50, self.name)
+        target = Game.game.GetClosestObjectToOtherObject(self, 100, self.name)
         if target is None and self.civilisation.inWarAgainst is not None:
             self.currentTarget = self.civilisation.inWarAgainst.cityHall
         else:
@@ -311,9 +309,11 @@ class Civilisation(BasicObject):
         if float(self.civilisationPreset["updateWeight"]) > -1:
             clock.schedule_interval(self.Update, float(self.civilisationPreset["updateWeight"]))
 
-        self.SpawnChief()
+        self.SpawnChief(0)
         self.currentHousing[self.cityHall.name] = self.cityHall
-        debugSuccessMsg("Civilisation Spawned --> " + self.name)
+
+        if AI_DEBUG:
+            debugSuccessMsg("Civilisation Spawned --> " + self.name)
 
     def Update(self, dt):
         self.ressources += self.IncreaseRessources()
@@ -323,6 +323,8 @@ class Civilisation(BasicObject):
     def Destroy(self):
         if not self.isCivilisationAlived:
             return
+
+        clock.unschedule(self.Update)
 
         self.isCivilisationAlived = False
         for unit in self.currentPopulation.copy():
@@ -339,6 +341,9 @@ class Civilisation(BasicObject):
 
         if self.inWar:
             self.MakePeace()
+
+        if AI_DEBUG:
+            debugWarningMsg("Civilisation détuite: " + str(self))
         Game.game.civilisationSpawned.pop(self.name)
         return super().Destroy()
 
@@ -358,6 +363,9 @@ class Civilisation(BasicObject):
 
         if Game.game.selectedTarget == self.cityHall:
             Game.game.UpdateDescPanel(self.cityHall.name)
+
+        if AI_DEBUG:
+            debugSuccessMsg(self.name + " ressource augmenté de: " + str(result))
 
         return result
 
@@ -379,7 +387,7 @@ class Civilisation(BasicObject):
         result["maisons"] = len(self.currentHousing)
         result["ressources"] = self.ressources
 
-        if self.wonderPreset != None:
+        if self.wonderPreset is not None:
             result["merveille"] = self.wonderPreset["name"]
             result["merveille construite ?"] = self.wonderAlreadyExist
 
@@ -395,11 +403,13 @@ class Civilisation(BasicObject):
     def GetLocation(self):
         return self.cityHallPos
 
-    def SpawnChief(self):
+    def SpawnChief(self,dt):
 
         chiefPreset = LoadPreset(Directories.PresetDir + "Presets.csv", self.civilisationPreset["chiefName"])
         self.chief = Game.game.SpawnUnit(chiefPreset, self.cityHallPos, self)
         self.currentPopulation[self.chief.name] = self.chief
+        if AI_DEBUG:
+            debugSuccessMsg("Chef créé: " + str(self.chief))
 
     def SpawnNewPopulation(self):
         """
@@ -415,6 +425,7 @@ class Civilisation(BasicObject):
                 self.currentPopulation[unit.name] = unit
                 self.ressources -= int(self.populationPreset["unitCost"])
                 self.currentZoneSize += 5
+
 
         if self.wonderPreset is not None and int(self.wonderPreset["unitCost"]) <= self.ressources \
                 and not self.wonderAlreadyExist:
@@ -441,6 +452,8 @@ class Civilisation(BasicObject):
         self.currentZoneSize += 50
         self.currentHousing[building.name] = building
         self.maxPop += int(self.civilisationPreset["maxPopIncrease"])
+        if AI_DEBUG:
+            debugSuccessMsg("civilisation détectés: " + str(building))
 
     def SpawnWonder(self):
         if self.wonderAlreadyExist or self.wonderPreset is None:
@@ -449,7 +462,9 @@ class Civilisation(BasicObject):
         self.currentZoneSize += 400
         self.wonderAlreadyExist = True
 
-        Game.game.SpawnUnit(self.wonderPreset, SeekNewPos(self.cityHallPos, self.currentZoneSize), self)
+        wonder = Game.game.SpawnUnit(self.wonderPreset, SeekNewPos(self.cityHallPos, 25), self)
+        if AI_DEBUG:
+            debugSuccessMsg("wonder construite: " + str(wonder))
 
     def TryToDeclareWarOnCivilisation(self):
         """
@@ -466,14 +481,15 @@ class Civilisation(BasicObject):
             for unit in self.currentPopulation:
                 self.currentPopulation[unit].AttackNearbyEnemies()
 
-
             if self.CanDeclareWar(target):
                 self.DeclareWar(target)
 
     def DeclareWar(self, target):
         self.inWar = True
         self.inWarAgainst = target
-        debugFailMsg(self.name + "declare la guerre a " + target.name)
+
+        if AI_DEBUG:
+            debugFailMsg(self.name + "declare la guerre a " + str(target.name))
 
         if not target.inWar:  # si on fait pas ça, ça revien a aller frapper un enfant sans défence.
             target.DeclareWar(self)
@@ -482,6 +498,8 @@ class Civilisation(BasicObject):
             Game.game.UpdateDescPanel(self.cityHall.name)
 
     def MakePeace(self):
+        if AI_DEBUG:
+            debugSuccessMsg(self.name + " fait la paix avec: " + str(self.inWarAgainst))
         self.inWar = False
         self.inWarAgainst = None
 
@@ -493,8 +511,6 @@ class Civilisation(BasicObject):
         Returns:
             bool: oui ou non la civilisation entre en guerre
         """
-
-        return True
 
         if int(self.civilisationPreset["aggressivity"]) == 0:
             return False
@@ -515,23 +531,28 @@ class Civilisation(BasicObject):
 
         if len(Game.game.civilisationSpawned) == 1:
             return {}
+
+        if not self.isCivilisationAlived:
+            return {}
+
         result = {}
         temp = Game.game.civilisationSpawned.copy()
         temp.pop(self.name)  # c'est un peu debile de calculer la distance avec soi même...
 
         for civilisation in temp:
-            distance = GetDistanceFromVector(self.cityHallPos,Game.game.civilisationSpawned[civilisation].cityHallPos)
+            distance = GetDistanceFromVector(self.cityHallPos, Game.game.civilisationSpawned[civilisation].cityHallPos)
 
-            if distance <=  1000000:#self.currentZoneSize:
+            if distance <= 1000000:  # self.currentZoneSize:
                 result[civilisation] = distance
         result = {key: val for key, val in sorted(result.items(), key=lambda ele: ele[0])}
-
+        if AI_DEBUG:
+            debugWarningMsg("civilisation détectés: " + str(result))
         return result
 
 
 class FantomeSprite(BasicObject):
 
-    def __init__(self, preset, size, pos, batch): # le batch doit etre gros pour qui passe devant tout
+    def __init__(self, preset, pos, batch):  # le batch doit etre gros pour qui passe devant tout
 
         super().__init__()
 
@@ -541,27 +562,40 @@ class FantomeSprite(BasicObject):
         self.y = pos[1]
 
         self.currentSprite = 0.0
-        scale = Clamp(size * random.random() + 0.4, 0.75, 1.1)
+        scale = Clamp(Game.game.screen.worldCamera.sizeMultiplier * random.random() + 0.4, 0.75, 1.1)
         self.image = Game.game.sprites[preset["name"]]
-        self.image.anchor_x = self.image.width // 2
-        self.image.anchor_y = self.image.height // 2
         self.image = pyglet.sprite.Sprite(Game.game.sprites[preset["name"]], pos[0], pos[1], batch=batch)
+        self.image.update(self.x, self.y, scale=self.image.scale * Game.game.screen.worldCamera.sizeMultiplier)
 
-        #self.image.color[3] = 150 # pas sur mais tkt
-        debugSuccessMsg(self.image.opacity)
+        # self.image.color[3] = 150 # pas sur mais tkt
+        # debugSuccessMsg(self.image.opacity)
         self.image.opacity = 150
         self.isAddingAlpha = True  # True = ça monte False = ça déscend
 
-        #threading.Thread(target=self.Update, daemon=True).start()
+        if AI_DEBUG:
+            debugSuccessMsg("Fantome sprite créé " + str(self))
+
+        # threading.Thread(target=self.Update, daemon=True).start()
 
     def Destroy(self):
-        #Game.game.cameraGroup.remove(self)
-        #self.kill()
+        # Game.game.cameraGroup.remove(self)
+        # self.kill()
 
         return super().Destroy()
 
+    def Hide(self):
+
+        self.image.visible = False
+
+    def UpdateSprite(self, preset):
+        self.preset = preset
+        self.image.visible = True
+        self.image = pyglet.sprite.Sprite(Game.game.sprites[self.preset["name"]], self.x, self.y, batch=Game.game.screen.worldBatch)
+        if AI_DEBUG:
+            debugWarningMsg("Fantome sprite update: " + str(preset))
+
     def Update(self):
-        self.image = pyglet.sprite.Sprite(Game.game.sprites[self.preset["name"]], self.x, self.y, batch=Game.game.batch)
+        self.image.update(self.x, self.y,scale=self.image.scale * Game.game.screen.worldCamera.sizeMultiplier)
 
         """while True:
             if self.isAddingAlpha:
