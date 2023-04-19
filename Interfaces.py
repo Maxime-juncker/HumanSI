@@ -39,6 +39,10 @@ class DescriptionPanel(Panel):
         result = ""
         for info in infos:
             result += info + " : " + str(infos[info]) + "                                        "
+
+        result+="  |                                                           " \
+                "  |                                                            " \
+                "F pour quitter"
         self.statsToShow = result
 
     def GetInfos(self):

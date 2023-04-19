@@ -56,10 +56,11 @@ class Unit(BasicObject):
         """Le taux de mutation vas definir le multiplier qui vas alterer les differente stats"""
         mutationMultiplier = Clamp(MUTATION_FORCE * random.random() + 0.4, 0.75, 1.1)
 
-        self.image = pyglet.sprite.Sprite(Game.game.sprites[preset["name"]], x=self.x, y=self.y, batch=batch)
-        self.image.update(self.x, self.y, \
-                          scale=self.image.scale * Game.game.screen.worldCamera.sizeMultiplier * mutationMultiplier,\
-                          rotation=random.randint(-10,10))
+        index = randint(0, len(Game.game.sprites[preset["name"]]) - 1)
+        frames = Game.game.sprites[preset["name"]]
+        animation = pyglet.image.Animation.from_image_sequence(frames, duration=0.1, loop=True)
+        self.image = pyglet.sprite.Sprite(animation, x=self.x, y=self.y, batch=batch)
+
 
         self.speed = int(self.unitPreset["speed"])
         self.moveTimer = int(self.unitPreset["moveTimer"])
@@ -82,6 +83,7 @@ class Unit(BasicObject):
             clock.schedule_interval(self.Update, float(self.unitPreset["updateWeight"]))
         if float(self.unitPreset["lifeSpan"]) > -1:
             clock.schedule_once(self.Update, float(self.unitPreset["lifeSpan"]))
+
 
         if AI_DEBUG:
             debugSuccessMsg("Unit Spawned --> " + self.name)
@@ -138,7 +140,9 @@ class Unit(BasicObject):
             self.civilisation.Destroy()
         if "Chief" in self.name and self.civilisation.isCivilisationAlived:
             clock.schedule_once(self.civilisation.SpawnChief, 15)
-        Game.game.visibleSprite.pop(self.name)
+
+        if self.name in Game.game.visibleSprite:
+            Game.game.visibleSprite.pop(self.name)
 
         if AI_DEBUG:
             debugFailMsg(self.name + " est détruit.")
@@ -202,7 +206,7 @@ class Unit(BasicObject):
             debugWarningMsg(str(self) + " a prix " + str(amount) + "| hp: " + str(self.health))
 
     def CheckForNearbyEnemies(self):
-        target = Game.game.GetClosestObjectToOtherObject(self, 100, self.name)
+        target = Game.game.GetClosestObjectToOtherObject(self, 225, self.name)
         if target is None and self.civilisation.inWarAgainst is not None:
             self.currentTarget = self.civilisation.inWarAgainst.cityHall
         else:
@@ -276,14 +280,10 @@ class Civilisation(BasicObject):
         self.populationPreset = LoadPreset(Directories.PresetDir + "Presets.csv", preset["popName"])
         self.housePreset = LoadPreset(Directories.PresetDir + "Presets.csv", preset["houseName"])
         cityHallPreset = LoadPreset(Directories.PresetDir + "Presets.csv", preset["cityHallName"])
-
         self.cityHallPos = Game.game.GetMouseOffset()
-        debugWarningMsg("suppr ce msg si tout vas bien mais si le sprite \n"
-                        "spawn pas au bon endroit c'est a cause de la ligne 298 dans AI.py :)")
-
         self.cityHall = Game.game.SpawnUnit(cityHallPreset, self.cityHallPos, self)
-        self.wonderPreset = None
 
+        self.wonderPreset = None
         if preset["wonderName"] != "none":
             self.wonderPreset = LoadPreset(Directories.PresetDir + "Presets.csv", self.civilisationPreset["wonderName"])
 
@@ -563,8 +563,9 @@ class FantomeSprite(BasicObject):
 
         self.currentSprite = 0.0
         scale = Clamp(Game.game.screen.worldCamera.sizeMultiplier * random.random() + 0.4, 0.75, 1.1)
-        self.image = Game.game.sprites[preset["name"]]
-        self.image = pyglet.sprite.Sprite(Game.game.sprites[preset["name"]], pos[0], pos[1], batch=batch)
+
+        imgIndex = Game.game.activeImageIndex
+        self.image = pyglet.sprite.Sprite(Game.game.sprites[self.preset["name"]][imgIndex], pos[0], pos[1], batch=batch)
         self.image.update(self.x, self.y, scale=self.image.scale * Game.game.screen.worldCamera.sizeMultiplier)
 
         # self.image.color[3] = 150 # pas sur mais tkt
@@ -590,7 +591,9 @@ class FantomeSprite(BasicObject):
     def UpdateSprite(self, preset):
         self.preset = preset
         self.image.visible = True
-        self.image = pyglet.sprite.Sprite(Game.game.sprites[self.preset["name"]], self.x, self.y, batch=Game.game.screen.worldBatch)
+
+        imgIndex = Game.game.activeImageIndex
+        self.image = pyglet.sprite.Sprite(Game.game.sprites[self.preset["name"]][imgIndex], self.x, self.y, batch=Game.game.screen.worldBatch)
         if AI_DEBUG:
             debugWarningMsg("Fantome sprite update: " + str(preset))
 

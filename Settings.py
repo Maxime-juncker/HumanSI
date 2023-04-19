@@ -13,6 +13,6 @@ qui informe de tout ce qu'il est en train de faire pas un bonne idée d'activer 
 """
 
 GAME_DEBUG = False
-MAIN_DEBUG = True
+MAIN_DEBUG = False
 AI_DEBUG = False
 INTERFACES_DEBUG = False

@@ -3,6 +3,7 @@ from random import randint
 import pyglet
 from pyglet.gl import *
 from Settings import *
+import Game
 
 
 class Camera:
@@ -39,6 +40,10 @@ class Camera:
     @position.setter
     def position(self, value):
         self.offset_x, self.offset_y = value
+
+    def SetPosition(self,value):
+        self.offset_x, self.offset_y = value
+
 
     def move(self, axis_x, axis_y):
         """
@@ -98,10 +103,10 @@ class MyWindow(pyglet.window.Window):
         glClearColor(255, 255, 255, 1.0)  # red, green, blue, and alpha(transparency)
 
         self.worldCamera = CenteredCamera(self, scroll_speed=5, min_zoom=.5, max_zoom=6)
+        self.game: Game.Game = None
         self.worldBatch = pyglet.graphics.Batch()
         self.guiCamera = CenteredCamera(self)
         self.guiBatch = pyglet.graphics.Batch()
-
         self.updateFonct = []
 
     def on_close(self):
@@ -109,6 +114,11 @@ class MyWindow(pyglet.window.Window):
 
     def Update(self, dt):
         self.OnDraw(dt)
+
+        if self.game is not None and self.game.selectedTarget is not None:
+            self.worldCamera.position = self.game.selectedTarget.GetLocation()[0] + 70, self.game.selectedTarget.GetLocation()[1]
+            if self.worldCamera.zoom < self.worldCamera.max_zoom:
+                self.worldCamera.zoom += .2
 
         for i in range(len(self.updateFonct)):
             self.updateFonct[i](dt)
@@ -123,16 +133,21 @@ class MyWindow(pyglet.window.Window):
         # quand on draw avec le gui les element ne bouge pas avec l'offset de la cam
         with self.guiCamera:
             self.guiBatch.draw()
+
+
 screen = None
+
 
 
 def CreateWindow(updateMain, startGame):
     global screen
-    screen = MyWindow(WIDTH, HEIGHT, "HumanSI",fullscreen=FULLSCREEN)
+    global game
+    screen = MyWindow(WIDTH, HEIGHT, "HumanSI", fullscreen=FULLSCREEN)
     screen.AddToUpdate(updateMain)
     game = startGame(screen)
     pyglet.clock.schedule_interval(screen.Update, 1 / 120)
-    return screen,game
+    return screen, game
+
 
 def StartWindow():
     pyglet.app.run()

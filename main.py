@@ -49,7 +49,8 @@ def update(dt):
     if game is not None:
         game.SuperUpdate()
 
-
+game:Game = None
+screen:MyWindow = None
 screen, game = CreateWindow(update, StartGame)
 
 
@@ -59,14 +60,15 @@ def on_key_press(symbol, modifiers):
         debugSuccessMsg(str(symbol) + " | " + str(modifiers))
 
     # =========== Mouvement ==================
-    if symbol == pyglet.window.key.Z:
-        keyPress["Z"] = True
-    if symbol == pyglet.window.key.Q:
-        keyPress["Q"] = True
-    if symbol == pyglet.window.key.S:
-        keyPress["S"] = True
-    if symbol == pyglet.window.key.D:
-        keyPress["D"] = True
+    if game.selectedTarget is None:
+        if symbol == pyglet.window.key.Z:
+            keyPress["Z"] = True
+        if symbol == pyglet.window.key.Q:
+            keyPress["Q"] = True
+        if symbol == pyglet.window.key.S:
+            keyPress["S"] = True
+        if symbol == pyglet.window.key.D:
+            keyPress["D"] = True
     # =========== Description Panel ==========
     if symbol == pyglet.window.key.F:
         game.UpdateDescPanel(None)
@@ -118,12 +120,7 @@ def on_mouse_press(x, y, button, modifiers):
     if button == 2:  # Clic molette
         pass
     if button == 4:  # clic droit
-        offsetPos = game.GetMouseOffset()
-        closestObject = game.GetClosestObjectToLocation(offsetPos, 40)
-        # L'update du panneau de desc peut supporter les valuer None c'est pas un probleme
-        if MAIN_DEBUG:
-            debugSuccessMsg(closestObject)
-        game.UpdateDescPanel(closestObject)
+        pass
 
 
 @screen.event

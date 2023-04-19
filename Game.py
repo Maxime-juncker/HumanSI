@@ -18,7 +18,8 @@ class Game:
         """
         try:
             # ============== VARS =============================
-            self.screen = window
+            self.screen:MyWindow = window
+            self.screen.game = self
             self.fps_display = pyglet.window.FPSDisplay(window=window)
             self.fps_display.label.color = (100, 255, 100, 100)
             self.fps_display.label.font_size = 15
@@ -30,7 +31,8 @@ class Game:
                                                 font_size=20,
                                                 color=(0, 0, 0, 255),
                                                 x=-window.width // 2 + 20, y=window.height // 2 - 50,
-                                                anchor_x='left', anchor_y='center')
+                                                anchor_x='left', anchor_y='center',
+                                                batch=self.screen.guiBatch)
 
             self.descriptionPanel = DescriptionPanel((window.width // 3, -window.height // 15 + 100),
                                                      window.worldCamera.sizeMultiplier,self.screen.guiBatch)
@@ -54,6 +56,7 @@ class Game:
             self.activeSprite = []
             self.interfaces = {}
             self.spriteIndex = 0
+            self.activeImageIndex = 0
             self.spawnAbleUnit = LoadPreset(Directories.PresetDir + "Presets.csv")
             # self.interfaces["descriptionPanel"] = self.descriptionPanel
             self.PopulateSpawnableDict()
@@ -85,8 +88,16 @@ class Game:
         for ligne in content:
             if ligne["name"] != "none":
                 temp = LoadSpritesFromFolder(ligne["spritesPath"])
-                result[ligne["name"]] = pyglet.image.load(Directories.SpritesDir + ligne["spritesPath"] + "/" + temp[
-                    random.randrange(0, len(temp))])
+                if len(temp) == 1:
+                    result[ligne["name"]] = (pyglet.image.load(
+                        Directories.SpritesDir + ligne["spritesPath"] + "/" + temp[0]),)
+                    continue
+
+                sprites = []
+                for i in range(len(temp)):
+                    sprites.append(pyglet.resource.image(Directories.SpritesDir + ligne["spritesPath"] + "/" + temp[i]))
+                result[ligne["name"]] = sprites
+
         return result
 
     def UpdateDescPanel(self, clickedSprite):
@@ -109,6 +120,7 @@ class Game:
             return
 
         preset = LoadPreset(Directories.PresetDir + "Presets.csv", names[self.spriteIndex])
+        self.activeImageIndex = randint(0, len(self.sprites[preset["name"]]) - 1)
         if self.currentFantomeSprite is None:
             self.currentFantomeSprite = FantomeSprite(preset, self.GetMouseOffset(), self.screen.worldBatch)
 
@@ -151,6 +163,15 @@ class Game:
             closestObject = game.GetClosestObjectToLocation(self.GetMouseOffset(), 45)
             if closestObject != None:
                 self.visibleSprite[closestObject].Damage(int(preset["damage"]))
+
+        if preset["name"] == "inspecter":
+
+            offsetPos = self.GetMouseOffset()
+            closestObject = self.GetClosestObjectToLocation(offsetPos, 40)
+            # L'update du panneau de desc peut supporter les valuer None c'est pas un probleme
+            if GAME_DEBUG:
+                debugSuccessMsg(closestObject)
+            self.UpdateDescPanel(closestObject)
 
     def SpawnUnit(self, popPreset, pos, civilisation):
 
