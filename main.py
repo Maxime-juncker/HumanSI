@@ -26,10 +26,10 @@ def on_draw():
             game.descLabel.draw()"""
 
 keyPress = {
-    "Z": False,
-    "Q": False,
-    "S": False,
-    "D": False
+    "Forward": False,
+    "Backward": False,
+    "Left": False,
+    "Right": False
 }
 
 
@@ -37,13 +37,13 @@ def update(dt):
     if game is not None and not game.GAME_RUNNING:
         return
 
-    if keyPress["Z"]:
+    if keyPress["Forward"]:
         screen.worldCamera.move(0, 2)
-    if keyPress["S"]:
+    if keyPress["Backward"]:
         screen.worldCamera.move(0, -2)
-    if keyPress["Q"]:
+    if keyPress["Left"]:
         screen.worldCamera.move(-2, 0)
-    if keyPress["D"]:
+    if keyPress["Right"]:
         screen.worldCamera.move(2, 0)
 
     if game is not None:
@@ -61,14 +61,14 @@ def on_key_press(symbol, modifiers):
 
     # =========== Mouvement ==================
     if game.selectedTarget is None:
-        if symbol == pyglet.window.key.Z:
-            keyPress["Z"] = True
-        if symbol == pyglet.window.key.Q:
-            keyPress["Q"] = True
-        if symbol == pyglet.window.key.S:
-            keyPress["S"] = True
-        if symbol == pyglet.window.key.D:
-            keyPress["D"] = True
+        if symbol == pyglet.window.key.Z or symbol == pyglet.window.key.UP:
+            keyPress["Forward"] = True
+        if symbol == pyglet.window.key.Q or symbol == pyglet.window.key.LEFT:
+            keyPress["Left"] = True
+        if symbol == pyglet.window.key.S or symbol == pyglet.window.key.DOWN:
+            keyPress["Backward"] = True
+        if symbol == pyglet.window.key.D or symbol == pyglet.window.key.RIGHT:
+            keyPress["Right"] = True
     # =========== Description Panel ==========
     if symbol == pyglet.window.key.F:
         game.UpdateDescPanel(None)
@@ -100,14 +100,14 @@ def on_key_release(symbol, modifiers):
     if MAIN_DEBUG:
         debugSuccessMsg(str(symbol) + " | " + str(modifiers))
 
-    if symbol == pyglet.window.key.Z:
-        keyPress["Z"] = False
-    if symbol == pyglet.window.key.Q:
-        keyPress["Q"] = False
-    if symbol == pyglet.window.key.S:
-        keyPress["S"] = False
-    if symbol == pyglet.window.key.D:
-        keyPress["D"] = False
+    if symbol == pyglet.window.key.Z or symbol == pyglet.window.key.UP:
+        keyPress["Forward"] = False
+    if symbol == pyglet.window.key.Q or symbol == pyglet.window.key.LEFT:
+        keyPress["Left"] = False
+    if symbol == pyglet.window.key.S or symbol == pyglet.window.key.DOWN:
+        keyPress["Backward"] = False
+    if symbol == pyglet.window.key.D or symbol == pyglet.window.key.RIGHT:
+        keyPress["Right"] = False
 
 
 @screen.event

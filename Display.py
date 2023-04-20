@@ -109,6 +109,8 @@ class MyWindow(pyglet.window.Window):
         self.guiBatch = pyglet.graphics.Batch()
         self.updateFonct = []
 
+        self.frame = pyglet.gui.Frame(self)
+
     def on_close(self):
         pyglet.app.exit()
 

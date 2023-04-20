@@ -18,7 +18,7 @@ class Game:
         """
         try:
             # ============== VARS =============================
-            self.screen:MyWindow = window
+            self.screen: MyWindow = window
             self.screen.game = self
             self.fps_display = pyglet.window.FPSDisplay(window=window)
             self.fps_display.label.color = (100, 255, 100, 100)
@@ -34,8 +34,8 @@ class Game:
                                                 anchor_x='left', anchor_y='center',
                                                 batch=self.screen.guiBatch)
 
-            self.descriptionPanel = DescriptionPanel((window.width // 3, -window.height // 15 + 100),
-                                                     window.worldCamera.sizeMultiplier,self.screen.guiBatch)
+            self.descriptionPanel = DescriptionPanel(pos=(window.width // 3, -window.height // 15 + 100),
+                                                     scale=window.worldCamera.sizeMultiplier, batch=self.screen.guiBatch)
             self.descLabel = pyglet.text.Label("",
                                                font_name='Times New Roman',
                                                font_size=15,
@@ -45,13 +45,24 @@ class Game:
                                                multiline=True,
                                                width=300,
                                                batch=self.screen.guiBatch)
+
+            """depressed = pyglet.resource.image('Assets/Graphics/Interfaces/Buttons/depressed.png')
+            pressed = pyglet.resource.image('Assets/Graphics/Interfaces/Buttons/pressed.png')
+            hover = pyglet.resource.image('Assets/Graphics/Interfaces/Buttons/hover.png')
+
+            togglebutton = pyglet.gui.ToggleButton(0,0, pressed=pressed, depressed=depressed, hover=hover,
+                                                   batch=self.screen.guiBatch)
+            togglebutton.set_handler('on_toggle', self.toggle_button_handler)
+            self.screen.frame.add_widget(togglebutton)"""
+
+            self.togglebutton = SpawnButton(self.screen.guiBatch)
+            self.screen.frame.add_widget(self.togglebutton)
+
             self.slowUpdateTimer = None
             self.newUnit = None
             self.selectedTarget = None
             self.currentFantomeSprite = None
             self.civilisationSpawned = {}
-            self.normalUpdateDict = {}
-            self.slowUpdateDict = {}
             self.visibleSprite = {}
             self.activeSprite = []
             self.interfaces = {}
@@ -74,6 +85,9 @@ class Game:
             debugFailMsg("/!\ FAIL DE L'INIT DANS Game.py \n HumanSI ne peut pas démarer !")
             debugFailMsg(e.with_traceback())
 
+    def toggle_button_handler(value):
+        print("rok")
+
     def PreLoadSprites(self):
         """
         fonct pour renplir un dict d'image
@@ -95,10 +109,21 @@ class Game:
 
                 sprites = []
                 for i in range(len(temp)):
-                    sprites.append(pyglet.resource.image(Directories.SpritesDir + ligne["spritesPath"] + "/" + temp[i]))
+                    sprites.append(pyglet.image.load(Directories.SpritesDir + ligne["spritesPath"] + "/" + temp[i]))
                 result[ligne["name"]] = sprites
 
         return result
+
+    def LoadAnimationFrames(self, preset):
+        file = open(Directories.PresetDir + "Presets.csv", "r")
+
+        if preset["name"] != "none":
+            temp = LoadSpritesFromFolder(preset["spritesPath"])
+            frames = []
+            for i in range(len(temp)):
+                frames.append(pyglet.resource.image(Directories.SpritesDir + preset["spritesPath"] + "/" + temp[i]))
+
+        return frames
 
     def UpdateDescPanel(self, clickedSprite):
         if clickedSprite is None:
@@ -144,6 +169,7 @@ class Game:
             self.ToolAction(preset)
             return
 
+        pyglet.media.StaticSource(pyglet.media.load('Assets/SFX/Place_build.wav')).play()
         if "CityHall" in names[self.spriteIndex]:
             self.SpawnCivilisation(names[self.spriteIndex])
             return
@@ -154,20 +180,21 @@ class Game:
 
     def ToolAction(self, preset):
 
-        if preset["name"] == "oppenheimer":
+        if preset["name"] == "exterminator":
             closestObject = game.GetClosestObjectToLocation(self.GetMouseOffset(), 45)
             if closestObject != None:
                 self.visibleSprite[closestObject].Destroy()
+                pyglet.media.StaticSource(pyglet.media.load('Assets/SFX/DeleteTool.wav')).play()
 
-        if preset["name"] == "badaboom":
+        if preset["name"] == "ouch":
             closestObject = game.GetClosestObjectToLocation(self.GetMouseOffset(), 45)
             if closestObject != None:
                 self.visibleSprite[closestObject].Damage(int(preset["damage"]))
+                pyglet.media.StaticSource(pyglet.media.load('Assets/SFX/DeleteTool.wav')).play()
 
         if preset["name"] == "inspecter":
-
             offsetPos = self.GetMouseOffset()
-            closestObject = self.GetClosestObjectToLocation(offsetPos, 40)
+            closestObject = self.GetClosestObjectToLocation(offsetPos, 90)
             # L'update du panneau de desc peut supporter les valuer None c'est pas un probleme
             if GAME_DEBUG:
                 debugSuccessMsg(closestObject)
@@ -292,8 +319,8 @@ class Game:
             self.normalUpdateDict[sprite].Tick()
 
     def GetMouseOffset(self):
-        offsetPos_x = self.screen.worldCamera.offset_x - self.screen.width + self.mouse_pos[0] * 2
-        offsetPos_y = self.screen.worldCamera.offset_y - self.screen.height + self.mouse_pos[1] * 2
+        offsetPos_x = self.screen.worldCamera.offset_x - self.screen.width + self.mouse_pos[0] * 2 - 10
+        offsetPos_y = self.screen.worldCamera.offset_y - self.screen.height + self.mouse_pos[1] * 2 - 10
 
         return offsetPos_x, offsetPos_y
 

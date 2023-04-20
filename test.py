@@ -1,78 +1,82 @@
-# importing pyglet module
 import pyglet
-import pyglet.window.key
 
-# width of window
-width = 500
-
-# height of window
-height = 500
-
-# caption i.e title of the window
-title = "Geeksforgeeks"
-
-# creating a window
-window = pyglet.window.Window(width, height, title)
-
-# text
-text = "Welcome to GeeksforGeeks Have a nice day"
-
-# batch object
+window = pyglet.window.Window(540, 500, caption="Widget Example")
 batch = pyglet.graphics.Batch()
-
-# creating a formatted document
-document = pyglet.text.document.FormattedDocument(text)
-
-# setting style to the document
-document.set_style(0, len(document.text), dict(font_name='Arial', font_size=16, color=(255, 255, 255, 255)))
-
-# creating a incremental text layout
-layout = pyglet.text.layout.IncrementalTextLayout(document, 400, 350, batch=batch)
-
-# creating a caret
-caret = pyglet.text.caret.Caret(layout, color=(150, 255, 150))
-
-# caret to window push handlers
-window.push_handlers(caret)
-
-# setting caret style
-caret.set_style(dict(font_name="Arial"))
+pyglet.gl.glClearColor(0.8, 0.8, 0.8, 1.0)
 
 
-# on draw event
 @window.event
 def on_draw():
-    # clear the window
     window.clear()
-
-    # draw the batch
     batch.draw()
 
-    # caret to window push handlers
-    window.push_handlers(caret)
+
+####################################
+# load resources to use for Widgets:
+####################################
+
+depressed = pyglet.resource.image('Assets/Graphics/Interfaces/Buttons/depressed.png')
+pressed = pyglet.resource.image('Assets/Graphics/Interfaces/Buttons/pressed.png')
+hover = pyglet.resource.image('Assets/Graphics/Interfaces/Buttons/hover.png')
+bar = pyglet.resource.image('Assets/Graphics/Interfaces/Buttons/hover.png')
+knob = pyglet.resource.image('Assets/Graphics/Interfaces/Buttons/hover.png')
 
 
-# key press event   
-@window.event
-def on_key_press(symbol, modifier):
-    # key "C" get press
-    if symbol == pyglet.window.key.C:
-        # closing the window
-        # window.close()
-        pass
+######################################
+# Create some event handler functions:
+######################################
+
+def slider_handler(value):
+    slider_label.text = f"Slider Value: {round(value, 1)}"
 
 
+def toggle_button_handler(value):
+    toggle_label.text = f"Toggle Button: {value}"
 
 
+def push_button_handler():
+    push_label.text = f"Push Button: True"
 
 
-# getting start position of the paragraph which is at
-# position 10
-value = document.get_paragraph_start(10)
+def release_button_handler():
+    push_label.text = f"Push Button: False"
 
-# printing value
-print("Start Position : ", end=" ")
-print(value)
 
-# start running the application
+def text_entry_handler(text):
+    text_entry_label.text = f"Text: {text}"
+
+
+###############################
+# Create some Widget instances:
+###############################
+
+# A Frame instance to hold all Widgets:
+frame = pyglet.gui.Frame(window, order=4)
+
+
+togglebutton = pyglet.gui.ToggleButton(100, 400, pressed=pressed, depressed=depressed, hover=hover, batch=batch)
+togglebutton.set_handler('on_toggle', toggle_button_handler)
+frame.add_widget(togglebutton)
+toggle_label = pyglet.text.Label("Toggle Button: False", x=300, y=400, batch=batch, color=(0, 0, 0, 255))
+
+
+pushbutton = pyglet.gui.PushButton(100, 300, pressed=pressed, depressed=depressed, hover=hover, batch=batch)
+pushbutton.set_handler('on_press', push_button_handler)
+pushbutton.set_handler('on_release', release_button_handler)
+frame.add_widget(pushbutton)
+push_label = pyglet.text.Label("Push Button: False", x=300, y=300, batch=batch, color=(0, 0, 0, 255))
+
+
+slider = pyglet.gui.Slider(100, 200, bar, knob, edge=5, batch=batch)
+slider.set_handler('on_change', slider_handler)
+frame.add_widget(slider)
+slider_label = pyglet.text.Label("Slider Value: 0.0", x=300, y=200, batch=batch, color=(0, 0, 0, 255))
+
+
+text_entry = pyglet.gui.TextEntry("Enter Your Name", 100, 100, 150, batch=batch)
+frame.add_widget(text_entry)
+text_entry.set_handler('on_commit', text_entry_handler)
+text_entry_label = pyglet.text.Label("Text: None", x=300, y=100, batch=batch, color=(0, 0, 0, 255))
+
+
 pyglet.app.run()
