@@ -71,6 +71,8 @@ internalSurfaceSize = (displaySurface.get_size()[0], displaySurface.get_size()[1
 internalSurface = pygame.Surface(internalSurfaceSize, pygame.SRCALPHA)
 internalRect = internalSurface.get_rect(center=(half_w, half_h))
 
+def PlaceTree(x, y, Biomeliste ) :
+    for biome in Biomeliste :
 
 # Boucle update
 while GAME_RUNNING:
