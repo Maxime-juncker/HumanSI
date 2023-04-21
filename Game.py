@@ -22,9 +22,9 @@ class Game:
             self.screen.game = self
             self.fps_display = pyglet.window.FPSDisplay(window=window)
             self.fps_display.label.color = (100, 255, 100, 100)
-            self.fps_display.label.font_size = 15
-            self.fps_display.label.x = -window.width // 2 + 20
-            self.fps_display.label.y = window.height // 2 - 20
+            self.fps_display.label.font_size = 32
+            self.fps_display.label.x = -window.width + 20
+            self.fps_display.label.y = window.height - 50
             self.fps_display.label.batch = self.screen.guiBatch
             self.spawnLabel = pyglet.text.Label("",
                                                 font_name='Times New Roman',
@@ -34,13 +34,13 @@ class Game:
                                                 anchor_x='left', anchor_y='center',
                                                 batch=self.screen.guiBatch)
 
-            self.descriptionPanel = DescriptionPanel(pos=(window.width // 3, -window.height // 15 + 100),
+            self.descriptionPanel = DescriptionPanel(pos=(window.width // 1.7, -window.height // 15 + 100),
                                                      scale=window.worldCamera.sizeMultiplier, batch=self.screen.guiBatch)
             self.descLabel = pyglet.text.Label("",
                                                font_name='Times New Roman',
-                                               font_size=15,
+                                               font_size=30,
                                                color=(255, 255, 255, 255),
-                                               x=self.descriptionPanel.x, y=self.descriptionPanel.y,
+                                               x=self.descriptionPanel.x-30, y=self.descriptionPanel.y,
                                                anchor_x='center', anchor_y='center',
                                                multiline=True,
                                                width=300,
@@ -54,9 +54,8 @@ class Game:
                                                    batch=self.screen.guiBatch)
             togglebutton.set_handler('on_toggle', self.toggle_button_handler)
             self.screen.frame.add_widget(togglebutton)"""
-
-            self.togglebutton = SpawnButton(self.screen.guiBatch)
-            self.screen.frame.add_widget(self.togglebutton)
+            pos = (-window.width + 50 , 0)
+            self.togglebutton = ToggleButton(self.toggle_button_handler,pos,1, self.screen.guiBatch)
 
             self.slowUpdateTimer = None
             self.newUnit = None
@@ -85,7 +84,7 @@ class Game:
             debugFailMsg("/!\ FAIL DE L'INIT DANS Game.py \n HumanSI ne peut pas démarer !")
             debugFailMsg(e.with_traceback())
 
-    def toggle_button_handler(value):
+    def toggle_button_handler(self,value):
         print("rok")
 
     def PreLoadSprites(self):
@@ -319,8 +318,8 @@ class Game:
             self.normalUpdateDict[sprite].Tick()
 
     def GetMouseOffset(self):
-        offsetPos_x = self.screen.worldCamera.offset_x - self.screen.width + self.mouse_pos[0] * 2 - 10
-        offsetPos_y = self.screen.worldCamera.offset_y - self.screen.height + self.mouse_pos[1] * 2 - 10
+        offsetPos_x = self.screen.worldCamera.offset_x - self.screen.width + self.mouse_pos[0] * 2
+        offsetPos_y = self.screen.worldCamera.offset_y - self.screen.height + self.mouse_pos[1] * 2
 
         return offsetPos_x, offsetPos_y
 

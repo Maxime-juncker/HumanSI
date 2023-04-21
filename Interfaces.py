@@ -13,7 +13,7 @@ class Panel(AI.BasicObject):
         img.anchor_x = img.width // 2
         img.anchor_y = img.height // 2
         self.image = pyglet.sprite.Sprite(img, x=self.x, y=self.y, batch=batch)
-        self.image.update(self.x, self.y, scale=self.image.scale * scale)
+        self.image.update(self.x, self.y, scale=self.image.scale * scale * 2)
 
         self.HidePanel()  # on cache instant le pannel si jamais faut pas override la funct
 
@@ -28,7 +28,7 @@ class Panel(AI.BasicObject):
 
 
 class DescriptionPanel(Panel):
-    def __init__(self, imageName="descriptionPanel.png", pos=(0,0), scale=1, batch=None):
+    def __init__(self, imageName="descriptionPanel.png", pos=(0, 0), scale=1, batch=None):
         super().__init__(imageName, pos, scale, batch)
         self.statsToShow = None
 
@@ -66,11 +66,36 @@ class DescriptionPanel(Panel):
         return text
 
 
-class SpawnButton():
-    def __init__(self,batch,pos):
-        depressed = pyglet.resource.image('Assets/Graphics/Interfaces/Buttons/depressed.png')
-        pressed = pyglet.resource.image('Assets/Graphics/Interfaces/Buttons/pressed.png')
-        hover = pyglet.resource.image('Assets/Graphics/Interfaces/Buttons/hover.png')
+class ToggleButton():
+    def __init__(self, eventHandler, pos, scale, batch):
+        self.eventHandler = eventHandler
 
+        self.depressed = pyglet.image.load('Assets/Graphics/Interfaces/Buttons/depressed.png')
+        self.depressed.anchor_x = self.depressed.width // 2
+        self.depressed.anchor_y = self.depressed.height // 2
 
+        self.pressed = pyglet.image.load('Assets/Graphics/Interfaces/Buttons/pressed.png')
+        self.x, self.y = pos[0], pos[1]
+        self.pressed.anchor_x = self.pressed.width // 2
+        self.pressed.anchor_y = self.pressed.height // 2
 
+        self.hover = pyglet.image.load('Assets/Graphics/Interfaces/Buttons/hover.png')
+        self.x, self.y = pos[0], pos[1]
+        self.hover.anchor_x = self.hover.width // 2
+        self.hover.anchor_y = self.hover.height // 2
+
+        self.image = pyglet.sprite.Sprite(self.depressed, x=self.x, y=self.y, batch=batch)
+        self.image.update(self.x, self.y, scale=self.image.scale * scale)
+
+        self.isToggle = False
+
+    def CheckIfClicked(self, mousePos):
+        if GetDistanceFromVector((self.x, self.y), mousePos) <= 50:
+            self.isToggle = not self.isToggle
+            if self.isToggle:
+                self.image = pyglet.sprite.Sprite(self.pressed, x=self.x, y=self.y, batch=self.image.batch)
+                self.image.update(self.x, self.y, scale=self.image.scale)
+            else:
+                self.image = pyglet.sprite.Sprite(self.depressed, x=self.x, y=self.y, batch=self.image.batch)
+                self.image.update(self.x, self.y, scale=self.image.scale)
+            self.eventHandler(self)

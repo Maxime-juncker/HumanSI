@@ -12,7 +12,7 @@ class Camera:
     en bas
     """
 
-    def __init__(self, window: pyglet.window.Window, scroll_speed=1, min_zoom=1, max_zoom=4):
+    def __init__(self, window: pyglet.window.Window, scroll_speed=1, min_zoom=.5, max_zoom=4):
         assert min_zoom <= max_zoom
         self._window = window
         self.scroll_speed = scroll_speed
@@ -109,7 +109,7 @@ class MyWindow(pyglet.window.Window):
         self.guiBatch = pyglet.graphics.Batch()
         self.updateFonct = []
 
-        self.frame = pyglet.gui.Frame(self)
+
 
     def on_close(self):
         pyglet.app.exit()
