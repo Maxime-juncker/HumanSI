@@ -1,6 +1,7 @@
 import pyglet
 from Utilities import *
 import AI
+import Game
 
 
 class Panel(AI.BasicObject):
@@ -67,8 +68,10 @@ class DescriptionPanel(Panel):
 
 
 class ToggleButton():
-    def __init__(self, eventHandler, pos, scale, batch):
+    def __init__(self, eventHandler, category, pos, scale, batch):
+
         self.eventHandler = eventHandler
+        self.category = LoadPreset(Directories.PresetDir + "Presets.csv", category)["category"]
 
         self.depressed = pyglet.image.load('Assets/Graphics/Interfaces/Buttons/depressed.png')
         self.depressed.anchor_x = self.depressed.width // 2
@@ -87,15 +90,34 @@ class ToggleButton():
         self.image = pyglet.sprite.Sprite(self.depressed, x=self.x, y=self.y, batch=batch)
         self.image.update(self.x, self.y, scale=self.image.scale * scale)
 
+        self.iconImg = pyglet.image.load("Assets/Graphics/Misc/Categories/" + category + ".png")
+        self.icon = pyglet.sprite.Sprite(self.iconImg, x=self.x, y=self.y, batch=batch)
+        self.icon.update(self.x, self.y, scale=self.image.scale * scale)
+
         self.isToggle = False
 
     def CheckIfClicked(self, mousePos):
-        if GetDistanceFromVector((self.x, self.y), mousePos) <= 50:
+        if GetDistanceFromVector(
+                (self.x + Game.game.screen.worldCamera.offset_x, self.y + Game.game.screen.worldCamera.offset_y),
+                mousePos) <= 50:
             self.isToggle = not self.isToggle
             if self.isToggle:
-                self.image = pyglet.sprite.Sprite(self.pressed, x=self.x, y=self.y, batch=self.image.batch)
-                self.image.update(self.x, self.y, scale=self.image.scale)
+                self.Enable()
             else:
-                self.image = pyglet.sprite.Sprite(self.depressed, x=self.x, y=self.y, batch=self.image.batch)
-                self.image.update(self.x, self.y, scale=self.image.scale)
+                self.Disable()
             self.eventHandler(self)
+
+        return self.isToggle
+
+    def Disable(self):
+        self.image = pyglet.sprite.Sprite(self.depressed, x=self.x, y=self.y, batch=self.image.batch)
+        self.image.update(self.x, self.y, scale=self.image.scale)
+        self.icon = pyglet.sprite.Sprite(self.iconImg, x=self.x, y=self.y, batch=self.icon.batch)
+        self.icon.update(self.x, self.y, scale=self.image.scale)
+
+    def Enable(self):
+        self.image = pyglet.sprite.Sprite(self.pressed, x=self.x, y=self.y, batch=self.image.batch)
+        self.image.update(self.x, self.y, scale=self.image.scale)
+        self.icon = pyglet.sprite.Sprite(self.iconImg, x=self.x, y=self.y, batch=self.icon.batch)
+        self.icon.update(self.x, self.y, scale=self.image.scale)
+        Game.game.DisableAllButtons(self)

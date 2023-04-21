@@ -28,34 +28,38 @@ class Game:
             self.fps_display.label.batch = self.screen.guiBatch
             self.spawnLabel = pyglet.text.Label("",
                                                 font_name='Times New Roman',
-                                                font_size=20,
+                                                font_size=40,
                                                 color=(0, 0, 0, 255),
-                                                x=-window.width // 2 + 20, y=window.height // 2 - 50,
+                                                x=-window.width + 20, y=window.height // 2 - 50,
+                                                anchor_x='left', anchor_y='center',
+                                                batch=self.screen.guiBatch)
+            self.categoryLabel = pyglet.text.Label("categorie : tool",
+                                                font_name='Times New Roman',
+                                                font_size=25,
+                                                color=(0, 0, 0, 255),
+                                                x=-window.width + 20, y=window.height // 2 - 100,
                                                 anchor_x='left', anchor_y='center',
                                                 batch=self.screen.guiBatch)
 
+            self.toolTipLabel = pyglet.text.Label("A / E pour changer d'objet, click gauche pour placer",
+                                                font_name='Times New Roman',
+                                                font_size=18,
+                                                color=(0, 0, 0, 255),
+                                                x=-window.width + 20, y=-window.height + 50,
+                                                anchor_x='left', anchor_y='center',
+                                                batch=self.screen.guiBatch)
             self.descriptionPanel = DescriptionPanel(pos=(window.width // 1.7, -window.height // 15 + 100),
-                                                     scale=window.worldCamera.sizeMultiplier, batch=self.screen.guiBatch)
+                                                     scale=window.worldCamera.sizeMultiplier,
+                                                     batch=self.screen.guiBatch)
             self.descLabel = pyglet.text.Label("",
                                                font_name='Times New Roman',
                                                font_size=30,
                                                color=(255, 255, 255, 255),
-                                               x=self.descriptionPanel.x-30, y=self.descriptionPanel.y,
+                                               x=self.descriptionPanel.x - 30, y=self.descriptionPanel.y,
                                                anchor_x='center', anchor_y='center',
                                                multiline=True,
                                                width=300,
                                                batch=self.screen.guiBatch)
-
-            """depressed = pyglet.resource.image('Assets/Graphics/Interfaces/Buttons/depressed.png')
-            pressed = pyglet.resource.image('Assets/Graphics/Interfaces/Buttons/pressed.png')
-            hover = pyglet.resource.image('Assets/Graphics/Interfaces/Buttons/hover.png')
-
-            togglebutton = pyglet.gui.ToggleButton(0,0, pressed=pressed, depressed=depressed, hover=hover,
-                                                   batch=self.screen.guiBatch)
-            togglebutton.set_handler('on_toggle', self.toggle_button_handler)
-            self.screen.frame.add_widget(togglebutton)"""
-            pos = (-window.width + 50 , 0)
-            self.togglebutton = ToggleButton(self.toggle_button_handler,pos,1, self.screen.guiBatch)
 
             self.slowUpdateTimer = None
             self.newUnit = None
@@ -65,11 +69,15 @@ class Game:
             self.visibleSprite = {}
             self.activeSprite = []
             self.interfaces = {}
+            self.categoryButtons = {}
+            self.currentCategory = "tool"
+
             self.spriteIndex = 0
             self.activeImageIndex = 0
             self.spawnAbleUnit = LoadPreset(Directories.PresetDir + "Presets.csv")
             # self.interfaces["descriptionPanel"] = self.descriptionPanel
             self.PopulateSpawnableDict()
+            self.SetupCategoriesButton(("Other", "Pop", "Civilisation", "Tools"))
             self.sprites = self.PreLoadSprites()
             self.mouse_pos = 0, 0
             # =================================================
@@ -84,8 +92,38 @@ class Game:
             debugFailMsg("/!\ FAIL DE L'INIT DANS Game.py \n HumanSI ne peut pas démarer !")
             debugFailMsg(e.with_traceback())
 
-    def toggle_button_handler(self,value):
-        print("rok")
+    def toggle_button_handler(self, button: ToggleButton):
+        if GAME_DEBUG:
+            debugWarningMsg("switch to:" + button.category)
+        self.currentCategory = button.category
+        self.categoryLabel.text = "categorie : " + button.category
+        self.spriteIndex = 0
+        self.PopulateSpawnableDict()
+        self.UpdateFantomeSprite()
+
+    def SetupCategoriesButton(self, listCategories: list):
+        for i in range(len(listCategories)):
+            pos = (-self.screen.width + 50, i * 100)
+            self.categoryButtons[listCategories[i]] = ToggleButton(self.toggle_button_handler, listCategories[i], pos,
+                                                                   1, self.screen.guiBatch)
+
+    def ToggleButtonAction(self):
+        result = []
+        for button in self.categoryButtons:
+            result.append(self.categoryButtons[button].CheckIfClicked(self.GetMouseOffset()))
+
+        if True in result:
+            return True
+        else:
+            return False
+
+    def DisableAllButtons(self, buttonToggle):
+        if GAME_DEBUG:
+            debugWarningMsg("Bouton pressé: " + str(buttonToggle))
+
+        for button in self.categoryButtons:
+            if self.categoryButtons[button] != buttonToggle:
+                self.categoryButtons[button].Disable()
 
     def PreLoadSprites(self):
         """
@@ -99,7 +137,7 @@ class Game:
 
         result = {}
         for ligne in content:
-            if ligne["name"] != "none":
+            if ligne["spritesPath"] != "none":
                 temp = LoadSpritesFromFolder(ligne["spritesPath"])
                 if len(temp) == 1:
                     result[ligne["name"]] = (pyglet.image.load(
@@ -160,6 +198,7 @@ class Game:
         [names.extend([v]) for v in self.spawnAbleUnit.keys()]
 
         if "none" in names[self.spriteIndex]:
+            self.SpawnUnit(LoadPreset(Directories.PresetDir + "Presets.csv", "spawnEffect"), self.GetMouseOffset(),None)
             return
 
         preset = LoadPreset(Directories.PresetDir + "Presets.csv", names[self.spriteIndex])
@@ -233,7 +272,7 @@ class Game:
         temp = LoadPreset(Directories.PresetDir + "Presets.csv")
         self.spawnAbleUnit.clear()
         for element in temp:
-            if int(temp[element]["isSpawnable"]) == 1:
+            if int(temp[element]["isSpawnable"]) == 1 and temp[element]["category"] == self.currentCategory or temp[element]["category"] == "none":
                 self.spawnAbleUnit[element] = LoadPreset(Directories.PresetDir + "Presets.csv", element)
 
     def KillAllActors(self):
@@ -324,7 +363,7 @@ class Game:
         return offsetPos_x, offsetPos_y
 
     def SuperUpdate(self):
-        pass
+
         l = []
         [l.extend([v]) for v in game.spawnAbleUnit.keys()]
         if len(l) > 0:

@@ -117,7 +117,8 @@ def on_mouse_press(x, y, button, modifiers):
 
     if button == 1:  # clic gauche
         game.SpawnUnitBaseByIndex()
-        game.togglebutton.CheckIfClicked(game.GetMouseOffset())
+        game.ToggleButtonAction()
+        #game.togglebutton.CheckIfClicked(game.GetMouseOffset())
     if button == 2:  # Clic molette
         pass
     if button == 4:  # clic droit

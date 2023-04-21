@@ -657,3 +657,10 @@ class FantomeSprite(BasicObject):
         self.image.color[3] -= 6
         if self.image.get_alpha() < 30:
             self.isAddingAlpha = True
+
+
+
+
+
+
+# BOUH !

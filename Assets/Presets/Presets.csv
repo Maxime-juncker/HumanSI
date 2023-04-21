@@ -2,17 +2,23 @@ name,speed,moveTimer,sociability,damage,attackSpeed,health,lifeSpan,civilisation
 
 none,0,0,0,0,0,-1,-1,none,none,-1,none,1,-1,0
 
+Tools,0,0,0,10,0,-1,-1,none,tool,-1,none,0,-1,0
+Civilisation,0,0,0,10,0,-1,-1,none,building,-1,none,0,-1,0
+Pop,0,0,0,10,0,-1,-1,none,unit,-1,none,0,-1,0
+Other,0,0,0,10,0,-1,-1,ressources,ressources,-1,none,0,-1,0
+
+
 ouch,0,0,0,10,0,-1,-1,none,tool,-1,Misc/Hammer,1,-1,0
 exterminator,0,0,0,99999,0,-1,-1,none,tool,-1,Misc/Cross,1,-1,0
 inspecter,0,0,0,0,0,-1,-1,none,tool,-1,Misc/Lens,1,-1,0
 
-spawnEffect,0,0,0,0,0,-1,-1,none,VFX,-1,VFX,1,-1,.1
+spawnEffect,0,0,0,0,0,-1,-1,none,VFX,-1,VFX,-1,-1,.1
 
 
 Rock,0,0,0,0,0,50,-1,none,ressources,-1,Props/Rocks,1,-1,0
 Tree,0,0,0,0,0,50,-1,none,ressources,-1,Props/Trees,1,-1,0
 Forest,0,0,0,0,0,50,-1,none,ressources,-1,Props/Forests,1,-1,0
-Ruines,0,0,0,0,0,100,-1,none,none,-1,Props/Ruines,0,-1,0
+Ruines,0,0,0,0,0,100,-1,none,ressources,-1,Props/Ruines,1,-1,0
 
 YellowCityHall,0,0,0,0,0,800,-1,yellow,building,-1,Civilisations/Yellow/BuildingsYellow/HDV,1,-1,0
 YellowHouse,0,0,0,0,0,300,-1,yellow,building,50,Civilisations/Yellow/BuildingsYellow/Buildings,0,-1,0
