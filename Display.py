@@ -108,11 +108,16 @@ class MyWindow(pyglet.window.Window):
         self.guiCamera = CenteredCamera(self)
         self.guiBatch = pyglet.graphics.Batch()
         self.updateFonct = []
+        self.terrain:pyglet.sprite.Sprite = None
 
 
 
     def on_close(self):
         pyglet.app.exit()
+
+    def AddTerrain(self,terrainImg):
+        self.terrain = pyglet.sprite.Sprite(terrainImg,-self.width,-self.height)
+        self.terrain.scale = self.terrain.scale * 5
 
     def Update(self, dt):
         self.OnDraw(dt)
@@ -130,7 +135,10 @@ class MyWindow(pyglet.window.Window):
 
     def OnDraw(self, dt):
         self.clear()
+
+
         with self.worldCamera:
+            self.terrain.draw()
             self.worldBatch.draw()
         # quand on draw avec le gui les element ne bouge pas avec l'offset de la cam
         with self.guiCamera:
@@ -141,11 +149,13 @@ screen = None
 
 
 
-def CreateWindow(updateMain, startGame):
+def CreateWindow(updateMain, startGame,terrainImg=""):
     global screen
     global game
     screen = MyWindow(WIDTH, HEIGHT, "HumanSI", fullscreen=FULLSCREEN)
     screen.AddToUpdate(updateMain)
+    if terrainImg != "":
+        screen.AddTerrain(terrainImg)
     game = startGame(screen)
     pyglet.clock.schedule_interval(screen.Update, 1 / 120)
     return screen, game

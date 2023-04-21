@@ -4,6 +4,18 @@ FULLSCREEN = True
 
 MUTATION_FORCE = .25
 
+"""
+LES SETTINGS SUIVANTS SONT POUR LA GEN PROC DU TERRAIN:
+
+si USE_RANDOM_TERRAIN est a False, il n'y aura pas de génération procédural et l'un des terrain
+déjà générer sera utiliser (a utiliser si vous voulez lancer rapidement HumanSI ou si la génération prend trop de temps)
+plus les settings de résolution seront élever plus la generation prendra du temp
+"""
+
+USE_RANDOM_TERRAIN = True
+
+WIDTH_RESOLUTION = 512
+HEIGHT_RESOLUTION = 512
 
 """
 LES SETTINGS SUIVANTS SONT POUR LE DEBUG:
@@ -16,3 +28,5 @@ GAME_DEBUG = False
 MAIN_DEBUG = False
 AI_DEBUG = False
 INTERFACES_DEBUG = False
+
+

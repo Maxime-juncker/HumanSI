@@ -239,28 +239,10 @@ class Game:
             self.UpdateDescPanel(closestObject)
 
     def SpawnUnit(self, popPreset, pos, civilisation):
-
-        """try:
-            (r, g, b, a) = self.cameraGroup.internalSurface.get_at((int(pos[0]), int(pos[1])))
-            if r == 113 and g == 221 and b == 238:
-                debugFailMsg("unable to spawn on water !")
-                return
-        except:
-            print("probleme")"""
-
         self.newUnit = Unit(popPreset, civilisation, pos, self.screen.worldBatch)
         return self.newUnit
 
     def SpawnCivilisation(self, civilisationName):
-
-        """try:
-            (r, g, b, a) = pygame.Surface.get_at(self.display, (int(offsetPos[0]), int(offsetPos[1])))
-            if r == 113 and g == 221 and b == 238:
-                debugFailMsg("unable to spawn on water !")
-                return
-        except:
-            print("problème")"""
-
         tempPreset = LoadPreset(Directories.PresetDir + "Presets.csv", civilisationName)
         preset = LoadPreset(Directories.PresetDir + "Civilisation.csv", tempPreset["civilisation"])
         newCivilisation = Civilisation(preset)
@@ -276,7 +258,6 @@ class Game:
                 self.spawnAbleUnit[element] = LoadPreset(Directories.PresetDir + "Presets.csv", element)
 
     def KillAllActors(self):
-
         for object in self.visibleSprite.copy():
             self.visibleSprite[object].Destroy()
         self.slowUpdateDict.clear()

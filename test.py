@@ -1,82 +1,73 @@
-import pyglet
+from PIL import Image
+from perlin_noise import PerlinNoise
+from Utilities import *
+from pygame.locals import *
 
-window = pyglet.window.Window(540, 500, caption="Widget Example")
-batch = pyglet.graphics.Batch()
-pyglet.gl.glClearColor(0.8, 0.8, 0.8, 1.0)
+noise1 = PerlinNoise(octaves=3)
+noise2 = PerlinNoise(octaves=10)
+noise3 = PerlinNoise(octaves=3)
+noise4 = PerlinNoise(octaves=5)
 
-
-@window.event
-def on_draw():
-    window.clear()
-    batch.draw()
-
-
-####################################
-# load resources to use for Widgets:
-####################################
-
-depressed = pyglet.resource.image('Assets/Graphics/Interfaces/Buttons/depressed.png')
-pressed = pyglet.resource.image('Assets/Graphics/Interfaces/Buttons/pressed.png')
-hover = pyglet.resource.image('Assets/Graphics/Interfaces/Buttons/hover.png')
-bar = pyglet.resource.image('Assets/Graphics/Interfaces/Buttons/hover.png')
-knob = pyglet.resource.image('Assets/Graphics/Interfaces/Buttons/hover.png')
-
-
-######################################
-# Create some event handler functions:
-######################################
-
-def slider_handler(value):
-    slider_label.text = f"Slider Value: {round(value, 1)}"
+WHITE = (255, 255, 255, 255)
+DARKWHITE = (225,225,225, 255)
+BLUE = (0, 0, 255, 255)
+YELLOW = (255, 255, 0, 255)
+LIGTHGREEN = (102, 255, 102, 255)
+MIDGREEN = (60, 255, 60, 255)
+GREEN = (0,255,0, 255)
+DEEPGREEN = (0, 153, 0, 255)
+RED = (255, 0, 0, 255)
+GREY = (128, 128, 128, 255)
+DARKGREY = (180, 180, 180, 255)
+DEFAULTCOLOR = (0, 0, 0, 255)
+BLACK = (0, 0, 0, 255)
 
 
-def toggle_button_handler(value):
-    toggle_label.text = f"Toggle Button: {value}"
+biomes = {      #dico avec la liste des biomes et leurs characteristiques
+    "ocean" : (-8/9, YELLOW, "ocean"),
+    "plage" : (-6/9, BLUE, "plage"),
+    "plaine" : (-4/9, LIGTHGREEN, "plaine"),
+    "forest" : (-2/9, GREEN,"forest"),
+    "midForest" : (0, MIDGREEN, "midForest"),      #Si on met se biome le monde devient tres plat
+    "deepForest" : (2/9, DEEPGREEN, "deepForest"),
+    "stonyMontagne" :  (4/9, DARKGREY, "stonyMontagne"),
+    "montagne" : (6/9, GREY, "montagne"),
+    "hightMontagne" : (8/9, DARKWHITE, "hightMontagne"),
+}
 
 
-def push_button_handler():
-    push_label.text = f"Push Button: True"
+def CheckForBiomeAt(value):
+    for biome in biomes:
+        if biomes[biome][0] >= value:
+            return (biome)
+
+    debugFailMsg("failed to find a biome !")
+
+def PlaceBiome(x, y, valuePerlinNoise, Biomeliste):
+    for biome in Biomeliste:
+        if Biomeliste[biome][0] > 1:
+            return debugFailMsg("depassement de la valeur de 1 dans : PlaceBiome")
+        elif valuePerlinNoise >= Biomeliste[biome][0] and valuePerlinNoise <= Biomeliste[biome][0] + .25:
+            return Biomeliste[CheckForBiomeAt(valuePerlinNoise)][1]
 
 
-def release_button_handler():
-    push_label.text = f"Push Button: False"
+im = Image.open('Assets/Graphics/Misc/blanckSurface.png')
+width, height = im.size
+colortuples = im.getcolors()
+mycolor1 = min(colortuples)[1]
+mycolor2 = max(colortuples)[1]
+print(max(colortuples)[1])
+pix = im.load()
+for x in range(0, width):
+    for y in range(0, height):
 
+        noise_val = noise3([x / im.width, y / im.height])  # basic noise
+        noise_val = noise3([x / im.width, y / im.height])  # basic noise
+        noise_val += noise4([x / im.width, y / im.height])  # basic noise
 
-def text_entry_handler(text):
-    text_entry_label.text = f"Text: {text}"
+        val = PlaceBiome(x,y,noise_val,biomes)
+        im.putpixel((x, y),val)
+    debugWarningMsg("Generation : " + str(round(x / im.width * 100, 1)) + "%")
 
-
-###############################
-# Create some Widget instances:
-###############################
-
-# A Frame instance to hold all Widgets:
-frame = pyglet.gui.Frame(window, order=4)
-
-
-togglebutton = pyglet.gui.ToggleButton(100, 400, pressed=pressed, depressed=depressed, hover=hover, batch=batch)
-togglebutton.set_handler('on_toggle', toggle_button_handler)
-frame.add_widget(togglebutton)
-toggle_label = pyglet.text.Label("Toggle Button: False", x=300, y=400, batch=batch, color=(0, 0, 0, 255))
-
-
-pushbutton = pyglet.gui.PushButton(100, 300, pressed=pressed, depressed=depressed, hover=hover, batch=batch)
-pushbutton.set_handler('on_press', push_button_handler)
-pushbutton.set_handler('on_release', release_button_handler)
-frame.add_widget(pushbutton)
-push_label = pyglet.text.Label("Push Button: False", x=300, y=300, batch=batch, color=(0, 0, 0, 255))
-
-
-slider = pyglet.gui.Slider(100, 200, bar, knob, edge=5, batch=batch)
-slider.set_handler('on_change', slider_handler)
-frame.add_widget(slider)
-slider_label = pyglet.text.Label("Slider Value: 0.0", x=300, y=200, batch=batch, color=(0, 0, 0, 255))
-
-
-text_entry = pyglet.gui.TextEntry("Enter Your Name", 100, 100, 150, batch=batch)
-frame.add_widget(text_entry)
-text_entry.set_handler('on_commit', text_entry_handler)
-text_entry_label = pyglet.text.Label("Text: None", x=300, y=100, batch=batch, color=(0, 0, 0, 255))
-
-
-pyglet.app.run()
+im.save('MyImage.png')
+debugSuccessMsg("finished !")

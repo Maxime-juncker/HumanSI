@@ -5,25 +5,10 @@ import pyglet
 from Utilities import *
 from Settings import *
 from Display import *
+from TestPerlinNoise import *
 
 if MAIN_DEBUG:
     debugWarningMsg("Version de pyglet: " + str(pyglet.__version__))
-
-"""@game.window.event
-def on_draw():
-    if not game.GAME_RUNNING:
-        return
-
-    game.window.clear()
-    with game.worldCamera:
-        game.batch.draw()
-    # quand on draw avec la gui les element ne bouge pas avec l'offset de la cam
-    with game.GuiCamera:
-        game.spawnLabel.draw()
-        game.fps_display.draw()
-        game.descriptionPanel.image.draw()
-        if game.descLabel.text != "":
-            game.descLabel.draw()"""
 
 keyPress = {
     "Forward": False,
@@ -49,9 +34,17 @@ def update(dt):
     if game is not None:
         game.SuperUpdate()
 
-game:Game.Game = None
-screen:MyWindow = None
-screen, game = CreateWindow(update, StartGame)
+
+if USE_RANDOM_TERRAIN:
+    terrainImg = GenerateWorld()
+else:
+    terrains = LoadSpritesFromFolder("Misc/GeneratedMap")
+    r = random.randint(0, len(terrains)-1)
+    terrainImg = pyglet.image.load(Directories.SpritesDir + "Misc/GeneratedMap/" + terrains[r])
+
+game: Game.Game = None
+screen: MyWindow = None
+screen, game = CreateWindow(update, StartGame, terrainImg)
 
 
 @screen.event
@@ -118,7 +111,7 @@ def on_mouse_press(x, y, button, modifiers):
     if button == 1:  # clic gauche
         game.SpawnUnitBaseByIndex()
         game.ToggleButtonAction()
-        #game.togglebutton.CheckIfClicked(game.GetMouseOffset())
+        # game.togglebutton.CheckIfClicked(game.GetMouseOffset())
     if button == 2:  # Clic molette
         pass
     if button == 4:  # clic droit
