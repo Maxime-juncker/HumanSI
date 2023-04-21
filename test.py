@@ -1,73 +1,41 @@
+#!/usr/bin/env python
+
+width, height = 1000, 200
+
+import math
 from PIL import Image
-from perlin_noise import PerlinNoise
-from Utilities import *
-from pygame.locals import *
+im = Image.new('RGB', (width, height))
+ld = im.load()
 
-noise1 = PerlinNoise(octaves=3)
-noise2 = PerlinNoise(octaves=10)
-noise3 = PerlinNoise(octaves=3)
-noise4 = PerlinNoise(octaves=5)
+# A map of rgb points in your distribution
+# [distance, (r, g, b)]
+# distance is percentage from left edge
 
-WHITE = (255, 255, 255, 255)
-DARKWHITE = (225,225,225, 255)
-BLUE = (0, 0, 255, 255)
-YELLOW = (255, 255, 0, 255)
-LIGTHGREEN = (102, 255, 102, 255)
-MIDGREEN = (60, 255, 60, 255)
-GREEN = (0,255,0, 255)
-DEEPGREEN = (0, 153, 0, 255)
-RED = (255, 0, 0, 255)
-GREY = (128, 128, 128, 255)
-DARKGREY = (180, 180, 180, 255)
-DEFAULTCOLOR = (0, 0, 0, 255)
-BLACK = (0, 0, 0, 255)
+heatmap = [
+    [0.0, (0, 0, 0)],
+    [0.20, (0, 0, .5)],
+    [0.40, (0, .5, 0)],
+    [0.60, (.5, 0, 0)],
+    [0.80, (.75, .75, 0)],
+    [0.90, (1.0, .75, 0)],
+    [1.00, (1.0, 1.0, 1.0)],
+]
 
+def gaussian(x, a, b, c, d=0):
+    return a * math.exp(-(x - b)**2 / (2 * c**2)) + d
 
-biomes = {      #dico avec la liste des biomes et leurs characteristiques
-    "ocean" : (-8/9, YELLOW, "ocean"),
-    "plage" : (-6/9, BLUE, "plage"),
-    "plaine" : (-4/9, LIGTHGREEN, "plaine"),
-    "forest" : (-2/9, GREEN,"forest"),
-    "midForest" : (0, MIDGREEN, "midForest"),      #Si on met se biome le monde devient tres plat
-    "deepForest" : (2/9, DEEPGREEN, "deepForest"),
-    "stonyMontagne" :  (4/9, DARKGREY, "stonyMontagne"),
-    "montagne" : (6/9, GREY, "montagne"),
-    "hightMontagne" : (8/9, DARKWHITE, "hightMontagne"),
-}
+def pixel(x, width=100, map=[], spread=1):
+    width = float(width)
+    r = sum([gaussian(x, p[1][0], p[0] * width, width/(spread*len(map))) for p in map])
+    g = sum([gaussian(x, p[1][1], p[0] * width, width/(spread*len(map))) for p in map])
+    b = sum([gaussian(x, p[1][2], p[0] * width, width/(spread*len(map))) for p in map])
+    return min(1.0, r), min(1.0, g), min(1.0, b)
 
+for x in range(im.size[0]):
+    r, g, b = pixel(x, width=im.size[0], map=heatmap)
+    r, g, b = [int(256*v) for v in (r, g, b)]
+    for y in range(im.size[1]):
+        ld[x, y] = r, g, b
 
-def CheckForBiomeAt(value):
-    for biome in biomes:
-        if biomes[biome][0] >= value:
-            return (biome)
-
-    debugFailMsg("failed to find a biome !")
-
-def PlaceBiome(x, y, valuePerlinNoise, Biomeliste):
-    for biome in Biomeliste:
-        if Biomeliste[biome][0] > 1:
-            return debugFailMsg("depassement de la valeur de 1 dans : PlaceBiome")
-        elif valuePerlinNoise >= Biomeliste[biome][0] and valuePerlinNoise <= Biomeliste[biome][0] + .25:
-            return Biomeliste[CheckForBiomeAt(valuePerlinNoise)][1]
-
-
-im = Image.open('Assets/Graphics/Misc/blanckSurface.png')
-width, height = im.size
-colortuples = im.getcolors()
-mycolor1 = min(colortuples)[1]
-mycolor2 = max(colortuples)[1]
-print(max(colortuples)[1])
-pix = im.load()
-for x in range(0, width):
-    for y in range(0, height):
-
-        noise_val = noise3([x / im.width, y / im.height])  # basic noise
-        noise_val = noise3([x / im.width, y / im.height])  # basic noise
-        noise_val += noise4([x / im.width, y / im.height])  # basic noise
-
-        val = PlaceBiome(x,y,noise_val,biomes)
-        im.putpixel((x, y),val)
-    debugWarningMsg("Generation : " + str(round(x / im.width * 100, 1)) + "%")
-
-im.save('MyImage.png')
-debugSuccessMsg("finished !")
+im.save('grad.png')
+print(im.getpixel((500,0))) # permet d'avoir le pixel a une coordoné

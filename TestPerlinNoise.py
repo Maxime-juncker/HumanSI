@@ -45,6 +45,8 @@ def CheckForBiomeAt(value):
 
 
 def PlaceBiome(x, y, valuePerlinNoise, Biomeliste):
+
+
     for biome in Biomeliste:
         if Biomeliste[biome][0] > 1:
             return debugFailMsg("depassement de la valeur de 1 dans : PlaceBiome")
