@@ -66,7 +66,7 @@ def GenerateWorld(heightMap: Image):
             noiseVal = noise3([x / im.width, y / im.height])  # basic noise
             noiseVal += noise2([x / im.width, y / im.height])
             noiseVal += 0.3  # c'est une valeur arbitraire pour juste qu'il y ai un peu moins d'eau
-            noiseVal += Clamp(random.random() * .05, -.5, .5)  # c'est une valeur arbitraire pour un peu de variation
+            noiseVal += Clamp(random.random() * .01, -.5, .5)  # c'est une valeur arbitraire pour un peu de variation
 
             noiseVal = Clamp(WIDTH_RESOLUTION * noiseVal, 0, WIDTH_RESOLUTION - 1)
 

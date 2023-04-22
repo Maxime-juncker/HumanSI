@@ -121,3 +121,45 @@ class ToggleButton():
         self.icon = pyglet.sprite.Sprite(self.iconImg, x=self.x, y=self.y, batch=self.icon.batch)
         self.icon.update(self.x, self.y, scale=self.image.scale)
         Game.game.DisableAllButtons(self)
+
+
+class DispalyText():
+    def __init__(self, infos, priority=0, x=0, y=0, batch:pyglet.graphics.Batch=None):
+        if priority == 0:
+            self.infoLabel = pyglet.text.Label(str(infos),
+                                               font_name='Times New Roman',
+                                               font_size=22,
+                                               color=(20, 20, 20, 230),
+                                               x=x, y=y + 40*len(Game.game.activeDisplayText),
+                                               anchor_x='left', anchor_y='center',
+                                               multiline=True,
+                                               width=2500,
+                                               bold=True,
+                                               batch=batch)
+        if priority == 1:
+            self.infoLabel = pyglet.text.Label("Warning : " + str(infos),
+                                               font_name='Times New Roman',
+                                               font_size=22,
+                                               color=(255, 200, 0, 230),
+                                               x=x, y=y + 40*len(Game.game.activeDisplayText),
+                                               anchor_x='left', anchor_y='center',
+                                               multiline=True,
+                                               width=2500,
+                                               bold=True,
+                                               batch=batch)
+        if priority == 2:
+            self.infoLabel = pyglet.text.Label("Error : " + str(infos),
+                                               font_name='Times New Roman',
+                                               font_size=22,
+                                               color=(200, 0, 0, 230),
+                                               x=x, y=y + 40*len(Game.game.activeDisplayText),
+                                               anchor_x='left', anchor_y='center',
+                                               multiline=True,
+                                               width=2500,
+                                               bold=True,
+                                               batch=batch)
+        Game.game.activeDisplayText[id(self)] = self
+        pyglet.clock.schedule_once(self.Destroy, 5)
+    def Destroy(self, dt):
+        Game.game.activeDisplayText.pop(id(self))
+        del self

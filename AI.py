@@ -458,7 +458,7 @@ class Civilisation(BasicObject):
         le nom c'est unitCost
         """
 
-        if len(self.currentPopulation) < self.maxPop:
+        if len(self.currentPopulation) < self.maxPop and len(self.currentPopulation) < MAX_POP_PER_CIVILISATION:
             if int(self.populationPreset["unitCost"]) <= self.ressources:
                 unit = Game.game.SpawnUnit(self.populationPreset, self.cityHallPos, self)
                 self.currentPopulation[unit.name] = unit

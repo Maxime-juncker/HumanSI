@@ -100,7 +100,7 @@ class MyWindow(pyglet.window.Window):
         if not FULLSCREEN:
             self.set_size(WIDTH, HEIGHT)
         # Background
-        glClearColor(255, 255, 255, 1.0)  # red, green, blue, and alpha(transparency)
+        glClearColor(25, 20, 102, 1.0)  # red, green, blue, and alpha(transparency)
 
         self.worldCamera = CenteredCamera(self, scroll_speed=5, min_zoom=.5, max_zoom=6)
         self.game: Game.Game = None
@@ -118,6 +118,11 @@ class MyWindow(pyglet.window.Window):
     def AddTerrain(self,terrainImg):
         self.terrain = pyglet.sprite.Sprite(terrainImg,-self.width,-self.height)
         self.terrain.scale = self.terrain.scale * 5
+
+        #  on centre le terrain au millieu de la carte
+        """self.terrain.x -= self.terrain.width
+        self.terrain.y += self.terrain.height"""
+        print(self.terrain.scale)
 
     def Update(self, dt):
         self.OnDraw(dt)
