@@ -14,8 +14,8 @@ plus les settings de résolution seront élever plus la generation prendra du te
 
 USE_RANDOM_TERRAIN = True
 
-WIDTH_RESOLUTION = 512
-HEIGHT_RESOLUTION = 512
+WIDTH_RESOLUTION = 700
+HEIGHT_RESOLUTION = 700
 
 """
 LES SETTINGS SUIVANTS SONT POUR LE DEBUG:
