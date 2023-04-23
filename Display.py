@@ -1,5 +1,7 @@
 import math
 from random import randint
+
+import PIL
 import pyglet
 from pyglet.gl import *
 from Settings import *
@@ -99,6 +101,7 @@ class MyWindow(pyglet.window.Window):
         # Set la taille
         if not FULLSCREEN:
             self.set_size(WIDTH, HEIGHT)
+        self.set_icon(pyglet.resource.image("Assets/Graphics/HumanSI-Logo.png"))
         # Background
         glClearColor(25, 20, 102, 1.0)  # red, green, blue, and alpha(transparency)
 
@@ -109,20 +112,22 @@ class MyWindow(pyglet.window.Window):
         self.guiBatch = pyglet.graphics.Batch()
         self.updateFonct = []
         self.terrain:pyglet.sprite.Sprite = None
+        self.terrainImg:PIL.Image = None
+
+        """terrain_data = self.terrain.image.get_region(x, y, 1, 1).get_image_data()
+        width = terrain_data.width
+        data = terrain_data.get_data('RGB', 3 * width)"""
 
 
 
     def on_close(self):
         pyglet.app.exit()
 
-    def AddTerrain(self,terrainImg):
-        self.terrain = pyglet.sprite.Sprite(terrainImg,-self.width,-self.height)
-        self.terrain.scale = self.terrain.scale * 5
+    def AddTerrain(self,terrain, terrainImg):
+        self.terrain = pyglet.sprite.Sprite(terrain,0,0)
+        self.terrain.scale = self.terrain.scale * 1
 
-        #  on centre le terrain au millieu de la carte
-        """self.terrain.x -= self.terrain.width
-        self.terrain.y += self.terrain.height"""
-        print(self.terrain.scale)
+
 
     def Update(self, dt):
         self.OnDraw(dt)
@@ -154,13 +159,13 @@ screen = None
 
 
 
-def CreateWindow(updateMain, startGame,terrainImg=""):
+def CreateWindow(updateMain, startGame,terrain, terrainImg):
     global screen
     global game
     screen = MyWindow(WIDTH, HEIGHT, "HumanSI", fullscreen=FULLSCREEN)
     screen.AddToUpdate(updateMain)
-    if terrainImg != "":
-        screen.AddTerrain(terrainImg)
+    if terrainImg is not None:
+        screen.AddTerrain(terrain, terrainImg)
     game = startGame(screen)
     pyglet.clock.schedule_interval(screen.Update, 1 / 120)
     return screen, game

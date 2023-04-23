@@ -210,6 +210,10 @@ class Game:
             self.ToolAction(preset)
             return
 
+        """if CheckPosition(self.GetMouseOffset()[0], self.GetMouseOffset()[1])[2] > 100:
+            DispalyText("impossible de créer un objet ici !", 2, -self.screen.width + 20, -self.screen.height + 30, self.screen.guiBatch)
+            return"""
+
         pyglet.media.StaticSource(pyglet.media.load('Assets/SFX/Place_build.wav')).play()
         if "CityHall" in names[self.spriteIndex]:
             self.SpawnCivilisation(names[self.spriteIndex])

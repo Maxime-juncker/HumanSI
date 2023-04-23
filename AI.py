@@ -140,9 +140,9 @@ class Unit(BasicObject):
     # ============ A FAIRE =============================================================================================
     def Destroy(self, dt=0):
         clock.unschedule(self.Update)
-        self.SetNewState(UnitState.DED)
 
         try:
+            self.SetNewState(UnitState.DED)
             self.image.delete()
             if Game.game.selectedTarget == self:
                 Game.game.UpdateDescPanel(None)
@@ -488,6 +488,10 @@ class Civilisation(BasicObject):
         PS: le prix est + 4 * la pop sinon il constuise des tonne de maison et ça devient
         exponentielle
         """
+        pos = SeekNewPos(self.cityHallPos, self.currentZoneSize)
+        if CheckPosition(pos[0], pos[1])[2] > 100: #  ocean / montagen
+            return
+
         building = Game.game.SpawnUnit(self.housePreset, SeekNewPos(self.cityHallPos, self.currentZoneSize), self)
         self.ressources -= int(self.housePreset["unitCost"]) + len(self.currentPopulation) * 4
         self.currentZoneSize += 50

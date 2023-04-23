@@ -3,6 +3,9 @@ import random
 import csv
 import os
 
+import Game
+from Settings import UTILITIES_DEBUG
+
 
 class Directories:
     PresetDir = "Assets/Presets/"
@@ -37,7 +40,21 @@ def SeekNewPos(currentPos, distance):
     randomX = random.randint(currentPos[0] - distance, currentPos[0] + distance)
     randomY = random.randint(currentPos[1] - distance, currentPos[1] + distance)
 
+    """while CheckPosition(randomX, randomY)[2] > 100: # prb de perf donc désactivé
+        return currentPos[0], currentPos[1]"""
+
     return randomX, randomY
+
+def CheckPosition(x, y):
+    try:
+        img_data = Game.game.screen.terrain.image.get_region(x, y, 1, 1).get_image_data()
+        width = img_data.width
+        data = img_data.get_data('RGB', 3 * width)
+        if UTILITIES_DEBUG:
+            print(str(data[0]) + ', ' + str(data[1]) + ', ' + str(data[2]))
+        return data
+    except:
+        pass
 
 
 def LoadPreset(presetPath, name=""):

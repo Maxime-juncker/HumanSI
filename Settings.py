@@ -14,10 +14,15 @@ déjà générer sera utiliser (a utiliser si vous voulez lancer rapidement Huma
 plus les settings de résolution seront élever plus la generation prendra du temp
 """
 
-USE_RANDOM_TERRAIN = True
+USE_RANDOM_TERRAIN = False
 
 WIDTH_RESOLUTION = 700
 HEIGHT_RESOLUTION = 700
+
+# c'est une valeur arbitraire pour un peu de variation quand on pixelise le terrain c'est un peu trop
+# smooth et ça fais un randu bizzard, les valeurs qui marche le mieux sont entre .1 et .2 apres c'est
+# trop chaotique et en deussous c'est trop lisse
+CHAOS_FORCE = .015
 
 """
 LES SETTINGS SUIVANTS SONT POUR LE DEBUG:
@@ -30,5 +35,6 @@ GAME_DEBUG = False
 MAIN_DEBUG = False
 AI_DEBUG = False
 INTERFACES_DEBUG = False
+UTILITIES_DEBUG = False
 
 

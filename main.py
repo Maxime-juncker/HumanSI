@@ -7,6 +7,7 @@ from Settings import *
 from Display import *
 from TestPerlinNoise import *
 from GradientGenerator import *
+from PIL import Image
 
 if MAIN_DEBUG:
     debugWarningMsg("Version de pyglet: " + str(pyglet.__version__))
@@ -37,20 +38,23 @@ def update(dt):
 
 
 if USE_RANDOM_TERRAIN:
-    terrainImg = GenerateWorld(NewGradient())
+    terrain, terrainImg = GenerateWorld(NewGradient())
+
 else:
     terrains = LoadSpritesFromFolder("Misc/GeneratedMap")
     r = random.randint(0, len(terrains)-1)
-    terrainImg = pyglet.image.load(Directories.SpritesDir + "Misc/GeneratedMap/" + terrains[r])
+    terrain = pyglet.image.load(Directories.SpritesDir + "Misc/GeneratedMap/" + terrains[r])
+    terrainImg = Image.open(Directories.SpritesDir + "Misc/GeneratedMap/" + terrains[r])
 
 
 game: Game.Game = None
 screen: MyWindow = None
-screen, game = CreateWindow(update, StartGame, terrainImg)
+screen, game = CreateWindow(update, StartGame, terrain, terrainImg)
 
 
 @screen.event
 def on_key_press(symbol, modifiers):
+
     if MAIN_DEBUG:
         debugSuccessMsg(str(symbol) + " | " + str(modifiers))
 
@@ -107,6 +111,7 @@ def on_key_release(symbol, modifiers):
 
 @screen.event
 def on_mouse_press(x, y, button, modifiers):
+
     if MAIN_DEBUG:
         debugWarningMsg(str(button) + " | " + str(modifiers))
 
