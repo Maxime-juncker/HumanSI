@@ -25,15 +25,15 @@ class bcolors:  # /!\ les couleurs ne marche que sur sur certains IDE (ex : edup
 
 
 def debugSuccessMsg(info):
-    print(bcolors.OKCYAN + "Success : " + bcolors.OKGREEN + str(info) + bcolors.ENDC)
+    print(bcolors.OKCYAN + "[Success] " + bcolors.OKGREEN + str(info) + bcolors.ENDC)
 
 
 def debugFailMsg(info):
-    print(bcolors.FAIL + str(info) + bcolors.ENDC)
+    print(bcolors.FAIL + "[Error] " + str(info) + bcolors.ENDC)
 
 
 def debugWarningMsg(info):
-    print(bcolors.WARNING + "Warning : " + bcolors.BOLD + str(info) + bcolors.ENDC)
+    print(bcolors.WARNING + "[Warning] " + bcolors.BOLD + str(info) + bcolors.ENDC)
 
 
 def SeekNewPos(currentPos, distance):
