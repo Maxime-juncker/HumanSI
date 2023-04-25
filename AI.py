@@ -342,6 +342,8 @@ class Civilisation(BasicObject):
         self.ressources = 0
         self.chief = None
         self.isCivilisationAlived = True
+        self.isAdvantaged = ""
+        self.ApplyBuffOrDebuffBasedOnHeight()
 
         Game.game.civilisationSpawned[self.name] = self
 
@@ -353,6 +355,41 @@ class Civilisation(BasicObject):
 
         if AI_DEBUG:
             debugSuccessMsg("Civilisation Spawned --> " + self.name)
+
+    def ApplyBuffOrDebuffBasedOnHeight(self):
+        """
+        Fonction qui buff ou debuff la population en fonction de son biome de preference
+        en gros si une civilisation qui aime l'eau apparait dans une montagne c'est pas cool
+        """
+
+        if abs(CheckCoordInBiome(self.cityHallPos) - float(self.civilisationPreset["desiredHeight"])) < .1:
+            # Cool ils ont spawn vers leur lieu préférer faut les avantager
+            self.populationPreset["health"] = int(int(self.populationPreset["health"]) * 1.5)
+            self.populationPreset["damage"] = int(int(self.populationPreset["damage"]) * 1.5)
+            self.populationPreset["lifeSpan"] = int(int(self.populationPreset["lifeSpan"]) * 1.5)
+            self.populationPreset["unitCost"] = int(int(self.populationPreset["unitCost"]) * 0.5)
+            self.populationPreset["moveTimer"] = int(int(self.populationPreset["moveTimer"]) * 0.5)
+
+            self.housePreset["health"] = int(int(self.housePreset["health"]) * 1.5)
+            self.housePreset["unitCost"] = int(int(self.housePreset["health"]) * 1)
+            self.isAdvantaged = "Avantagé"
+        elif abs(CheckCoordInBiome(self.cityHallPos) - float(self.civilisationPreset["desiredHeight"])) < .25:
+            pass # si jamais il sont pas trop long de leur spawn prefer is okay on fait rein
+            self.isAdvantaged = "Sans avantage"
+
+        else:
+            # Ils ont pas du tout spawn la ou ils fallait, autant les finir tout de suite
+
+            self.populationPreset["health"] = int(int(self.populationPreset["health"]) * .5)
+            self.populationPreset["damage"] = int(int(self.populationPreset["damage"]) * .5)
+            self.populationPreset["lifeSpan"] = int(int(self.populationPreset["lifeSpan"]) * .5)
+            self.populationPreset["unitCost"] = int(int(self.populationPreset["unitCost"]) * 3)
+            self.populationPreset["moveTimer"] = int(int(self.populationPreset["moveTimer"]) * 5)
+
+            self.housePreset["health"] = int(int(self.housePreset["health"]) * .5)
+            self.housePreset["unitCost"] = int(int(self.housePreset["health"]) * 3)
+            self.isAdvantaged = "Désavantagé"
+
 
     def Update(self, dt):
         self.ressources += self.IncreaseRessources()
@@ -425,6 +462,8 @@ class Civilisation(BasicObject):
         result["max pop"] = self.maxPop
         result["maisons"] = len(self.currentHousing)
         result["ressources"] = self.ressources
+        result["Avantagé"] = self.isAdvantaged
+
 
         if self.wonderPreset is not None:
             result["merveille"] = self.wonderPreset["name"]
@@ -489,7 +528,7 @@ class Civilisation(BasicObject):
         exponentielle
         """
         pos = SeekNewPos(self.cityHallPos, self.currentZoneSize)
-        if CheckPosition(pos[0], pos[1])[2] > 100: #  ocean / montagen
+        if CheckCoordInBiome((pos[0], pos[1])) < .1: #  ocean / montagen
             return
 
         building = Game.game.SpawnUnit(self.housePreset, SeekNewPos(self.cityHallPos, self.currentZoneSize), self)

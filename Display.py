@@ -103,7 +103,7 @@ class MyWindow(pyglet.window.Window):
             self.set_size(WIDTH, HEIGHT)
         self.set_icon(pyglet.resource.image("Assets/Graphics/HumanSI-Logo.png"))
         # Background
-        glClearColor(25, 20, 102, 1.0)  # red, green, blue, and alpha(transparency)
+        glClearColor(0, 0, 0.4, 1.0)  # red, green, blue, and alpha(transparency)
 
         self.worldCamera = CenteredCamera(self, scroll_speed=5, min_zoom=.5, max_zoom=6)
         self.game: Game.Game = None
@@ -112,7 +112,6 @@ class MyWindow(pyglet.window.Window):
         self.guiBatch = pyglet.graphics.Batch()
         self.updateFonct = []
         self.terrain:pyglet.sprite.Sprite = None
-        self.terrainImg:PIL.Image = None
 
         """terrain_data = self.terrain.image.get_region(x, y, 1, 1).get_image_data()
         width = terrain_data.width
@@ -123,7 +122,7 @@ class MyWindow(pyglet.window.Window):
     def on_close(self):
         pyglet.app.exit()
 
-    def AddTerrain(self,terrain, terrainImg):
+    def AddTerrain(self,terrain):
         self.terrain = pyglet.sprite.Sprite(terrain,0,0)
         self.terrain.scale = self.terrain.scale * 1
 
@@ -159,14 +158,15 @@ screen = None
 
 
 
-def CreateWindow(updateMain, startGame,terrain, terrainImg):
+def CreateWindow(updateMain, startGame,terrain, csvPath):
     global screen
     global game
     screen = MyWindow(WIDTH, HEIGHT, "HumanSI", fullscreen=FULLSCREEN)
     screen.AddToUpdate(updateMain)
-    if terrainImg is not None:
-        screen.AddTerrain(terrain, terrainImg)
+    if terrain is not None:
+        screen.AddTerrain(terrain)
     game = startGame(screen)
+    game.LoadBiomeDict(csvPath)
     pyglet.clock.schedule_interval(screen.Update, 1 / 120)
     return screen, game
 

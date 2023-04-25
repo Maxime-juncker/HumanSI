@@ -38,18 +38,18 @@ def update(dt):
 
 
 if USE_RANDOM_TERRAIN:
-    terrain, terrainImg = GenerateWorld(NewGradient())
+    terrain, csvPath = GenerateWorld(NewGradient())
 
 else:
     terrains = LoadSpritesFromFolder("Misc/GeneratedMap")
     r = random.randint(0, len(terrains)-1)
     terrain = pyglet.image.load(Directories.SpritesDir + "Misc/GeneratedMap/" + terrains[r])
-    terrainImg = Image.open(Directories.SpritesDir + "Misc/GeneratedMap/" + terrains[r])
+    csvPath = "Assets/Presets/MapBiomes/" + "terrain" + str(r) + ".csv"
 
 
 game: Game.Game = None
 screen: MyWindow = None
-screen, game = CreateWindow(update, StartGame, terrain, terrainImg)
+screen, game = CreateWindow(update, StartGame, terrain, csvPath)
 
 
 @screen.event

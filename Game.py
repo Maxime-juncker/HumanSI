@@ -5,6 +5,7 @@ from Interfaces import *
 from pyglet.window import *
 from Settings import *
 from Display import *
+import TestPerlinNoise
 
 
 class Game:
@@ -34,20 +35,20 @@ class Game:
                                                 anchor_x='left', anchor_y='center',
                                                 batch=self.screen.guiBatch)
             self.categoryLabel = pyglet.text.Label("categorie : tool",
-                                                font_name='Times New Roman',
-                                                font_size=20,
-                                                color=(0, 0, 0, 255),
-                                                x=-window.width + 20, y=window.height // 2 - 100,
-                                                anchor_x='left', anchor_y='center',
-                                                batch=self.screen.guiBatch)
+                                                   font_name='Times New Roman',
+                                                   font_size=20,
+                                                   color=(0, 0, 0, 255),
+                                                   x=-window.width + 20, y=window.height // 2 - 100,
+                                                   anchor_x='left', anchor_y='center',
+                                                   batch=self.screen.guiBatch)
 
             self.toolTipLabel = pyglet.text.Label("A / E pour changer d'objet, click gauche pour placer",
-                                                font_name='Times New Roman',
-                                                font_size=18,
-                                                color=(0, 0, 0, 200),
-                                                x=window.width - 20, y=-window.height + 50,
-                                                anchor_x='right', anchor_y='center',
-                                                batch=self.screen.guiBatch)
+                                                  font_name='Times New Roman',
+                                                  font_size=18,
+                                                  color=(0, 0, 0, 200),
+                                                  x=window.width - 20, y=-window.height + 50,
+                                                  anchor_x='right', anchor_y='center',
+                                                  batch=self.screen.guiBatch)
             self.descriptionPanel = DescriptionPanel(pos=(window.width // 1.7, -window.height // 15 + 100),
                                                      scale=window.worldCamera.sizeMultiplier,
                                                      batch=self.screen.guiBatch)
@@ -73,6 +74,8 @@ class Game:
             self.categoryButtons = {}
             self.currentCategory = "tool"
 
+            self.biomes = {}
+
             self.spriteIndex = 0
             self.activeImageIndex = 0
             self.spawnAbleUnit = LoadPreset(Directories.PresetDir + "Presets.csv")
@@ -93,6 +96,16 @@ class Game:
         except Exception as e:
             debugFailMsg("/!\ FAIL DE L'INIT DANS Game.py \n HumanSI ne peut pas démarer !")
             debugFailMsg(e.with_traceback())
+
+    def LoadBiomeDict(self, csvFile):
+        content = csv.DictReader(open(csvFile))
+        for line in content:
+            for element in line:
+                self.biomes[element] = line[element]
+
+
+
+
 
     def toggle_button_handler(self, button: ToggleButton):
         if GAME_DEBUG:
@@ -201,7 +214,8 @@ class Game:
         [names.extend([v]) for v in self.spawnAbleUnit.keys()]
 
         if "none" in names[self.spriteIndex]:
-            self.SpawnUnit(LoadPreset(Directories.PresetDir + "Presets.csv", "spawnEffect"), self.GetMouseOffset(),None)
+            self.SpawnUnit(LoadPreset(Directories.PresetDir + "Presets.csv", "spawnEffect"), self.GetMouseOffset(),
+                           None)
             return
 
         preset = LoadPreset(Directories.PresetDir + "Presets.csv", names[self.spriteIndex])
@@ -210,9 +224,10 @@ class Game:
             self.ToolAction(preset)
             return
 
-        """if CheckPosition(self.GetMouseOffset()[0], self.GetMouseOffset()[1])[2] > 100:
-            DispalyText("impossible de créer un objet ici !", 2, -self.screen.width + 20, -self.screen.height + 30, self.screen.guiBatch)
-            return"""
+        if CheckCoordInBiome(self.GetMouseOffset()) < .1:
+            DispalyText("impossible de créer un objet ici !", 2, -self.screen.width + 20, -self.screen.height + 30,
+                        self.screen.guiBatch)
+            return
 
         pyglet.media.StaticSource(pyglet.media.load('Assets/SFX/Place_build.wav')).play()
         if "CityHall" in names[self.spriteIndex]:
@@ -220,8 +235,8 @@ class Game:
             return
 
         self.newUnit = Unit(preset, None, self.GetMouseOffset(), self.screen.worldBatch)
-        DispalyText("Spawned : " + self.newUnit.name ,0, -self.screen.width + 20, -self.screen.height + 30, self.screen.guiBatch)
-
+        DispalyText("Spawned : " + self.newUnit.name, 0, -self.screen.width + 20, -self.screen.height + 30,
+                    self.screen.guiBatch)
 
         return self.newUnit
 
@@ -247,8 +262,6 @@ class Game:
                 debugSuccessMsg(closestObject)
             self.UpdateDescPanel(closestObject)
 
-
-
     def SpawnUnit(self, popPreset, pos, civilisation):
         self.newUnit = Unit(popPreset, civilisation, pos, self.screen.worldBatch)
         return self.newUnit
@@ -257,7 +270,7 @@ class Game:
         if len(self.civilisationSpawned) >= MAX_CIVILISATION:
             msg = "Limite de civilisation atteinte, pour en recréé utiliser l'exterminator et detruiser l'un des hotel de ville"
             debugFailMsg(msg)
-            DispalyText(msg,2, -self.screen.width + 20, -self.screen.height + 30, self.screen.guiBatch)
+            DispalyText(msg, 2, -self.screen.width + 20, -self.screen.height + 30, self.screen.guiBatch)
 
             return
         tempPreset = LoadPreset(Directories.PresetDir + "Presets.csv", civilisationName)
@@ -271,7 +284,8 @@ class Game:
         temp = LoadPreset(Directories.PresetDir + "Presets.csv")
         self.spawnAbleUnit.clear()
         for element in temp:
-            if int(temp[element]["isSpawnable"]) == 1 and temp[element]["category"] == self.currentCategory or temp[element]["category"] == "none":
+            if int(temp[element]["isSpawnable"]) == 1 and temp[element]["category"] == self.currentCategory or \
+                    temp[element]["category"] == "none":
                 self.spawnAbleUnit[element] = LoadPreset(Directories.PresetDir + "Presets.csv", element)
 
     def KillAllActors(self):
