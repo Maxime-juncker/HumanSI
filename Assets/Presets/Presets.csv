@@ -18,7 +18,7 @@ spawnEffect,0,0,0,0,0,-1,-1,none,VFX,-1,VFX,-1,-1,.1
 Rock,0,0,0,0,0,50,-1,none,ressources,-1,Props/Rocks,1,-1,0
 Tree,0,0,0,0,0,50,-1,none,ressources,-1,Props/Trees,1,-1,0
 Forest,0,0,0,0,0,50,-1,none,ressources,-1,Props/Forests,1,-1,0
-Ruines,0,0,0,0,0,100,-1,none,ressources,-1,Props/Ruines,1,-1,0
+Ruines,0,0,0,0,0,100,-1,none,ruine,-1,Props/Ruines,1,-1,0
 
 YellowCityHall,0,0,0,0,0,800,-1,yellow,building,-1,Civilisations/Yellow/BuildingsYellow/HDV,1,-1,0
 YellowHouse,0,0,0,0,0,300,-1,yellow,building,50,Civilisations/Yellow/BuildingsYellow/Buildings,0,-1,0
@@ -36,7 +36,7 @@ BlueHouse,0,0,0,0,0,100,-1,blue,building,100,Civilisations/Blue/BuildingsBlue/Bu
 
 GreenCityHall,0,0,0,0,0,900,-1,green,building,-1,Civilisations/Green/BuildingsGreen/HDV,1,-1,0
 GreenHouse,0,0,0,0,0,400,-1,green,building,85,Civilisations/Green/BuildingsGreen/Buildings,0,-1,0
-GreenWonder,0,0,0,0,0,1200,-1,red,building,4,Civilisations/Green/BuildingsGreen/GreenWonder,0,-1,0
+GreenWonder,0,0,0,0,0,1200,-1,red,building,280,Civilisations/Green/BuildingsGreen/GreenWonder,0,-1,0
 
 WhiteCityHall,0,0,0,0,0,500,-1,white,building,-1,Civilisations/White/BuildingsWhite/HDV,1,-1,0
 WhiteHouse,0,0,0,0,0,500,-1,white,building,100,Civilisations/White/BuildingsWhite/Buildings,0,-1,0

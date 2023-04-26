@@ -6,6 +6,8 @@ MUTATION_FORCE = .25
 MAX_CIVILISATION = 4
 MAX_POP_PER_CIVILISATION = 25
 
+MAX_RESSOURCES_SPAWN_ON_START = 20
+
 """
 LES SETTINGS SUIVANTS SONT POUR LA GEN PROC DU TERRAIN:
 
@@ -14,7 +16,7 @@ déjà générer sera utiliser (a utiliser si vous voulez lancer rapidement Huma
 plus les settings de résolution seront élever plus la generation prendra du temp
 """
 
-USE_RANDOM_TERRAIN = True
+USE_RANDOM_TERRAIN = False
 
 WIDTH_RESOLUTION = 3000
 HEIGHT_RESOLUTION = 2000

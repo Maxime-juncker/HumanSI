@@ -6,6 +6,7 @@ from pyglet.window import *
 from Settings import *
 from Display import *
 import TestPerlinNoise
+from geneObject import coordRandInList
 
 
 class Game:
@@ -90,12 +91,20 @@ class Game:
             window.set_caption("HumanSI")
 
             self.GAME_RUNNING = True
+
+            #self.CreateProps()
             debugSuccessMsg("l'init c'est bien déroulé ! \n lancement de HumanSI...")
 
 
         except Exception as e:
             debugFailMsg("/!\ FAIL DE L'INIT DANS Game.py \n HumanSI ne peut pas démarer !")
             debugFailMsg(e.with_traceback())
+
+    def CreateProps(self):
+        coords = coordRandInList()
+
+        for i in coords:
+            self.SpawnUnit(LoadPreset(Directories.PresetDir + "Presets.csv", "Tree"), i, None)
 
     def LoadBiomeDict(self, csvFile):
         content = csv.DictReader(open(csvFile))

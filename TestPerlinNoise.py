@@ -18,17 +18,17 @@ biomes = {}
 def AddBiomeToDict(value, coord):
     for i in range(5):
 
-        biomes[(coord[0]*6-i, coord[1]*6+i)] = value  # Up left
-        biomes[(coord[0]*6-i, coord[1]*6)] = value  # Middle left
-        biomes[(coord[0]*6-i, coord[1]*6-i)] = value  # Down left
+        biomes[(coord[0]*6-i, coord[1]*6+i)] = round(value,1)  # Up left
+        biomes[(coord[0]*6-i, coord[1]*6)] = round(value,1)  # Middle left
+        biomes[(coord[0]*6-i, coord[1]*6-i)] = round(value,1)  # Down left
 
-        biomes[(coord[0]*6, coord[1]*6+i)] = value  # Up
-        biomes[(coord[0]*6, coord[1]*6)] = value  # Middle
-        biomes[(coord[0]*6, coord[1]*6-i)] = value  # Down
+        biomes[(coord[0]*6, coord[1]*6+i)] = round(value,1)  # Up
+        biomes[(coord[0]*6, coord[1]*6)] = round(value,1)  # Middle
+        biomes[(coord[0]*6, coord[1]*6-i)] = round(value,1)  # Down
 
-        biomes[(coord[0]*6+i, coord[1]*6+i)] = value  # Up right
-        biomes[(coord[0]*6+i, coord[1]*6)] = value  # Middle right
-        biomes[(coord[0]*6+i, coord[1]*6-i)] = value  # Down right
+        biomes[(coord[0]*6+i, coord[1]*6+i)] = round(value,1)  # Up right
+        biomes[(coord[0]*6+i, coord[1]*6)] = round(value,1)  # Middle right
+        biomes[(coord[0]*6+i, coord[1]*6-i)] = round(value,1)  # Down right
 
 
 def SaveBiomeToCSV(name):

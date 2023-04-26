@@ -24,6 +24,10 @@ class bcolors:  # /!\ les couleurs ne marche que sur sur certains IDE (ex : edup
     UNDERLINE = '\033[4m'
 
 
+def debugInfoMsg(info):
+    print("[Info] " + str(info) + bcolors.ENDC)
+
+
 def debugSuccessMsg(info):
     print(bcolors.OKCYAN + "[Success] " + bcolors.OKGREEN + str(info) + bcolors.ENDC)
 
@@ -54,6 +58,7 @@ def CheckCoordInBiome(coord):
         return float(Game.game.biomes[str(coord)])
     except:  # y'a moyen que y'a probleme si jamais on click en dehors de l'ecran
         return -9999
+
 
 def LoadPreset(presetPath, name=""):
     file = open(presetPath, "r")
