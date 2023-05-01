@@ -55,9 +55,19 @@ def SeekNewPos(currentPos, distance):
 
 def CheckCoordInBiome(coord):
     try:
-        return float(Game.game.biomes[str(coord)])
-    except:  # y'a moyen que y'a probleme si jamais on click en dehors de l'ecran
+        x = coord[0]
+        y = coord[1]
+        while x % 5 > 0:
+            x += 1
+        while y % 5 > 0:
+            y += 1
+
+        result = (x, y)
+        key = str(result)
+        return float(Game.game.biomes[key])
+    except:
         return -9999
+
 
 
 def LoadPreset(presetPath, name=""):

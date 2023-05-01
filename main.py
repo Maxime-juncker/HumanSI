@@ -25,13 +25,13 @@ def update(dt):
         return
 
     if keyPress["Forward"]:
-        screen.worldCamera.move(0, 2)
+        screen.worldCamera.move(0, 3)
     if keyPress["Backward"]:
-        screen.worldCamera.move(0, -2)
+        screen.worldCamera.move(0, -3)
     if keyPress["Left"]:
-        screen.worldCamera.move(-2, 0)
+        screen.worldCamera.move(-3, 0)
     if keyPress["Right"]:
-        screen.worldCamera.move(2, 0)
+        screen.worldCamera.move(3, 0)
 
     if game is not None:
         game.SuperUpdate()
@@ -42,10 +42,9 @@ if USE_RANDOM_TERRAIN:
 
 else:
     terrains = LoadSpritesFromFolder("Misc/GeneratedMap")
-    r = random.randint(0, len(terrains)-1)
+    r = random.randint(0, len(terrains) - 1)
     terrain = pyglet.image.load(Directories.SpritesDir + "Misc/GeneratedMap/" + terrains[r])
     csvPath = "Assets/Presets/MapBiomes/" + "terrain" + str(r) + ".csv"
-
 
 game: Game.Game = None
 screen: MyWindow = None
@@ -54,7 +53,6 @@ screen, game = CreateWindow(update, StartGame, terrain, csvPath)
 
 @screen.event
 def on_key_press(symbol, modifiers):
-
     if MAIN_DEBUG:
         debugSuccessMsg(str(symbol) + " | " + str(modifiers))
 
@@ -111,14 +109,12 @@ def on_key_release(symbol, modifiers):
 
 @screen.event
 def on_mouse_press(x, y, button, modifiers):
-
     if MAIN_DEBUG:
         debugWarningMsg(str(button) + " | " + str(modifiers))
 
     if button == 1:  # clic gauche
-        game.SpawnUnitBaseByIndex()
         game.ToggleButtonAction()
-        # game.togglebutton.CheckIfClicked(game.GetMouseOffset())
+        game.SpawnUnitBaseByIndex()
     if button == 2:  # Clic molette
         pass
     if button == 4:  # clic droit

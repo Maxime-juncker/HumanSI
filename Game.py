@@ -1,3 +1,5 @@
+import random
+
 import pyglet.clock
 from AI import *
 from Utilities import *
@@ -55,7 +57,7 @@ class Game:
                                                      batch=self.screen.guiBatch)
             self.descLabel = pyglet.text.Label("",
                                                font_name='Times New Roman',
-                                               font_size=30,
+                                               font_size=25,
                                                color=(255, 255, 255, 255),
                                                x=self.descriptionPanel.x - 30, y=self.descriptionPanel.y,
                                                anchor_x='center', anchor_y='center',
@@ -91,30 +93,35 @@ class Game:
             window.set_caption("HumanSI")
 
             self.GAME_RUNNING = True
-
-            #self.CreateProps()
             debugSuccessMsg("l'init c'est bien déroulé ! \n lancement de HumanSI...")
-
 
         except Exception as e:
             debugFailMsg("/!\ FAIL DE L'INIT DANS Game.py \n HumanSI ne peut pas démarer !")
             debugFailMsg(e.with_traceback())
 
     def CreateProps(self):
-        coords = coordRandInList()
-
+        coords = coordRandInList(MAX_RESSOURCES_SPAWN_ON_START, self.screen.terrain.width, self.screen.terrain.height)
         for i in coords:
-            self.SpawnUnit(LoadPreset(Directories.PresetDir + "Presets.csv", "Tree"), i, None)
+            if .35 > CheckCoordInBiome(i) > .2:
+                self.SpawnUnit(LoadPreset(Directories.PresetDir + "Presets.csv", "Rock"), i, None)
+            elif .6 > CheckCoordInBiome(i) > .35:
+                self.SpawnUnit(LoadPreset(Directories.PresetDir + "Presets.csv", "Forest"), i, None)
+            elif 1 > CheckCoordInBiome(i) > .6:
+                self.SpawnUnit(LoadPreset(Directories.PresetDir + "Presets.csv", "Tree"), i, None)
 
+        """coords = coordRandInList(MAX_CIVILISATION_ON_START, self.screen.terrain.width, self.screen.terrain.height)
+        for i in coords:
+            if CheckCoordInBiome(i) < .1:
+                civilisation = ("YellowCityHall", "RedCityHall", "PurpleCityHall", "BlueCityHall", "GreenCityHall",
+                                "WhiteCityHall", "BlackCityHall", "DefaultCityHall")
+                r = random.randint(0, 7)
+                self.SpawnCivilisation(civilisation[r], i)
+        """
     def LoadBiomeDict(self, csvFile):
         content = csv.DictReader(open(csvFile))
         for line in content:
             for element in line:
                 self.biomes[element] = line[element]
-
-
-
-
 
     def toggle_button_handler(self, button: ToggleButton):
         if GAME_DEBUG:
@@ -213,6 +220,10 @@ class Game:
 
         self.currentFantomeSprite.UpdateSprite(preset)
 
+    def CreatePopupMsg(self, info, priority):
+        DispalyText(info, priority, -self.screen.width + 20, -self.screen.height + 30,
+                    self.screen.guiBatch)
+
     def SpawnUnitBaseByIndex(self):
         '''
         on recup les different sprites en fonction de l'index
@@ -222,25 +233,25 @@ class Game:
         names = []
         [names.extend([v]) for v in self.spawnAbleUnit.keys()]
 
-        if "none" in names[self.spriteIndex]:
-            self.SpawnUnit(LoadPreset(Directories.PresetDir + "Presets.csv", "spawnEffect"), self.GetMouseOffset(),
-                           None)
-            return
-
         preset = LoadPreset(Directories.PresetDir + "Presets.csv", names[self.spriteIndex])
-
         if "tool" in preset["category"]:
             self.ToolAction(preset)
             return
 
+        self.SpawnUnit(LoadPreset(Directories.PresetDir + "Presets.csv", "spawnEffect"), self.GetMouseOffset(), None)
+
+        if "none" in preset["category"]:
+            return
+
         if CheckCoordInBiome(self.GetMouseOffset()) < .1:
+            pyglet.media.StaticSource(pyglet.media.load('Assets/SFX/CantBuild.wav')).play()
             DispalyText("impossible de créer un objet ici !", 2, -self.screen.width + 20, -self.screen.height + 30,
                         self.screen.guiBatch)
             return
 
         pyglet.media.StaticSource(pyglet.media.load('Assets/SFX/Place_build.wav')).play()
         if "CityHall" in names[self.spriteIndex]:
-            self.SpawnCivilisation(names[self.spriteIndex])
+            self.SpawnCivilisation(names[self.spriteIndex], self.GetMouseOffset())
             return
 
         self.newUnit = Unit(preset, None, self.GetMouseOffset(), self.screen.worldBatch)
@@ -252,16 +263,17 @@ class Game:
     def ToolAction(self, preset):
 
         if preset["name"] == "exterminator":
-            closestObject = game.GetClosestObjectToLocation(self.GetMouseOffset(), 45)
+            closestObject = self.GetClosestObjectToLocation(self.GetMouseOffset(), 45)
+
             if closestObject != None:
                 self.visibleSprite[closestObject].Destroy()
                 pyglet.media.StaticSource(pyglet.media.load('Assets/SFX/DeleteTool.wav')).play()
 
         if preset["name"] == "ouch":
-            closestObject = game.GetClosestObjectToLocation(self.GetMouseOffset(), 45)
+            closestObject = self.GetClosestObjectToLocation(self.GetMouseOffset(), 45)
             if closestObject != None:
                 self.visibleSprite[closestObject].Damage(int(preset["damage"]))
-                pyglet.media.StaticSource(pyglet.media.load('Assets/SFX/DeleteTool.wav')).play()
+                pyglet.media.StaticSource(pyglet.media.load('Assets/SFX/DamageTool.wav')).play()
 
         if preset["name"] == "inspecter":
             offsetPos = self.GetMouseOffset()
@@ -275,16 +287,15 @@ class Game:
         self.newUnit = Unit(popPreset, civilisation, pos, self.screen.worldBatch)
         return self.newUnit
 
-    def SpawnCivilisation(self, civilisationName):
+    def SpawnCivilisation(self, civilisationName, pos):
         if len(self.civilisationSpawned) >= MAX_CIVILISATION:
             msg = "Limite de civilisation atteinte, pour en recréé utiliser l'exterminator et detruiser l'un des hotel de ville"
-            debugFailMsg(msg)
             DispalyText(msg, 2, -self.screen.width + 20, -self.screen.height + 30, self.screen.guiBatch)
-
             return
+
         tempPreset = LoadPreset(Directories.PresetDir + "Presets.csv", civilisationName)
         preset = LoadPreset(Directories.PresetDir + "Civilisation.csv", tempPreset["civilisation"])
-        newCivilisation = Civilisation(preset)
+        newCivilisation = Civilisation(preset, pos)
 
     def GetRandomSprite(self, sprites):
         return sprites[random.randint(0, len(sprites) - 1)]
@@ -320,7 +331,7 @@ class Game:
         result = {}
 
         for object in temp:
-            if object == exeption:
+            if object == exeption or self.visibleSprite[object].category == "VFX":
                 continue
             distance = GetDistanceFromVector(location, temp[object].GetLocation())
             if distance <= maxDistance:

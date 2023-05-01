@@ -106,12 +106,14 @@ class MyWindow(pyglet.window.Window):
         glClearColor(0, 0, 0.4, 1.0)  # red, green, blue, and alpha(transparency)
 
         self.worldCamera = CenteredCamera(self, scroll_speed=5, min_zoom=.5, max_zoom=6)
+        self.worldCamera.position = (WIDTH*5//2, HEIGHT*5//2)
         self.game: Game.Game = None
         self.worldBatch = pyglet.graphics.Batch()
         self.guiCamera = CenteredCamera(self)
         self.guiBatch = pyglet.graphics.Batch()
         self.updateFonct = []
         self.terrain:pyglet.sprite.Sprite = None
+
 
         """terrain_data = self.terrain.image.get_region(x, y, 1, 1).get_image_data()
         width = terrain_data.width
@@ -168,6 +170,7 @@ def CreateWindow(updateMain, startGame,terrain, csvPath):
     game = startGame(screen)
     game.LoadBiomeDict(csvPath)
     pyglet.clock.schedule_interval(screen.Update, 1 / 120)
+    game.CreateProps()
     return screen, game
 
 

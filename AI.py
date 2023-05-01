@@ -96,9 +96,6 @@ class Unit(BasicObject):
         if float(self.unitPreset["lifeSpan"]) > -1:
             clock.schedule_once(self.Update, float(self.unitPreset["lifeSpan"]))
 
-        if self.category != "VFX":
-            Game.game.SpawnUnit(LoadPreset(Directories.PresetDir + "Presets.csv", "spawnEffect"), (self.x, self.y),
-                                None)
 
         if AI_DEBUG:
             debugSuccessMsg("Unit Spawned --> " + self.name)
@@ -229,14 +226,22 @@ class Unit(BasicObject):
                 self.currentTarget = Game.game.visibleSprite[target]
             self.currentDestination = self.currentTarget.GetLocation()
         else:
-            target = Game.game.GetClosestObjectToLocation(self.GetLocation(), 120, self.name)
+            target = Game.game.GetClosestObjectToLocation(self.GetLocation(), 60, self.name)
+
             if target is not None:
                 self.CheckForTarget(Game.game.visibleSprite[target])
 
     def CheckForTarget(self, target: BasicObject):
+
         if target is None or target.category == "VFX" or self.currentTarget == target or \
-                target.GetCivilisation() is not None and target.GetCivilisation() == self.GetCivilisation():
+                target.GetCivilisation() is not None and target.GetCivilisation() == self.GetCivilisation() \
+                or target.GetCivilisation() is not None:
             return
+
+        if target.category == "ressources":
+            self.currentTarget = target
+            self.currentDestination = self.currentTarget.GetLocation()
+
         if self.sociability == 0:
             self.currentTarget = target
             self.currentDestination = self.currentTarget.GetLocation()
@@ -311,7 +316,7 @@ class Unit(BasicObject):
 
 class Civilisation(BasicObject):
 
-    def __init__(self, preset):
+    def __init__(self, preset, pos):
         super().__init__()
 
         self.civilisationPreset = preset
@@ -319,7 +324,7 @@ class Civilisation(BasicObject):
         self.populationPreset = LoadPreset(Directories.PresetDir + "Presets.csv", preset["popName"])
         self.housePreset = LoadPreset(Directories.PresetDir + "Presets.csv", preset["houseName"])
         cityHallPreset = LoadPreset(Directories.PresetDir + "Presets.csv", preset["cityHallName"])
-        self.cityHallPos = Game.game.GetMouseOffset()
+        self.cityHallPos = pos
         self.cityHall = Game.game.SpawnUnit(cityHallPreset, self.cityHallPos, self)
 
         self.wonderPreset = None
@@ -356,6 +361,8 @@ class Civilisation(BasicObject):
         if AI_DEBUG:
             debugSuccessMsg("Civilisation Spawned --> " + self.name)
 
+        Game.game.CreatePopupMsg("Civilisation créé " + self.name, 1)
+
     def ApplyBuffOrDebuffBasedOnHeight(self):
         """
         Fonction qui buff ou debuff la population en fonction de son biome de preference
@@ -374,7 +381,7 @@ class Civilisation(BasicObject):
             self.housePreset["unitCost"] = int(int(self.housePreset["health"]) * 1)
             self.isAdvantaged = "Avantagé"
         elif abs(CheckCoordInBiome(self.cityHallPos) - float(self.civilisationPreset["desiredHeight"])) < .25:
-            pass # si jamais il sont pas trop long de leur spawn prefer is okay on fait rein
+            pass  # si jamais il sont pas trop long de leur spawn prefer is okay on fait rein
             self.isAdvantaged = "Sans avantage"
 
         else:
@@ -390,7 +397,6 @@ class Civilisation(BasicObject):
             self.housePreset["unitCost"] = int(int(self.housePreset["health"]) * 3)
             self.isAdvantaged = "Désavantagé"
 
-
     def Update(self, dt):
         self.ressources += self.IncreaseRessources()
         self.SpawnNewPopulation()
@@ -400,6 +406,7 @@ class Civilisation(BasicObject):
         if not self.isCivilisationAlived:
             return
 
+        Game.game.CreatePopupMsg(self.name + " a est détruit !", 2)
         clock.unschedule(self.Update)
 
         self.isCivilisationAlived = False
@@ -464,7 +471,6 @@ class Civilisation(BasicObject):
         result["ressources"] = self.ressources
         result["Avantagé"] = self.isAdvantaged
 
-
         if self.wonderPreset is not None:
             result["merveille"] = self.wonderPreset["name"]
             result["merveille construite ?"] = self.wonderAlreadyExist
@@ -513,7 +519,7 @@ class Civilisation(BasicObject):
         if Game.game.selectedTarget == self.cityHall:
             Game.game.UpdateDescPanel(self.cityHall.name)
 
-    def Damage(self, amount, attacker:BasicObject):
+    def Damage(self, amount, attacker: BasicObject):
         if attacker.GetCivilisation() is not None and self.inWarAgainst != attacker.GetCivilisation():
             self.DeclareWar(attacker.GetCivilisation())
 
@@ -528,7 +534,7 @@ class Civilisation(BasicObject):
         exponentielle
         """
         pos = SeekNewPos(self.cityHallPos, self.currentZoneSize)
-        if CheckCoordInBiome((pos[0], pos[1])) < .1: #  ocean / montagen
+        if CheckCoordInBiome((pos[0], pos[1])) < .1:  # ocean / montagen
             return
 
         building = Game.game.SpawnUnit(self.housePreset, SeekNewPos(self.cityHallPos, self.currentZoneSize), self)
@@ -547,6 +553,8 @@ class Civilisation(BasicObject):
         self.wonderAlreadyExist = True
 
         wonder = Game.game.SpawnUnit(self.wonderPreset, SeekNewPos(self.cityHallPos, 25), self)
+        Game.game.CreatePopupMsg(self.name + " a crée une merveille !", 1)
+
         if AI_DEBUG:
             debugSuccessMsg("wonder construite: " + str(wonder))
 
@@ -574,6 +582,8 @@ class Civilisation(BasicObject):
 
         if AI_DEBUG:
             debugFailMsg(self.name + "declare la guerre a " + str(target.name))
+
+        Game.game.CreatePopupMsg(self.name + " a déclarer la guerre a " + target.name + " !", 2)
 
         if not target.inWar:  # si on fait pas ça, ça revien a aller frapper un enfant sans défence.
             target.DeclareWar(self)
@@ -700,10 +710,5 @@ class FantomeSprite(BasicObject):
         self.image.color[3] -= 6
         if self.image.get_alpha() < 30:
             self.isAddingAlpha = True
-
-
-
-
-
 
 # BOUH !

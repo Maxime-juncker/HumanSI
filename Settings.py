@@ -6,7 +6,10 @@ MUTATION_FORCE = .25
 MAX_CIVILISATION = 4
 MAX_POP_PER_CIVILISATION = 25
 
-MAX_RESSOURCES_SPAWN_ON_START = 20
+# Si MAX_CIVILISATION_ON_START est plus grand que MAX_CIVILISATION ça lockera le nb de civilisation a MAX_CIVILISATION
+MAX_CIVILISATION_ON_START = 3
+
+MAX_RESSOURCES_SPAWN_ON_START = 420  # Nice...
 
 """
 LES SETTINGS SUIVANTS SONT POUR LA GEN PROC DU TERRAIN:
@@ -18,8 +21,8 @@ plus les settings de résolution seront élever plus la generation prendra du te
 
 USE_RANDOM_TERRAIN = False
 
-WIDTH_RESOLUTION = 3000
-HEIGHT_RESOLUTION = 2000
+WIDTH_RESOLUTION = 700
+HEIGHT_RESOLUTION = 700
 
 # c'est une valeur arbitraire pour un peu de variation quand on pixelise le terrain c'est un peu trop
 # smooth et ça fais un randu bizzard, les valeurs qui marche le mieux sont entre .1 et .2 apres c'est
@@ -38,5 +41,3 @@ MAIN_DEBUG = False
 AI_DEBUG = False
 INTERFACES_DEBUG = False
 UTILITIES_DEBUG = False
-
-

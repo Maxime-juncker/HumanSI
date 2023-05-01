@@ -126,6 +126,7 @@ class ToggleButton():
 class DispalyText():
     def __init__(self, infos, priority=0, x=0, y=0, batch:pyglet.graphics.Batch=None):
         if priority == 0:
+            debugInfoMsg(infos)
             self.infoLabel = pyglet.text.Label(str(infos),
                                                font_name='Times New Roman',
                                                font_size=22,
@@ -137,7 +138,8 @@ class DispalyText():
                                                bold=True,
                                                batch=batch)
         if priority == 1:
-            self.infoLabel = pyglet.text.Label("Warning : " + str(infos),
+            debugWarningMsg(infos)
+            self.infoLabel = pyglet.text.Label(str(infos),
                                                font_name='Times New Roman',
                                                font_size=22,
                                                color=(255, 200, 0, 230),
@@ -148,7 +150,8 @@ class DispalyText():
                                                bold=True,
                                                batch=batch)
         if priority == 2:
-            self.infoLabel = pyglet.text.Label("Error : " + str(infos),
+            debugFailMsg(infos)
+            self.infoLabel = pyglet.text.Label(str(infos),
                                                font_name='Times New Roman',
                                                font_size=22,
                                                color=(200, 0, 0, 230),

@@ -5,30 +5,17 @@ from PIL import Image
 from perlin_noise import PerlinNoise
 from Utilities import *
 from Settings import *
-from pygame.locals import *
 
 noise1 = PerlinNoise(octaves=3)
 noise2 = PerlinNoise(octaves=6)
 noise3 = PerlinNoise(octaves=3)
 noise4 = PerlinNoise(octaves=5)
 
-
 biomes = {}
 
+
 def AddBiomeToDict(value, coord):
-    for i in range(5):
-
-        biomes[(coord[0]*6-i, coord[1]*6+i)] = round(value,1)  # Up left
-        biomes[(coord[0]*6-i, coord[1]*6)] = round(value,1)  # Middle left
-        biomes[(coord[0]*6-i, coord[1]*6-i)] = round(value,1)  # Down left
-
-        biomes[(coord[0]*6, coord[1]*6+i)] = round(value,1)  # Up
-        biomes[(coord[0]*6, coord[1]*6)] = round(value,1)  # Middle
-        biomes[(coord[0]*6, coord[1]*6-i)] = round(value,1)  # Down
-
-        biomes[(coord[0]*6+i, coord[1]*6+i)] = round(value,1)  # Up right
-        biomes[(coord[0]*6+i, coord[1]*6)] = round(value,1)  # Middle right
-        biomes[(coord[0]*6+i, coord[1]*6-i)] = round(value,1)  # Down right
+    biomes[(coord[0] * 5, coord[1] * 5)] = round(value, 1)  # Middle
 
 
 def SaveBiomeToCSV(name):
@@ -60,7 +47,7 @@ def GenerateWorld(heightMap: Image):
             noiseVal += 0.3  # c'est une valeur arbitraire pour juste qu'il y ai un peu moins d'eau
             noiseVal += Clamp(random.random() * CHAOS_FORCE, -.5, .5)
 
-            AddBiomeToDict(noiseVal, (x,y))  # avant de continuer on ajoute le pixel a la liste de biome
+            AddBiomeToDict(noiseVal, (x, y))  # avant de continuer on ajoute le pixel a la liste de biome
 
             noiseVal = Clamp(WIDTH_RESOLUTION * noiseVal, 0, WIDTH_RESOLUTION - 1)
 
@@ -72,8 +59,6 @@ def GenerateWorld(heightMap: Image):
     name = "terrain" + str(len(LoadSpritesFromFolder("Misc/GeneratedMap")))
     path = "Assets/Graphics/Misc/GeneratedMap/" + name + ".png"
 
-
-
     """path ="Assets/Graphics/Misc/GeneratedMap/"+"terrain"+str(len(LoadSpritesFromFolder("Misc/GeneratedMap")))+"("
            + str(WIDTH_RESOLUTION) + "/" + str(HEIGHT_RESOLUTION) + ")" + ".png"""
 
@@ -82,7 +67,7 @@ def GenerateWorld(heightMap: Image):
     terrain = terrain.resize(size=(size[0] * 5, size[1] * 5))
     terrain.save(path)
 
-    debugWarningMsg("Enregistrement des biomes en csv (cette étape peut prendre plusieurs secondes)")
+    debugWarningMsg("Enregistrement des biomes en csv (cette étape peut prendre plusieurs minutes)")
     SaveBiomeToCSV(name)
     debugSuccessMsg("La génération de la carte [" + name + "] c'est bien dérouler !")
 
