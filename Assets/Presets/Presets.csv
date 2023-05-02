@@ -14,6 +14,7 @@ inspecter,0,0,0,0,0,-1,-1,none,tool,-1,Misc/Lens,1,-1,0
 
 spawnEffect,0,0,0,0,0,-1,-1,none,VFX,-1,VFX,-1,-1,.1
 
+RandomAssets,0,0,0,0,0,50,-1,none,ressources,-1,Props/RandomProps,1,-1,0
 
 Rock,0,0,0,0,0,50,-1,none,ressources,-1,Props/Rocks,1,-1,0
 Tree,0,0,0,0,0,50,-1,none,ressources,-1,Props/Trees,1,-1,0

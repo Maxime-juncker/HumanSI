@@ -103,12 +103,11 @@ class Game:
     def CreateProps(self):
         coords = coordRandInList(MAX_RESSOURCES_SPAWN_ON_START, self.screen.terrain.width, self.screen.terrain.height)
         for i in coords:
-            if .35 > CheckCoordInBiome(i) > .2:
-                self.SpawnUnit(LoadPreset(Directories.PresetDir + "Presets.csv", "Rock"), i, None)
-            elif .6 > CheckCoordInBiome(i) > .35:
-                self.SpawnUnit(LoadPreset(Directories.PresetDir + "Presets.csv", "Forest"), i, None)
-            elif 1 > CheckCoordInBiome(i) > .6:
-                self.SpawnUnit(LoadPreset(Directories.PresetDir + "Presets.csv", "Tree"), i, None)
+            if CheckCoordInBiome(i) > .2:
+                self.SpawnUnit(LoadPreset(Directories.PresetDir + "Presets.csv", "RandomAssets"), i, None)
+
+        if GAME_DEBUG:
+            debugSuccessMsg("Placement des pros bons")
 
         """coords = coordRandInList(MAX_CIVILISATION_ON_START, self.screen.terrain.width, self.screen.terrain.height)
         for i in coords:
