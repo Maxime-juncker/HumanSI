@@ -94,6 +94,7 @@ class Game:
 
             self.GAME_RUNNING = True
             debugSuccessMsg("l'init c'est bien déroulé ! \n lancement de HumanSI...")
+            debugInfoMsg("ci jamais la fenetre ne prend pas tous l'écran il faut \n modifier les paramètres WIDTH et HEIGHT dans Settings.py et mettre la résolution de votre écran")
 
         except Exception as e:
             debugFailMsg("/!\ FAIL DE L'INIT DANS Game.py \n HumanSI ne peut pas démarer !")

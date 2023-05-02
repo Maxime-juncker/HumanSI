@@ -1,5 +1,6 @@
-WIDTH = 1920
-HEIGHT = 1080
+# Mettez les résolution de votre écran ici
+WIDTH = 1080
+HEIGHT = 720
 FULLSCREEN = True
 
 MUTATION_FORCE = .25
