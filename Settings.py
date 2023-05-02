@@ -22,8 +22,8 @@ plus les settings de résolution seront élever plus la generation prendra du te
 
 USE_RANDOM_TERRAIN = True
 
-WIDTH_RESOLUTION = 200
-HEIGHT_RESOLUTION = 200
+WIDTH_RESOLUTION = 1000
+HEIGHT_RESOLUTION = 1000
 
 # c'est une valeur arbitraire pour un peu de variation quand on pixelise le terrain c'est un peu trop
 # smooth et ça fais un randu bizzard, les valeurs qui marche le mieux sont entre .1 et .2 apres c'est
