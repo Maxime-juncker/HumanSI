@@ -1,6 +1,6 @@
 # Mettez les résolution de votre écran ici
-WIDTH = 1920
-HEIGHT = 1080
+WIDTH = 1366
+HEIGHT = 768
 FULLSCREEN = True
 
 MUTATION_FORCE = .25
@@ -20,7 +20,7 @@ déjà générer sera utiliser (a utiliser si vous voulez lancer rapidement Huma
 plus les settings de résolution seront élever plus la generation prendra du temp
 """
 
-USE_RANDOM_TERRAIN = True
+USE_RANDOM_TERRAIN = False
 
 WIDTH_RESOLUTION = 2200
 HEIGHT_RESOLUTION = 2200

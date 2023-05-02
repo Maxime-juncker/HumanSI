@@ -2,7 +2,7 @@ import pyglet
 from Utilities import *
 import AI
 import Game
-
+from Settings import INTERFACES_DEBUG
 
 class Panel(AI.BasicObject):
 
@@ -126,7 +126,8 @@ class ToggleButton():
 class DispalyText():
     def __init__(self, infos, priority=0, x=0, y=0, batch:pyglet.graphics.Batch=None):
         if priority == 0:
-            debugInfoMsg(infos)
+            if INTERFACES_DEBUG:
+                debugInfoMsg(infos)
             self.infoLabel = pyglet.text.Label(str(infos),
                                                font_name='Times New Roman',
                                                font_size=22,
@@ -138,7 +139,8 @@ class DispalyText():
                                                bold=True,
                                                batch=batch)
         if priority == 1:
-            debugWarningMsg(infos)
+            if INTERFACES_DEBUG:
+                debugWarningMsg(infos)
             self.infoLabel = pyglet.text.Label(str(infos),
                                                font_name='Times New Roman',
                                                font_size=22,
@@ -150,7 +152,8 @@ class DispalyText():
                                                bold=True,
                                                batch=batch)
         if priority == 2:
-            debugFailMsg(infos)
+            if INTERFACES_DEBUG:
+                debugFailMsg(infos)
             self.infoLabel = pyglet.text.Label(str(infos),
                                                font_name='Times New Roman',
                                                font_size=22,

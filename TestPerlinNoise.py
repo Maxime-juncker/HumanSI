@@ -46,7 +46,6 @@ def GenerateWorld(heightMap: Image):
             noiseVal += noise2([x / im.width, y / im.height])
             noiseVal += 0.3  # c'est une valeur arbitraire pour juste qu'il y ai un peu moins d'eau
             noiseVal += Clamp(random.random() * CHAOS_FORCE, -.5, .5)
-
             AddBiomeToDict(noiseVal, (x, y))  # avant de continuer on ajoute le pixel a la liste de biome
 
             noiseVal = Clamp(WIDTH_RESOLUTION * noiseVal, 0, WIDTH_RESOLUTION - 1)
