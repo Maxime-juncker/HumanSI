@@ -22,31 +22,31 @@ Forest,0,0,0,0,0,50,-1,none,ressources,-1,Props/Forests,1,-1,0
 Ruines,0,0,0,0,0,100,-1,none,ruine,-1,Props/Ruines,1,-1,0
 
 YellowCityHall,0,0,0,0,0,800,-1,yellow,building,-1,Civilisations/Yellow/BuildingsYellow/HDV,1,-1,0
-YellowHouse,0,0,0,0,0,300,-1,yellow,building,50,Civilisations/Yellow/BuildingsYellow/Buildings,0,-1,0
+YellowHouse,0,0,0,0,0,300,40,yellow,building,50,Civilisations/Yellow/BuildingsYellow/Buildings,0,-1,0
 YellowWonder,0,0,0,0,0,1200,-1,red,building,250,Civilisations/Yellow/BuildingsYellow/YellowWonder,0,-1,0
 
 RedCityHall,0,0,0,0,0,1000,-1,red,building,-1,Civilisations/Red/BuildingsRed/HDV,1,-1,.5
-RedHouse,0,0,0,0,0,400,-1,red,building,100,Civilisations/Red/BuildingsRed/Buildings,0,-1,0
+RedHouse,0,0,0,0,0,400,40,red,building,100,Civilisations/Red/BuildingsRed/Buildings,0,-1,0
 RedWonder,0,0,0,0,0,1300,-1,red,building,300,Civilisations/Red/BuildingsRed/RedWonder,0,-1,0
 
 PurpleCityHall,0,0,0,0,0,600,-1,purple,building,-1,Civilisations/Purple/BuildingsPurple/HDV,1,-1,0
-PurpleHouse,0,0,0,0,0,200,-1,purple,building,30,Civilisations/Purple/BuildingsPurple/Buildings,0,-1,0
+PurpleHouse,0,0,0,0,0,200,70,purple,building,30,Civilisations/Purple/BuildingsPurple/Buildings,0,-1,0
 
 BlueCityHall,0,0,0,0,0,800,-1,blue,building,-1,Civilisations/Blue/BuildingsBlue/HDV,1,-1,0
-BlueHouse,0,0,0,0,0,100,-1,blue,building,100,Civilisations/Blue/BuildingsBlue/Buildings,0,-1,0
+BlueHouse,0,0,0,0,0,100,60,blue,building,100,Civilisations/Blue/BuildingsBlue/Buildings,0,-1,0
 
 GreenCityHall,0,0,0,0,0,900,-1,green,building,-1,Civilisations/Green/BuildingsGreen/HDV,1,-1,0
-GreenHouse,0,0,0,0,0,400,-1,green,building,85,Civilisations/Green/BuildingsGreen/Buildings,0,-1,0
+GreenHouse,0,0,0,0,0,400,60,green,building,85,Civilisations/Green/BuildingsGreen/Buildings,0,-1,0
 GreenWonder,0,0,0,0,0,1200,-1,red,building,280,Civilisations/Green/BuildingsGreen/GreenWonder,0,-1,0
 
 WhiteCityHall,0,0,0,0,0,500,-1,white,building,-1,Civilisations/White/BuildingsWhite/HDV,1,-1,0
-WhiteHouse,0,0,0,0,0,500,-1,white,building,100,Civilisations/White/BuildingsWhite/Buildings,0,-1,0
+WhiteHouse,0,0,0,0,0,500,100,white,building,100,Civilisations/White/BuildingsWhite/Buildings,0,-1,0
 
 BlackCityHall,0,0,0,0,0,900,-1,black,building,-1,Civilisations/Black/BuildingsBlack/HDV,1,-1,0
-BlackHouse,0,0,0,0,0,100,-1,black,building,100,Civilisations/Black/BuildingsBlack/Buildings,0,-1,0
+BlackHouse,0,0,0,0,0,100,100,black,building,100,Civilisations/Black/BuildingsBlack/Buildings,0,-1,0
 
 DefaultCityHall,0,0,0,0,0,800,-1,default,building,-1,Civilisations/Default/BuildingsDefault/HDV,1,-1,0
-DefaultHouse,0,0,0,0,0,300,-1,default,building,100,Civilisations/Default/BuildingsDefault/Buildings,0,-1,0
+DefaultHouse,0,0,0,0,0,300,50,default,building,100,Civilisations/Default/BuildingsDefault/Buildings,0,-1,0
 
 Pop_Yellow,1,1,80,1,0.5,70,240,yellow,unit,6,Civilisations/Yellow/PopYellow,1,0.02,0.1
 Pop_Red,1,2,0,30,3,90,240,red,unit,12,Civilisations/Red/PopRed,1,0.02,0.1
