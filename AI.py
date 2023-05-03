@@ -471,7 +471,7 @@ class Civilisation(BasicObject):
         result["max pop"] = self.maxPop
         result["maisons"] = len(self.currentHousing)
         result["ressources"] = self.ressources
-        result["Avantagé"] = self.isAdvantaged
+        result["status"] = self.isAdvantaged
 
         if self.wonderPreset is not None:
             result["merveille"] = self.wonderPreset["name"]
