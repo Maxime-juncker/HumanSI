@@ -134,7 +134,6 @@ class Unit(BasicObject):
     def GetLocation(self):
         return self.x, self.y
 
-    # ============ A FAIRE =============================================================================================
     def Destroy(self, dt=0):
         clock.unschedule(self.Update)
 
@@ -152,14 +151,17 @@ class Unit(BasicObject):
             if self.civilisation is not None:
                 if self.unitPreset["category"] == "unit":
                     self.civilisation.currentPopulation.pop(self.name)
+                    self.civilisation.currentZoneSize -= 1
                     pyglet.media.StaticSource(pyglet.media.load('Assets/SFX/UnitDestruction.wav')).play()
 
                 elif self.unitPreset["category"] == "building":
+                    self.civilisation.currentZoneSize -= 50
                     self.civilisation.currentHousing.pop(self.name)
             if "CityHall" in self.name:
                 self.civilisation.Destroy()
                 pyglet.media.StaticSource(pyglet.media.load('Assets/SFX/BigBuildingDestruction.wav')).play()
             if "Wonder" in self.name:
+                self.civilisation.currentZoneSize -= 400
                 pyglet.media.StaticSource(pyglet.media.load('Assets/SFX/BigBuildingDestruction.wav')).play()
 
             if "Chief" in self.name and self.civilisation.isCivilisationAlived:

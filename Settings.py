@@ -27,7 +27,7 @@ HEIGHT_RESOLUTION = 2200
 
 # c'est une valeur arbitraire pour un peu de variation quand on pixelise le terrain c'est un peu trop
 # smooth et ça fais un randu bizzard, les valeurs qui marche le mieux sont entre .1 et .2 apres c'est
-# trop chaotique et en deussous c'est trop lisse
+# trop chaotique et en dessous c'est trop lisse
 CHAOS_FORCE = .015
 
 """
