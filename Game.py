@@ -82,7 +82,6 @@ class Game:
             self.spriteIndex = 0
             self.activeImageIndex = 0
             self.spawnAbleUnit = LoadPreset(Directories.PresetDir + "Presets.csv")
-            # self.interfaces["descriptionPanel"] = self.descriptionPanel
             self.PopulateSpawnableDict()
             self.SetupCategoriesButton(("Other", "Pop", "Civilisation", "Tools"))
             self.sprites = self.PreLoadSprites()
@@ -91,6 +90,7 @@ class Game:
             # C'est bon on a fini le setup la game loop peut commencer :D
             self.UpdateFantomeSprite()
             window.set_caption("HumanSI")
+            self.player = pyglet.media.Player()
 
             self.GAME_RUNNING = True
             debugSuccessMsg("l'init c'est bien déroulé ! \n lancement de HumanSI...")
