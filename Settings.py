@@ -1,6 +1,6 @@
 # Mettez les résolution de votre écran ici
-WIDTH = 1366
-HEIGHT = 768
+WIDTH = 1920
+HEIGHT = 1080
 FULLSCREEN = True
 
 MUTATION_FORCE = .25
@@ -22,8 +22,8 @@ plus les settings de résolution seront élever plus la generation prendra du te
 
 USE_RANDOM_TERRAIN = False
 
-WIDTH_RESOLUTION = 2200
-HEIGHT_RESOLUTION = 2200
+WIDTH_RESOLUTION = 900
+HEIGHT_RESOLUTION = 900
 
 # c'est une valeur arbitraire pour un peu de variation quand on pixelise le terrain c'est un peu trop
 # smooth et ça fais un randu bizzard, les valeurs qui marche le mieux sont entre .1 et .2 apres c'est

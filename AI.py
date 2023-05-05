@@ -220,13 +220,18 @@ class Unit(BasicObject):
             debugWarningMsg(str(self) + " a prix " + str(amount) + "| hp: " + str(self.health))
 
     def CheckForNearbyEnemies(self):
+
         if self.civilisation is not None and self.civilisation.inWar:
+
             target = Game.game.GetClosestObjectToOtherObject(self, 225, self.name)
             if target is None and self.civilisation.inWarAgainst is not None:
-                self.currentTarget = self.civilisation.inWarAgainst.cityHall
+                if not self.civilisation.wonderAlreadyExist:
+                    self.currentTarget = self.civilisation.inWarAgainst.cityHall
+                    self.currentDestination = self.currentTarget.GetLocation()
             else:
-                self.currentTarget = Game.game.visibleSprite[target]
-            self.currentDestination = self.currentTarget.GetLocation()
+                if target is not None:
+                    self.currentTarget = Game.game.visibleSprite[target]
+                    self.currentDestination = self.currentTarget.GetLocation()
         else:
             target = Game.game.GetClosestObjectToLocation(self.GetLocation(), 60, self.name)
 
@@ -557,6 +562,10 @@ class Civilisation(BasicObject):
         wonder = Game.game.SpawnUnit(self.wonderPreset, SeekNewPos(self.cityHallPos, 25), self)
         Game.game.CreatePopupMsg(self.name + " a crée une merveille !", 1)
 
+        for civilisation in Game.game.civilisationSpawned:
+            if civilisation == self.name:
+                continue
+
         if AI_DEBUG:
             debugSuccessMsg("wonder construite: " + str(wonder))
 
@@ -579,6 +588,10 @@ class Civilisation(BasicObject):
                 self.DeclareWar(target)
 
     def DeclareWar(self, target):
+        if self.wonderAlreadyExist:
+            self.inWar = True
+            return
+
         self.inWar = True
         self.inWarAgainst = target
 

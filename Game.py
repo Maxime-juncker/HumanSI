@@ -95,9 +95,11 @@ class Game:
             self.GAME_RUNNING = True
             debugSuccessMsg("l'init c'est bien déroulé ! \n lancement de HumanSI...")
             debugInfoMsg("ci jamais la fenetre ne prend pas tous l'écran il faut \n modifier les paramètres WIDTH et HEIGHT dans Settings.py et mettre la résolution de votre écran")
-
+            debugFailMsg("Si jamais HumanSI crash sans rasion enlever le # du return a la ligne 214")
         except Exception as e:
             debugFailMsg("/!\ FAIL DE L'INIT DANS Game.py \n HumanSI ne peut pas démarer !")
+            debugFailMsg("Si jamais HumanSI crash sans rasion enlever le # du return a la ligne 214")
+
             debugFailMsg(e.with_traceback())
 
     def CreateProps(self):
@@ -204,6 +206,12 @@ class Game:
         self.descLabel.text = self.descriptionPanel.GetInfos()
 
     def UpdateFantomeSprite(self):
+
+        """
+        Si pour une raison obscure, HumanSI crash sans raison enlever le # du return si dessous
+        ça peut arriver que cette fonction crash sur certaine config (apparament c'est plus chez les config Nvidia)
+        """
+        #return
 
         names = []
         [names.extend([v]) for v in self.spawnAbleUnit.keys()]
