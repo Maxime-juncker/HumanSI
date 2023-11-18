@@ -21,8 +21,6 @@ Pour changer des parametres allez dans le script Settigns.py
 (des presets de parametre sont trouvable dans la documentation pour les meilleurs perfomances)
 
 le liens du site : https://humansiweb.vercel.app/
-lien de la documentation : https://docs.google.com/document/d/17PZ6pbpmhLXZqg6RIOtxHAnYBfT1P63gAqS7nL3guhs/edit?usp=sharing
-du pc qui ce trouve sur le site
 
 ________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________
 
